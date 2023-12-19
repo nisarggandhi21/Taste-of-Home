@@ -11,7 +11,7 @@ gigId replaced with itemId in order and review modal
 also exporting itemSchema in item.model.js
 //export default mongoose.model("Item", itemSchema);
 
-
+ 
 Video time : 1:00:00
 
 MONGO = mongodb+srv://root:<Password>@taste-of-home.ol9eep3.mongodb.net/taste-of-home?retryWrites=true&w=majority
