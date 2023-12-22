@@ -35,6 +35,13 @@ app.use("/api/user", userRoute);
 // app.use("api/orders", orderRoutes);
 // app.use("api/reviews", reviewRoutes);
 
+app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Something went wrong";
+
+  res.status(errorStatus).send(errorMessage);
+});
+
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
   connect();
