@@ -14,14 +14,15 @@ function Gig() {
       newRequest.get(`/items/single/${id}`).then((res) => res.data),
   });
 
+  const userId = data?.userId; //optional chaning operator
+
   const {
     isLoading: isLoadingUser,
     error: errorUser,
     data: dataUser,
   } = useQuery({
     queryKey: ["user"],
-    queryFn: () =>
-      newRequest.get(`/users/${data.userId}`).then((res) => res.data),
+    queryFn: () => newRequest.get(`/users/${userId}`).then((res) => res.data),
   });
 
   return (
@@ -152,15 +153,7 @@ function Gig() {
                   <img src="/img/star.png" alt="" />
                   <span>5</span>
                 </div>
-                <p>
-                  I just want to say that art_with_ai was the first, and after
-                  this, the only artist Ill be using on Fiverr. Communication
-                  was amazing, each and every day he sent me images that I was
-                  free to request changes to. They listened, understood, and
-                  delivered above and beyond my expectations. I absolutely
-                  recommend this gig, and know already that Ill be using it
-                  again very very soon
-                </p>
+                <p>Very Tasty Food</p>
                 <div className="helpful">
                   <span>Helpful?</span>
                   <img src="/img/like.png" alt="" />
@@ -197,10 +190,7 @@ function Gig() {
                   <span>5</span>
                 </div>
                 <p>
-                  The designer took my photo for my book cover to the next
-                  level! Professionalism and ease of working with designer along
-                  with punctuality is above industry standards!! Whatever your
-                  project is, you need this designer!
+                  The food was amazing! I will definitely be ordering again.
                 </p>
                 <div className="helpful">
                   <span>Helpful?</span>
@@ -237,13 +227,7 @@ function Gig() {
                   <img src="/img/star.png" alt="" />
                   <span>5</span>
                 </div>
-                <p>
-                  Amazing work! Communication was amazing, each and every day he
-                  sent me images that I was free to request changes to. They
-                  listened, understood, and delivered above and beyond my
-                  expectations. I absolutely recommend this gig, and know
-                  already that Ill be using it again very very soon
-                </p>
+                <p>Amazing food!</p>
                 <div className="helpful">
                   <span>Helpful?</span>
                   <img src="/img/like.png" alt="" />
@@ -263,7 +247,7 @@ function Gig() {
             <div className="details">
               <div className="item">
                 <img src="/img/clock.png" alt="" />
-                <span>{data.deliveryDate} Days Delivery</span>
+                <span>Delivery in {data.deliveryTime} hours</span>
               </div>
             </div>
             <div className="features">

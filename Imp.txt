@@ -12,7 +12,7 @@ also exporting itemSchema in item.model.js
 //export default mongoose.model("Item", itemSchema);
 
  
-Video time : 1:41
+Video time : 2:20
 
 MONGO = mongodb+srv://root:<Password>@taste-of-home.ol9eep3.mongodb.net/taste-of-home?retryWrites=true&w=majority
 JWT_KEY = nisarggandhi21

@@ -2,7 +2,7 @@
   height: 600px;
   display: flex;
   justify-content: center;
-  background-color: #013914;
+  background-color: #8f9779;
   color: white;
 
   .container {
@@ -56,7 +56,7 @@
           width: 120px;
           height: 50px;
           border: none;
-          background-color: #1dbf73;
+          background-color: #d2b48c;
           color: white;
           align-self: flex-end;
           cursor: pointer;
@@ -86,9 +86,14 @@
 
     .right {
       height: 100%;
+
       img {
         height: 100%;
-        object-fit: contain;
+
+        &:hover {
+          transform: scale(1.06);
+          transition: all 0.5s ease;
+        }
       }
     }
   }

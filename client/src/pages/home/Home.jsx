@@ -1,7 +1,6 @@
 import React from "react";
 import "./Home.scss";
 import Featured from "../../components/featured/Featured";
-import TrustedBy from "../../components/trustedBy/TrustedBy";
 import Slide from "../../components/slide/Slide";
 import CatCard from "../../components/catCard/CatCard";
 import ProjectCard from "../../components/projectCard/ProjectCard";
@@ -11,7 +10,6 @@ function Home() {
   return (
     <div className="home">
       <Featured />
-      <TrustedBy />
       <Slide slidesToShow={5} arrowsScroll={5}>
         {cards.map((card) => (
           <CatCard key={card.id} card={card} />
@@ -20,38 +18,42 @@ function Home() {
       <div className="features">
         <div className="container">
           <div className="item">
-            <h1>A whole world of freelance talent at your fingertips</h1>
+            <h1>Discover a World of Home-Cooked Delights</h1>
             <div className="title">
               <img src="./img/check.png" alt="" />
-              The best for every budget
+              The Best for Every Palate
             </div>
             <p>
-              Find high-quality services at every price point. No hourly rates,
-              just project-based pricing.
+              Explore a diverse range of home-cooked meals at various price
+              points. Enjoy delicious food crafted with passion and care, all
+              available with project-based pricing.
             </p>
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Quality work done quickly
+              Quality Cuisine, Served Quickly
             </div>
             <p>
-              Find the right freelancer to begin working on your project within
-              minutes.
+              Connect with talented home cooks who can start preparing your
+              order within minutes. Experience quality meals crafted with
+              expertise and speed.
             </p>
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Protected payments, every time
+              Secure Transactions Every Time
             </div>
             <p>
-              Always know what you'll pay upfront. Your payment isn't released
-              until you approve the work.
+              Rest assured with protected payments. Your payment is held until
+              you approve the delightful home-cooked dishes delivered to your
+              doorstep.
             </p>
             <div className="title">
               <img src="./img/check.png" alt="" />
-              24/7 support
+              24/7 Support for Your Culinary Journey
             </div>
             <p>
-              Find high-quality services at every price point. No hourly rates,
-              just project-based pricing.
+              Enjoy round-the-clock support for any questions or assistance you
+              may need. Your satisfaction is our priority as you embark on a
+              culinary adventure.
             </p>
           </div>
           <div className="item">
@@ -61,88 +63,88 @@ function Home() {
       </div>
       <div className="explore">
         <div className="container">
-          <h1>Explore the marketplace</h1>
+          <h1>Explore the Market</h1>
           <div className="items">
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/graphics-design.d32a2f8.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Graphics & Design</span>
+              <span>North</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/online-marketing.74e221b.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
 
-              <span>Digital Marketing</span>
+              <span>South</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/writing-translation.32ebe2e.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Writing & Translation</span>
+              <span>Pizza</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/video-animation.f0d9d71.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Video & Animation</span>
+              <span>Burger</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/music-audio.320af20.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Music & Audio</span>
+              <span>Cake</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/programming.9362366.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Programming & Tech</span>
+              <span>Ice cream</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/business.bbdf319.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Business</span>
+              <span>Sandwich</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/lifestyle.745b575.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Lifestyle</span>
+              <span>Drinks</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/data.718910f.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Data</span>
+              <span>Choclates</span>
             </div>
             <div className="item">
               <img
-                src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/photography.01cf943.svg"
+                src="https://cdn.iconscout.com/icon/premium/png-512-thumb/food-1680418-1427510.png"
                 alt=""
               />
               <div className="line"></div>
-              <span>Photography</span>
+              <span>Other</span>
             </div>
           </div>
         </div>
@@ -151,34 +153,37 @@ function Home() {
         <div className="container">
           <div className="item">
             <h1>
-              liverr <i>business</i>
+              Taste of <i>home</i>
             </h1>
             <h1>
-              A business solution designed for <i>teams</i>
+              An online solution crafted for <i>food enthusiasts</i>
             </h1>
             <p>
-              Upgrade to a curated experience packed with tools and benefits,
-              dedicated to businesses
+              Elevate your dining experience with a curated platform filled with
+              tools and perks dedicated to food lovers.
             </p>
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Connect to freelancers with proven business experience
+              Connect with passionate home cooks offering proven culinary
+              expertise
             </div>
 
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Get matched with the perfect talent by a customer success manager
+              Discover the perfect homemade dishes with assistance from our
+              culinary experts
             </div>
 
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Manage teamwork and boost productivity with one powerful workspace
+              Manage your food orders seamlessly and enhance your culinary
+              journey with a user-friendly platform
             </div>
-            <button>Explore Liverr Business</button>
+            <button>Explore Home-Cooked Delights</button>
           </div>
           <div className="item">
             <img
-              src="https://fiverr-res.cloudinary.com/q_auto,f_auto,w_870,dpr_2.0/v1/attachments/generic_asset/asset/d9c17ceebda44764b591a8074a898e63-1599597624768/business-desktop-870-x2.png"
+              src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_1002,h_600/v1678428358/portal/m/seo_web/dweb_header.png"
               alt=""
             />
           </div>
