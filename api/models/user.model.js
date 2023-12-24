@@ -25,6 +25,10 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
+    location: {
+      type: String,
+      required: false,
+    },
     desc: {
       type: String,
       required: false,

@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/", verifyToken, createItem);
 router.delete("/:id", verifyToken, deleteItem);
-router.get("/single/:id", verifyToken, getItem);
-router.get("/", verifyToken, getItems);
+router.get("/single/:id", getItem);
+router.get("/", getItems);
 
 export default router;

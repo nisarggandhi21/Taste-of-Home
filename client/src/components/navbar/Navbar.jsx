@@ -44,7 +44,7 @@ function Navbar() {
           </Link>
         </div>
         <div className="links">
-          <span>Liverr Business</span>
+          <span>Taste of Home</span>
           <span>Explore</span>
           <span>English</span>
           {!currentUser?.isSeller && <span>Become a Seller</span>}
@@ -57,10 +57,10 @@ function Navbar() {
                   {currentUser.isSeller && (
                     <>
                       <Link className="link" to="/mygigs">
-                        Gigs
+                        Items
                       </Link>
                       <Link className="link" to="/add">
-                        Add New Gig
+                        Add New Item
                       </Link>
                     </>
                   )}
@@ -93,31 +93,31 @@ function Navbar() {
           <hr />
           <div className="menu">
             <Link className="link menuLink" to="/">
-              Graphics & Design
+              North
             </Link>
             <Link className="link menuLink" to="/">
-              Video & Animation
+              South
             </Link>
             <Link className="link menuLink" to="/">
-              Writing & Translation
+              Pizza
             </Link>
             <Link className="link menuLink" to="/">
-              AI Services
+              Burger
             </Link>
             <Link className="link menuLink" to="/">
-              Digital Marketing
+              Cake
             </Link>
             <Link className="link menuLink" to="/">
-              Music & Audio
+              Ice Cream
             </Link>
             <Link className="link menuLink" to="/">
-              Programming & Tech
+              Sandwich
             </Link>
             <Link className="link menuLink" to="/">
-              Business
+              Drinks
             </Link>
             <Link className="link menuLink" to="/">
-              Lifestyle
+              Choclates
             </Link>
           </div>
           <hr />
