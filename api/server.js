@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
-// import gigRoutes from "./routes/gig.route.js";
+import itemRoutes from "./routes/item.route.js";
 // import conversationRoutes from "./routes/conversation.route.js";
 // import messageRoutes from "./routes/message.route.js";
 // import orderRoutes from "./routes/order.route.js";
@@ -31,7 +31,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
-// app.use("api/gigs", gigRoutes);
+app.use("/api/items", itemRoutes);
 // app.use("api/conversations", conversationRoutes);
 // app.use("api/messages", messageRoutes);
 // app.use("api/orders", orderRoutes);

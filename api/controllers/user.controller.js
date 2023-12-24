@@ -4,12 +4,9 @@ import createError from "../utils/createError.js";
 export const deleteUser = async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
-  if (!token) return next(createError(401, "You need to login"));
-
-  if (req.userId !== user.id.toString()) {
-    return next(createError(403, "You can delete only your account"));
+  if (req.userId !== user._id.toString()) {
+    return next(createError(403, "You can delete only your account!"));
   }
-
   await User.findByIdAndDelete(req.params.id);
-  res.status(200).send("User deleted");
+  res.status(200).send("deleted");
 };
