@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./Gigs.scss";
+import "./items.scss";
 
-import GigCard from "../../components/gigCard/GigCard";
+import ItemCard from "../../components/itemCard/ItemCard";
 import newRequest from "../../utils/newRequest";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 
-function Gigs() {
+function Items() {
   const [sort, setSort] = useState("sales");
   const [open, setOpen] = useState(false);
   const minRef = useRef();
@@ -38,7 +38,7 @@ function Gigs() {
   };
 
   return (
-    <div className="gigs">
+    <div className="items">
       <div className="container">
         <span className="breadcrumbs">
           Taste of Home {">"} North {">"}
@@ -75,11 +75,11 @@ function Gigs() {
             ? "loading"
             : error
             ? "Something went wrong!"
-            : data.map((item) => <GigCard key={item._id} item={item} />)}
+            : data.map((item) => <ItemCard key={item._id} item={item} />)}
         </div>
       </div>
     </div>
   );
 }
 
-export default Gigs;
+export default Items;

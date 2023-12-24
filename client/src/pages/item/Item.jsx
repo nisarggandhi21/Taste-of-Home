@@ -1,11 +1,11 @@
 import React from "react";
-import "./Gig.scss";
+import "./item.scss";
 import { Slider } from "infinite-react-carousel/lib";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useParams } from "react-router-dom";
 
-function Gig() {
+function Item() {
   const { id } = useParams();
 
   const { isLoading, error, data } = useQuery({
@@ -28,11 +28,11 @@ function Gig() {
       newRequest.get(`/users/${userId}`).then((res) => {
         return res.data;
       }),
-    enabled: !!userId,
+    enabled: !!userId, //converts to boolean value
   });
 
   return (
-    <div className="gig">
+    <div className="item">
       {isLoading ? (
         "loading"
       ) : error ? (
@@ -272,4 +272,4 @@ function Gig() {
   );
 }
 
-export default Gig;
+export default Item;

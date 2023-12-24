@@ -152,9 +152,7 @@ function Home() {
       <div className="features dark">
         <div className="container">
           <div className="item">
-            <h1>
-              Taste of <i>home</i>
-            </h1>
+            <h1>Taste of home</h1>
             <h1>
               An online solution crafted for <i>food enthusiasts</i>
             </h1>

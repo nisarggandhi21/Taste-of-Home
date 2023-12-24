@@ -1,10 +1,10 @@
 import React from "react";
-import "./GigCard.scss";
+import "./itemCard.scss";
 import { Link } from "react-router-dom";
 import newRequest from "../../utils/newRequest";
 import { useQuery } from "@tanstack/react-query";
 
-const GigCard = ({ item }) => {
+const ItemCard = ({ item }) => {
   const { isLoading, error, data } = useQuery({
     queryKey: [item.userId],
     queryFn: () =>
@@ -15,7 +15,7 @@ const GigCard = ({ item }) => {
 
   return (
     <Link to={`/item/${item._id}`} className="link">
-      <div className="gigCard">
+      <div className="itemCard">
         <img src={item.cover} alt="" />
         <div className="info">
           {isLoading ? (
@@ -51,4 +51,4 @@ const GigCard = ({ item }) => {
   );
 };
 
-export default GigCard;
+export default ItemCard;

@@ -2,55 +2,55 @@ export const cards = [
   {
     id: 1,
     title: "North",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/12365247/pexels-photo-12365247.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 2,
     title: "South",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/4331491/pexels-photo-4331491.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 3,
     title: "Pizza",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/2180875/pexels-photo-2180875.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 4,
     title: "Burger",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/2015097/pexels-photo-2015097.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 5,
     title: "Cake",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/19478187/pexels-photo-19478187/free-photo-of-strawberry-cake-on-a-plate.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 6,
     title: "Ice Cream",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/2846337/pexels-photo-2846337.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 7,
     title: "Sandwich",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/14941252/pexels-photo-14941252.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 8,
     title: "Drinks",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
   {
     id: 8,
     title: "Choclates",
-    desc: "Lorem ipsum ",
+
     img: "https://images.pexels.com/photos/6167330/pexels-photo-6167330.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
   },
 ];
@@ -121,7 +121,7 @@ export const projects = [
   },
 ];
 
-export const gigs = [
+export const items = [
   {
     id: 1,
     img: "https://images.pexels.com/photos/580151/pexels-photo-580151.jpeg?auto=compress&cs=tinysrgb&w=1600",
