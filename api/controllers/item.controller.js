@@ -59,7 +59,7 @@ export const getItems = async (req, res, next) => {
     }),
   };
   try {
-    const items = await Item.find(filters);
+    const items = await Item.find(filters).sort({ [query.sort]: -1 });
     res.status(200).send(items);
   } catch (error) {
     next(error);
