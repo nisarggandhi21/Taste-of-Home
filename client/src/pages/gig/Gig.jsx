@@ -11,7 +11,9 @@ function Gig() {
   const { isLoading, error, data } = useQuery({
     queryKey: ["item"],
     queryFn: () =>
-      newRequest.get(`/items/single/${id}`).then((res) => res.data),
+      newRequest.get(`/items/single/${id}`).then((res) => {
+        return res.data;
+      }),
   });
 
   const userId = data?.userId; //optional chaning operator
@@ -22,7 +24,11 @@ function Gig() {
     data: dataUser,
   } = useQuery({
     queryKey: ["user"],
-    queryFn: () => newRequest.get(`/users/${userId}`).then((res) => res.data),
+    queryFn: () =>
+      newRequest.get(`/users/${userId}`).then((res) => {
+        return res.data;
+      }),
+    enabled: !!userId,
   });
 
   return (
