@@ -4,6 +4,7 @@ import { Slider } from "infinite-react-carousel/lib";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useParams } from "react-router-dom";
+import Reviews from "../../components/reviews/Reviews";
 
 function Item() {
   const { id } = useParams();
@@ -28,7 +29,7 @@ function Item() {
       newRequest.get(`/users/${userId}`).then((res) => {
         return res.data;
       }),
-    enabled: !!userId, //converts to boolean value
+    enabled: !!userId, //enable usequery function whenever userId is not null
   });
 
   return (
@@ -131,118 +132,7 @@ function Item() {
                 </div>
               </div>
             )}
-            <div className="reviews">
-              <h2>Reviews</h2>
-              <div className="item">
-                <div className="user">
-                  <img
-                    className="pp"
-                    src="https://images.pexels.com/photos/839586/pexels-photo-839586.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                    alt=""
-                  />
-                  <div className="info">
-                    <span>Garner David</span>
-                    <div className="country">
-                      <img
-                        src="https://fiverr-dev-res.cloudinary.com/general_assets/flags/1f1fa-1f1f8.png"
-                        alt=""
-                      />
-                      <span>United States</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="stars">
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <span>5</span>
-                </div>
-                <p>Very Tasty Food</p>
-                <div className="helpful">
-                  <span>Helpful?</span>
-                  <img src="/img/like.png" alt="" />
-                  <span>Yes</span>
-                  <img src="/img/dislike.png" alt="" />
-                  <span>No</span>
-                </div>
-              </div>
-              <hr />
-              <div className="item">
-                <div className="user">
-                  <img
-                    className="pp"
-                    src="https://images.pexels.com/photos/4124367/pexels-photo-4124367.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                    alt=""
-                  />
-                  <div className="info">
-                    <span>Sidney Owen</span>
-                    <div className="country">
-                      <img
-                        src="https://fiverr-dev-res.cloudinary.com/general_assets/flags/1f1e9-1f1ea.png"
-                        alt=""
-                      />
-                      <span>Germany</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="stars">
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <span>5</span>
-                </div>
-                <p>
-                  The food was amazing! I will definitely be ordering again.
-                </p>
-                <div className="helpful">
-                  <span>Helpful?</span>
-                  <img src="/img/like.png" alt="" />
-                  <span>Yes</span>
-                  <img src="/img/dislike.png" alt="" />
-                  <span>No</span>
-                </div>
-              </div>
-              <hr />
-              <div className="item">
-                <div className="user">
-                  <img
-                    className="pp"
-                    src="https://images.pexels.com/photos/842980/pexels-photo-842980.jpeg?auto=compress&cs=tinysrgb&w=1600"
-                    alt=""
-                  />
-                  <div className="info">
-                    <span>Lyle Giles </span>
-                    <div className="country">
-                      <img
-                        src="https://fiverr-dev-res.cloudinary.com/general_assets/flags/1f1fa-1f1f8.png"
-                        alt=""
-                      />
-                      <span>United States</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="stars">
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <img src="/img/star.png" alt="" />
-                  <span>5</span>
-                </div>
-                <p>Amazing food!</p>
-                <div className="helpful">
-                  <span>Helpful?</span>
-                  <img src="/img/like.png" alt="" />
-                  <span>Yes</span>
-                  <img src="/img/dislike.png" alt="" />
-                  <span>No</span>
-                </div>
-              </div>
-            </div>
+            <Reviews itemId={id} />
           </div>
           <div className="right">
             <div className="price">

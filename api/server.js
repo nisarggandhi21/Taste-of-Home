@@ -7,7 +7,7 @@ import itemRoutes from "./routes/item.route.js";
 // import conversationRoutes from "./routes/conversation.route.js";
 // import messageRoutes from "./routes/message.route.js";
 // import orderRoutes from "./routes/order.route.js";
-// import reviewRoutes from "./routes/review.route.js";
+import reviewRoutes from "./routes/review.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -35,7 +35,7 @@ app.use("/api/items", itemRoutes);
 // app.use("api/conversations", conversationRoutes);
 // app.use("api/messages", messageRoutes);
 // app.use("api/orders", orderRoutes);
-// app.use("api/reviews", reviewRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
