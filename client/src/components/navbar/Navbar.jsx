@@ -56,20 +56,20 @@ function Navbar() {
                 <div className="options">
                   {currentUser.isSeller && (
                     <>
-                      {/* <Link className="link" to="/myitems">
+                      <Link className="link" to="/items">
                         Items
-                      </Link> */}
+                      </Link>
                       <Link className="link" to="/add">
                         Add New Item
                       </Link>
                     </>
                   )}
-                  {/* <Link className="link" to="/orders">
+                  <Link className="link" to="/orders">
                     Orders
                   </Link>
                   <Link className="link" to="/messages">
                     Messages
-                  </Link> */}
+                  </Link>
                   <Link className="link" onClick={handleLogout}>
                     Logout
                   </Link>
