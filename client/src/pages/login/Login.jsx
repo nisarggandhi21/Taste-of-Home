@@ -29,7 +29,7 @@ function Login() {
         <input
           name="username"
           type="text"
-          placeholder="nisarggandhi21"
+          placeholder="username"
           onChange={(e) => setUsername(e.target.value)}
         />
 
@@ -37,6 +37,7 @@ function Login() {
         <input
           name="password"
           type="password"
+          placeholder="password"
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>

@@ -15,7 +15,7 @@ function Home() {
           <CatCard key={card.id} card={card} />
         ))}
       </Slide>
-      <div className="features">
+      {/* <div className="features">
         <div className="container">
           <div className="item">
             <h1>Discover a World of Home-Cooked Delights</h1>
@@ -60,8 +60,8 @@ function Home() {
             <video src="./img/video.mp4" controls />
           </div>
         </div>
-      </div>
-      <div className="explore">
+      </div> */}
+      {/* <div className="explore">
         <div className="container">
           <h1>Explore the Market</h1>
           <div className="items">
@@ -148,7 +148,7 @@ function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="features dark">
         <div className="container">
           <div className="item">

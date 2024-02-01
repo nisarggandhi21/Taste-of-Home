@@ -1,16 +1,5 @@
 deleted country attribute from user.model.js
-
 deleted revisionNUmber attribute from gig.model.js
-
-
-
-replaced gig file name with item
-
-gigId replaced with itemId in order and review modal
-
-also exporting itemSchema in item.model.js
-//export default mongoose.model("Item", itemSchema);
-
  
 Video time : 2:55
 

@@ -40,11 +40,11 @@ function Items() {
   return (
     <div className="items">
       <div className="container">
-        <span className="breadcrumbs">
+        {/* <span className="breadcrumbs">
           Taste of Home {">"} North {">"}
-        </span>
-        <h1>North</h1>
-        <p>Explore the North Food</p>
+        </span> */}
+        {/* <h1>North</h1> */}
+        <p>Explore the Food</p>
         <div className="menu">
           <div className="left">
             <span>Budget</span>

@@ -38,7 +38,7 @@ const Add = () => {
           </div>
           <div className="details">
             {/* <label htmlFor="">Service Title</label>
-            <input type="text" placeholder="e.g. One-page web design" /> */}
+            <input type="text" placeholder="" /> */}
             <label htmlFor="">Short Description</label>
             <textarea
               name=""
