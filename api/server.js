@@ -5,7 +5,7 @@ import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
 import itemRoutes from "./routes/item.route.js";
 import conversationRoutes from "./routes/conversation.route.js";
-// import messageRoutes from "./routes/message.route.js";
+import messageRoutes from "./routes/message.route.js";
 import orderRoutes from "./routes/order.route.js";
 import reviewRoutes from "./routes/review.route.js";
 import cookieParser from "cookie-parser";
@@ -33,7 +33,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/items", itemRoutes);
 app.use("/api/conversations", conversationRoutes);
-// app.use("/api/messages", messageRoutes);
+app.use("/api/messages", messageRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 
