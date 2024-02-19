@@ -1,7 +1,7 @@
 deleted country attribute from user.model.js
 deleted revisionNUmber attribute from gig.model.js
  
-Video time : 3:30
+Video time : 3:54
 
 MONGO = mongodb+srv://root:<Password>@taste-of-home.ol9eep3.mongodb.net/taste-of-home?retryWrites=true&w=majority
 paswword = root1234
