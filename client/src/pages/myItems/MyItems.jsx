@@ -11,7 +11,7 @@ function Myitems() {
   const { isLoading, error, data } = useQuery({
     queryKey: ["myItems"],
     queryFn: () =>
-      newRequest.get(`/items?userId=${currentUser.id}`).then((res) => {
+      newRequest.get(`/items?userId=${currentUser._id}`).then((res) => {
         return res.data;
       }),
   });
