@@ -59,7 +59,7 @@ function Navbar() {
                 <div className="options">
                   {currentUser.isSeller && (
                     <>
-                      <Link className="link" to="/">
+                      <Link className="link" to="/myItems">
                         Items
                       </Link>
                       <Link className="link" to="/add">
@@ -95,13 +95,14 @@ function Navbar() {
         <>
           <hr />
           <div className="menu">
-            <Link className="link menuLink" to="/">
+            <Link className="link menuLink" to="/items?cat=north">
               North
             </Link>
             <Link className="link menuLink" to="/">
               South
             </Link>
-            <Link className="link menuLink" to="/">
+
+            <Link className="link menuLink" to="/items?cat=Pizza">
               Pizza
             </Link>
             <Link className="link menuLink" to="/">

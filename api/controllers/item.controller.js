@@ -42,24 +42,36 @@ export const getItem = async (req, res, next) => {
 };
 
 export const getItems = async (req, res, next) => {
-  const query = req.query;
+  const q = req.query;
+  // const filters = {
+  //   ...(query.userId && { userId: query.userId }),
+  //   ...(query.cat && {
+  //     cat: { $regex: query.cat, $options: "i" },
+  //   }),
+  //   ...((query.min || query.max) && {
+  //     price: {
+  //       ...(query.min && { $gt: query.min }),
+  //       ...(query.max && { $lt: query.max }),
+  //     },
+  //   }),
+  //   ...(query.title && {
+  //     title: { $regex: query.title, $options: "i" },
+  //   }),
+  // };
   const filters = {
-    ...(query.userId && { userId: query.userId }),
-    ...(query.cat && {
-      cat: { $regex: query.cat, $options: "i" },
-    }),
-    ...((query.min || query.max) && {
+    ...(q.userId && { userId: q.userId }),
+    ...(q.cat && { cat: { $regex: q.cat, $options: "i" } }),
+    ...((q.min || q.max) && {
       price: {
-        ...(query.min && { $gt: query.min }),
-        ...(query.max && { $lt: query.max }),
+        ...(q.min && { $gt: q.min }),
+        ...(q.max && { $lt: q.max }),
       },
     }),
-    ...(query.title && {
-      title: { $regex: query.title, $options: "i" },
-    }),
+    ...(q.search && { title: { $regex: q.search, $options: "i" } }),
   };
+
   try {
-    const items = await Item.find(filters).sort({ [query.sort]: -1 });
+    const items = await Item.find(filters).sort({ [q.sort]: -1 });
     res.status(200).send(items);
   } catch (error) {
     next(error);

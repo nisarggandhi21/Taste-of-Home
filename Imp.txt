@@ -6,3 +6,8 @@ Video time : 3:54
 MONGO = mongodb+srv://root:<Password>@taste-of-home.ol9eep3.mongodb.net/taste-of-home?retryWrites=true&w=majority
 paswword = root1234
 JWT_KEY = nisarggandhi21
+STRIPE_SECRET_KEY = sk_test_51OlVJvSIv0FHoYIn3BTGDKRvxG1Wz2Ze28SGaK58tK0IDUkqiZjTaQ0uym9LrZjIgYKdpEADvSEZ2TC9N7jV2u6800nmN76Ndm
+
+navbar need to be fixed
+for my items refer from 3:55
+data is not getting fetched

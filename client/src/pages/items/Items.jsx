@@ -16,12 +16,23 @@ function Items() {
 
   const { isLoading, error, data, refetch } = useQuery({
     queryKey: ["items"],
-    queryFn: () =>
-      newRequest
-        .get(
-          `/items${search}?min=${minRef.current.value}&max=${maxRef.current.value}&sort=${sort}`
-        )
-        .then((res) => res.data),
+    queryFn: () => {
+      // Construct the URL with query parameters
+      let url = `/items`;
+
+      // Append the search parameter if it exists
+      if (search) {
+        url += `${search}&`;
+      } else {
+        url += `?`;
+      }
+
+      // Append other parameters
+      url += `min=${minRef.current.value}&max=${maxRef.current.value}&sort=${sort}`;
+
+      // Make the API request using the constructed URL
+      return newRequest.get(url).then((res) => res.data);
+    },
   });
 
   const reSort = (type) => {
