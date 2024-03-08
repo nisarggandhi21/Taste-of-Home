@@ -31,13 +31,26 @@ const connect = async () => {
 // ];
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://taste-of-home-aim1.onrender.com/"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  origin: ["http://localhost:5173", "https://taste-of-home-aim1.onrender.com"],
+  credentials: true, // Allow credentials (cookies)
+  allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
 };
 
 app.use(cors(corsOptions));
+app.use(express.json());
+app.use(cookieParser());
+
+// Set Access-Control-Allow-Credentials header
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", true);
+  next();
+});
+
+// Handle CORS preflight requests
+app.options("*", cors(corsOptions));
+
+// Routes...
+
 app.use(express.json());
 app.use(cookieParser());
 
