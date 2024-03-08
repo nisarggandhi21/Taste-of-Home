@@ -28,7 +28,6 @@ const Messages = () => {
     mutation.mutate(id);
   };
 
-  console.log(currentUser);
   return (
     <div className="messages">
       {isLoading ? (

@@ -1,15 +1,19 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Orders.scss";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 
 const Orders = () => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
   const navigate = useNavigate();
   const { isLoading, error, data } = useQuery({
     queryKey: ["orders"],
-    queryFn: () => newRequest.get(`/orders`).then((res) => res.data),
+    queryFn: () =>
+      newRequest.get(`/orders`).then((res) => {
+        return res.data;
+      }),
   });
 
   const handleContact = async (order) => {

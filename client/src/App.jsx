@@ -12,10 +12,11 @@ import Add from "./pages/add/Add";
 import Orders from "./pages/orders/Orders";
 import Messages from "./pages/messages/Messages";
 import Message from "./pages/message/Message";
-import Myitems from "./pages/myitems/Myitems";
+
 import Pay from "./pages/pay/Pay";
 import Success from "./pages/success/Success";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Myitems from "./pages/myitems/Myitems";
 
 const queryClient = new QueryClient();
 
