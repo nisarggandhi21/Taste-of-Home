@@ -41,7 +41,7 @@ export const login = async (req, res, next) => {
     const { password, ...info } = user._doc;
     res
       .cookie("accessToken", token, {
-        httpOnly: true,
+        httponly: false,
         expires: new Date(Date.now() + 86400 * 1000),
         sameSite: "none",
         secure: process.env.NODE_ENV === "production" ? true : false,

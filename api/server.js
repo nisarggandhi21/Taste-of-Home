@@ -31,9 +31,10 @@ const connect = async () => {
 // ];
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://taste-of-home-aim1.onrender.com"],
-  credentials: true, // Allow credentials (cookies)
-  allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+  origin: ["http://localhost:5173", "https://taste-of-home-aim1.onrender.com/"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
 
 app.use(cors(corsOptions));
