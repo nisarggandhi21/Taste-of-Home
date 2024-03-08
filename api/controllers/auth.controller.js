@@ -23,7 +23,7 @@ export const login = async (req, res, next) => {
 
     if (!user) return next(createError(404, "User not found!"));
 
-    const isCorrect = await bcrypt.compare(req.body.password, user.password);
+    const isCorrect = bcrypt.compareSync(req.body.password, user.password);
     if (!isCorrect)
       return next(createError(400, "Wrong password or username!"));
 
@@ -32,24 +32,18 @@ export const login = async (req, res, next) => {
         id: user._id,
         isSeller: user.isSeller,
       },
-      process.env.JWT_KEY,
-      {
-        expiresIn: "1d",
-      }
+      process.env.JWT_KEY
     );
 
     const { password, ...info } = user._doc;
     res
       .cookie("accessToken", token, {
-        httponly: false,
-        expires: new Date(Date.now() + 86400 * 1000),
-        sameSite: "none",
-        secure: process.env.NODE_ENV === "production" ? true : false,
+        httpOnly: true,
       })
       .status(200)
       .send(info);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
