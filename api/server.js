@@ -44,6 +44,11 @@ app.use((err, req, res, next) => {
   res.status(errorStatus).send(errorMessage);
 });
 
+// Connected to the server
+app.use("/", (req, res) => {
+  res.send("Connected to the server");
+});
+
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
   connect();
