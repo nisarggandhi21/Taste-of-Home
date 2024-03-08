@@ -25,17 +25,18 @@ const connect = async () => {
   }
 };
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://taste-of-home-aim1.onrender.com",
-];
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "https://taste-of-home-aim1.onrender.com",
+// ];
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: ["http://localhost:5173", "https://taste-of-home-aim1.onrender.com"],
+  credentials: true, // Allow credentials (cookies)
+  allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
