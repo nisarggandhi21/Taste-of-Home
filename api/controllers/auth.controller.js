@@ -34,15 +34,15 @@ export const login = async (req, res, next) => {
       },
       process.env.JWT_KEY,
       {
-        expiresIn: "3d",
+        expiresIn: "1d",
       }
     );
-    console.log(token);
 
     const { password, ...info } = user._doc;
     res
       .cookie("accessToken", token, {
         httpOnly: true,
+        expires: new Date(Date.now() + 86400 * 1000),
       })
       .status(200)
       .send(info);

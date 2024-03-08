@@ -12,6 +12,7 @@ const Orders = () => {
     queryKey: ["orders"],
     queryFn: () =>
       newRequest.get(`/orders`).then((res) => {
+        console.log(res.data);
         return res.data;
       }),
   });
