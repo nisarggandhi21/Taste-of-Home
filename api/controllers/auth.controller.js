@@ -34,6 +34,7 @@ export const login = async (req, res, next) => {
       },
       process.env.JWT_KEY
     );
+    console.log(token);
 
     const { password, ...info } = user._doc;
     res
