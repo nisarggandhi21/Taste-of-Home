@@ -25,14 +25,7 @@ const connect = async () => {
   }
 };
 
-app.use(
-  cors({
-    origin: "https://taste-of-home-fronend.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
-app.options("*", cors());
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -49,10 +42,6 @@ app.use((err, req, res, next) => {
   const errorMessage = err.message || "Something went wrong";
 
   res.status(errorStatus).send(errorMessage);
-});
-
-app.get("/", (req, res) => {
-  res.json("Hello");
 });
 
 const port = process.env.PORT || 8000;
