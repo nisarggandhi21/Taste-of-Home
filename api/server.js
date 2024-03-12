@@ -28,6 +28,7 @@ const connect = async () => {
 app.use(
   cors({
     origin: "https://taste-of-home-frontend.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
