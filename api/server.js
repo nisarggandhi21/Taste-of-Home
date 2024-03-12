@@ -27,7 +27,7 @@ const connect = async () => {
 
 app.use(
   cors({
-    origin: "https://taste-of-home-frontend.netlify.app",
+    origin: "https://taste-of-home-fronend.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -51,9 +51,9 @@ app.use((err, req, res, next) => {
   res.status(errorStatus).send(errorMessage);
 });
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
   res.json("Hello");
-})
+});
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {

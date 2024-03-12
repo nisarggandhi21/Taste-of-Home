@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const newRequest = axios.create({
-  baseURL: "https://taste-of-home-backend.netlify.app/api/",
+  baseURL: "https://taste-of-home-flame.vercel.app/api/",
   withCredentials: true,
 });
 
