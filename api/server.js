@@ -27,10 +27,11 @@ const connect = async () => {
 
 app.use(
   cors({
-    origin: "https://taste-of-home-frontend.netlify.app/",
+    origin: "https://taste-of-home-frontend.netlify.app",
     credentials: true,
   })
 );
+app.options("*", cors());
 app.use(express.json());
 app.use(cookieParser());
 
