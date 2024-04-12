@@ -1,5 +1,5 @@
 import React from "react";
-import "./itemCard.scss";
+import "./ItemCard.scss";
 import { Link } from "react-router-dom";
 import newRequest from "../../utils/newRequest";
 import { useQuery } from "@tanstack/react-query";
