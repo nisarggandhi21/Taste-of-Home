@@ -1,5 +1,5 @@
 import React from "react";
-import "./item.scss";
+import "./Item.scss";
 // import { Slider } from "infinite-react-carousel/lib";
 import Slide from "../../components/slide/Slide";
 import { useQuery } from "@tanstack/react-query";
