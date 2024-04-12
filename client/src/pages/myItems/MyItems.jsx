@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Myitems.scss";
+import "./MyItems.scss";
 import newRequest from "../../utils/newRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
