@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./items.scss";
+import "./Items.scss";
 
 import ItemCard from "../../components/itemCard/ItemCard";
 import newRequest from "../../utils/newRequest";
