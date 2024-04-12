@@ -12,11 +12,10 @@ import Add from "./pages/add/Add";
 import Orders from "./pages/orders/Orders";
 import Messages from "./pages/messages/Messages";
 import Message from "./pages/message/Message";
-
+import MyItems from "./pages/myItems/MyItems";
 import Pay from "./pages/pay/Pay";
 import Success from "./pages/success/Success";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Myitems from "./pages/myitems/Myitems";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +47,7 @@ function App() {
         },
         {
           path: "/myitems",
-          element: <Myitems />,
+          element: <MyItems />,
         },
         {
           path: "/orders",
