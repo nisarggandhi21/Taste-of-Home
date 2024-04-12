@@ -1,6 +1,7 @@
 import React from "react";
 import "./item.scss";
-import { Slider } from "infinite-react-carousel/lib";
+// import { Slider } from "infinite-react-carousel/lib";
+import Slide from "../../components/slide/Slide";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { Link, useParams } from "react-router-dom";
@@ -69,11 +70,16 @@ function Item() {
                 )}
               </div>
             )}
-            <Slider slidesToShow={1} arrowsScroll={1} className="slider">
+            {/* <Slider slidesToShow={1} arrowsScroll={1} className="slider">
               {data.images?.map((img) => (
                 <img key={img} src={img} alt="" />
               ))}
-            </Slider>
+            </Slider> */}
+            <Slide slidesToShow={5} arrowsScroll={5}>
+              {data.images?.map((img) => (
+                <img key={img} src={img} alt="" />
+              ))}
+            </Slide>
             <h2>About This Item</h2>
             <p>{data.desc}</p>
             {isLoadingUser ? (

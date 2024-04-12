@@ -1,14 +1,20 @@
 import React from "react";
 import "./Slide.scss";
-import Slider from "infinite-react-carousel";
 
-const Slide = ({ children, slidesToShow, arrowsScroll }) => {
+const Slide = ({ children, slidesToShow }) => {
   return (
     <div className="slide">
       <div className="container">
-        <Slider slidesToShow={slidesToShow} arrowsScroll={arrowsScroll}>
-          {children}
-        </Slider>
+        <div className="slider">
+          {React.Children.map(children, (child, index) => (
+            <div
+              draggable="true"
+              className={`slide-item ${index < slidesToShow ? "show" : ""}`}
+            >
+              {child}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
