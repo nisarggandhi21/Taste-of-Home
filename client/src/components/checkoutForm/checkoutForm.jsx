@@ -60,7 +60,7 @@ const CheckoutForm = () => {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "https://taste-of-home-1.onrender.com/success",
+        return_url: "https://taste-of-home-idr0.onrender.com/success",
       },
     });
 
