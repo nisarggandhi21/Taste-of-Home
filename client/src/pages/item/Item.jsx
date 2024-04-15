@@ -18,6 +18,8 @@ function Item() {
       }),
   });
 
+  console.log(data);
+
   const userId = data?.userId; //optional chaning operator
 
   const {
@@ -70,12 +72,8 @@ function Item() {
                 )}
               </div>
             )}
-            {/* <Slider slidesToShow={1} arrowsScroll={1} className="slider">
-              {data.images?.map((img) => (
-                <img key={img} src={img} alt="" />
-              ))}
-            </Slider> */}
-            <Slide slidesToShow={5} arrowsScroll={5}>
+            <Slide slidesToShow={5} arrowsScroll={5} className="slider">
+              {" "}
               {data.images?.map((img) => (
                 <img key={img} src={img} alt="" />
               ))}
