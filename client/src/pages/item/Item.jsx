@@ -72,12 +72,12 @@ function Item() {
                 )}
               </div>
             )}
-            <Slide slidesToShow={5} arrowsScroll={5} className="slider">
+            {/* <Slide slidesToShow={5} arrowsScroll={5} className="slider">
               {" "}
               {data.images?.map((img) => (
                 <img key={img} src={img} alt="" />
               ))}
-            </Slide>
+            </Slide> */}
             <h2>About This Item</h2>
             <p>{data.desc}</p>
             {isLoadingUser ? (
