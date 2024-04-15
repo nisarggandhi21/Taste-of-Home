@@ -2,7 +2,7 @@ import React from "react";
 import Review from "../review/Review";
 import newRequest from "../../utils/newRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import "./reviews.scss";
+import "./Reviews.scss";
 
 const Reviews = ({ itemId }) => {
   const queryClient = useQueryClient();
