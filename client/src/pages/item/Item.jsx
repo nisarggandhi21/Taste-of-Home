@@ -1,6 +1,7 @@
 import React from "react";
-import "./item.scss";
-import { Slider } from "infinite-react-carousel/lib";
+import "./Item.scss";
+// import { Slider } from "infinite-react-carousel/lib";
+import Slide from "../../components/slide/Slide";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { Link, useParams } from "react-router-dom";
@@ -16,6 +17,8 @@ function Item() {
         return res.data;
       }),
   });
+
+  console.log(data);
 
   const userId = data?.userId; //optional chaning operator
 
@@ -69,11 +72,12 @@ function Item() {
                 )}
               </div>
             )}
-            <Slider slidesToShow={1} arrowsScroll={1} className="slider">
+            {/* <Slide slidesToShow={5} arrowsScroll={5} className="slider">
+              {" "}
               {data.images?.map((img) => (
                 <img key={img} src={img} alt="" />
               ))}
-            </Slider>
+            </Slide> */}
             <h2>About This Item</h2>
             <p>{data.desc}</p>
             {isLoadingUser ? (

@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Myitems.scss";
+import "./MyItems.scss";
 import newRequest from "../../utils/newRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-function Myitems() {
+function MyItems() {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const queryClient = useQueryClient();
 
@@ -78,4 +78,4 @@ function Myitems() {
   );
 }
 
-export default Myitems;
+export default MyItems;
