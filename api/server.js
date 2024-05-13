@@ -25,9 +25,9 @@ const connect = async () => {
   }
 };
 
-app.use(
-  cors({ origin: "https://taste-of-home-idr0.onrender.com", credentials: true })
-);
+const CORS_URL = process.env.CORS_URL;
+app.use(cors({ origin: CORS_URL, credentials: true }));
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -46,8 +46,14 @@ app.use((err, req, res, next) => {
   res.status(errorStatus).send(errorMessage);
 });
 
-const port = process.env.PORT || 8000;
+// const port = process.env.PORT;
+// app.listen(port, () => {
+//   connect();
+//   console.log(`Server is running on port ${port}`);
+// });
+const port = process.env.PORT;
+
 app.listen(port, () => {
   connect();
-  console.log(`Server is running on port ${port}`);
+  console.log(`Backend server is running on port ${port}!`);
 });

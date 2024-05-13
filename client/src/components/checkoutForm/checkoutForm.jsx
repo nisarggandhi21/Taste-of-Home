@@ -55,12 +55,12 @@ const CheckoutForm = () => {
     }
 
     setIsLoading(true);
-
+    const successUrl = import.meta.env.VITE_SUCCESS_URL;
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "https://taste-of-home-idr0.onrender.com/success",
+        return_url: successUrl,
       },
     });
 
