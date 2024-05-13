@@ -45,7 +45,7 @@ function Navbar() {
         </div>
         <div className="links">
           <Link className="link" to="/">
-            <span>Taste of Home</span>
+            <span>Home</span>
           </Link>
           <Link className="link" to="/Items">
             Explore
@@ -91,39 +91,9 @@ function Navbar() {
           )}
         </div>
       </div>
+
       {(active || pathname !== "/") && (
         <>
-          <hr />
-          <div className="menu">
-            <Link className="link menuLink" to="/items?cat=north">
-              North
-            </Link>
-            <Link className="link menuLink" to="/">
-              South
-            </Link>
-
-            <Link className="link menuLink" to="/items?cat=Pizza">
-              Pizza
-            </Link>
-            <Link className="link menuLink" to="/">
-              Burger
-            </Link>
-            <Link className="link menuLink" to="/">
-              Cake
-            </Link>
-            <Link className="link menuLink" to="/">
-              Ice Cream
-            </Link>
-            <Link className="link menuLink" to="/">
-              Sandwich
-            </Link>
-            <Link className="link menuLink" to="/">
-              Drinks
-            </Link>
-            <Link className="link menuLink" to="/">
-              Choclates
-            </Link>
-          </div>
           <hr />
         </>
       )}
