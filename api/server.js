@@ -39,6 +39,14 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+// The "catchall" handler: for any request that doesn't match one above, send back index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
+
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
   const errorMessage = err.message || "Something went wrong";
@@ -46,11 +54,6 @@ app.use((err, req, res, next) => {
   res.status(errorStatus).send(errorMessage);
 });
 
-// const port = process.env.PORT;
-// app.listen(port, () => {
-//   connect();
-//   console.log(`Server is running on port ${port}`);
-// });
 const port = process.env.PORT;
 
 app.listen(port, () => {
