@@ -17,6 +17,9 @@ const Success = () => {
         }, 5000);
       } catch (err) {
         console.log(err);
+        if (err.response.status === 401) {
+          navigate("/login");
+        }
       }
     };
 

@@ -1,11 +1,20 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const BASEURL = import.meta.env.VITE_BASEURL;
 const newRequest = axios.create({
-  // baseURL: "https://taste-of-home-1.onrender.com/api/",
-
   baseURL: BASEURL,
   withCredentials: true,
 });
+
+newRequest.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default newRequest;
