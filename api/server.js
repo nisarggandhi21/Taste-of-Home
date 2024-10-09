@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-import path from "path";
 import dotenv from "dotenv";
 import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
@@ -39,14 +38,6 @@ app.use("/api/conversations", conversationRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
-
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, "../client/build")));
-
-// The "catchall" handler: for any request that doesn't match one above, send back index.html
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
-});
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
