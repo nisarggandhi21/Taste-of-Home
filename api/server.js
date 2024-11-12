@@ -1,5 +1,5 @@
 import express from "express";
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 import dotenv from "dotenv";
 // import authRoute from "./routes/auth.route.js";
 // import userRoute from "./routes/user.route.js";
@@ -14,16 +14,16 @@ import dotenv from "dotenv";
 const app = express();
 dotenv.config();
 
-mongoose.set("strictQuery", true);
+// mongoose.set("strictQuery", true);
 
-const connect = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO);
-    console.log("Connected to database");
-  } catch (error) {
-    console.log("Error connecting to database: ", error);
-  }
-};
+// const connect = async () => {
+//   try {
+//     await mongoose.connect(process.env.MONGO);
+//     console.log("Connected to database");
+//   } catch (error) {
+//     console.log("Error connecting to database: ", error);
+//   }
+// };
 
 // const CORS_URL_MAIN = process.env.CORS_URL;
 // app.use(cors({ origin: CORS_URL_MAIN, credentials: true }));
@@ -48,12 +48,12 @@ app.get("/", (req, res) => {
 // app.use("/api/orders", orderRoutes);
 // app.use("/api/reviews", reviewRoutes);
 
-app.use((err, req, res, next) => {
-  const errorStatus = err.status || 500;
-  const errorMessage = err.message || "Something went wrong";
+// app.use((err, req, res, next) => {
+//   const errorStatus = err.status || 500;
+//   const errorMessage = err.message || "Something went wrong";
 
-  res.status(errorStatus).send(errorMessage);
-});
+//   res.status(errorStatus).send(errorMessage);
+// });
 
 // const port = process.env.PORT;
 
