@@ -58,6 +58,6 @@ app.get("/", (req, res) => {
 // const port = process.env.PORT;
 
 app.listen(8800, () => {
-  connect();
+  // connect();
   console.log(`Backend server is running on port ${port}!`);
 });
