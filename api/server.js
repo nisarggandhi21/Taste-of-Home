@@ -30,7 +30,7 @@ app.use(cors({ origin: CORS_URL_MAIN, credentials: true }));
 
 const corsOptions = {
   origin: CORS_URL_MAIN,
-  optionsSuccessStatus: 200,
+  // optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
