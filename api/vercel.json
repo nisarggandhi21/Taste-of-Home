@@ -6,9 +6,6 @@
       "use": "@vercel/node"
     }
   ],
-  "installCommand": "npm install",
-  "buildCommand": null,
-  "startCommand": "npm start", 
   "routes": [
     {
       "src": "/(.*)",
@@ -17,5 +14,7 @@
       },
       "dest": "server.js"
     }
-  ]
+  ],
+  "installCommand": "npm install",
+  "buildCommand": ""
 }
