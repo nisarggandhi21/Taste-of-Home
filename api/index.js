@@ -1,9 +1,18 @@
 import express from "express";
-import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js";
+import itemRoutes from "./routes/item.route.js";
+import conversationRoutes from "./routes/conversation.route.js";
+import messageRoutes from "./routes/message.route.js";
+import orderRoutes from "./routes/order.route.js";
+import reviewRoutes from "./routes/review.route.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express();
+dotenv.config();
 
 mongoose.set("strictQuery", true);
 
@@ -16,18 +25,39 @@ const connect = async () => {
   }
 };
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+const CORS_URL_MAIN = process.env.CORS_URL;
+app.use(cors({ origin: CORS_URL_MAIN, credentials: true }));
 
-// Basic route
+const corsOptions = {
+  origin: CORS_URL_MAIN,
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+app.use(express.json());
+app.use(cookieParser());
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the API" });
 });
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/items", itemRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/reviews", reviewRoutes);
 
-// Set port and start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Something went wrong";
+
+  res.status(errorStatus).send(errorMessage);
+});
+
+const port = process.env.PORT;
+
+app.listen(8800, () => {
   connect();
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Backend server is running on port ${port}!`);
 });
