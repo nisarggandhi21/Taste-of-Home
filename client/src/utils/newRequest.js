@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const BASEURL = import.meta.env.VITE_BASEURL;
+const BASEURL = import.meta.env.BASEURL;
 const newRequest = axios.create({
   baseURL: BASEURL,
   withCredentials: true,

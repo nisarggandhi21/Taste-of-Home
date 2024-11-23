@@ -55,7 +55,7 @@ const CheckoutForm = () => {
     }
 
     setIsLoading(true);
-    const successUrl = import.meta.env.VITE_SUCCESS_URL;
+    const successUrl = import.meta.env.SUCCESS_URL;
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
