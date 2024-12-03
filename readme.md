@@ -72,8 +72,8 @@ A **full-stack web application** connecting **home cooks** with **food enthusias
 ### **Client** Environment Variables
 
 ```bash
-BASEURL = http://localhost:8800/api/
-SUCCESS_URL = http://localhost:5173/success
+VITE_BASEURL = http://localhost:8800/api/
+VITE_SUCCESS_URL = http://localhost:5173/success
 ```
 
 ### **Server** Environment Variables
