@@ -37,9 +37,11 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the API" });
+  res.send("Hello World!");
 });
+
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/items", itemRoutes);
@@ -55,9 +57,11 @@ app.use((err, req, res, next) => {
   res.status(errorStatus).send(errorMessage);
 });
 
-const port = process.env.PORT;
+// const port = process.env.PORT;
 
-app.listen(8800, () => {
-  connect();
-  console.log(`Backend server is running on port ${port}!`);
-});
+// app.listen(8800, () => {
+//   connect();
+//   console.log(`Backend server is running on port ${port}!`);
+// });
+
+export default app;
