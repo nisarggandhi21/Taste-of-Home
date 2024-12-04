@@ -42,6 +42,7 @@ export const getItem = async (req, res, next) => {
 };
 
 export const getItems = async (req, res, next) => {
+  console.log("got req for items");
   const q = req.query;
   // const filters = {
   //   ...(query.userId && { userId: query.userId }),
