@@ -26,14 +26,14 @@ const connect = async () => {
 };
 
 const CORS_URL_MAIN = process.env.CORS_URL;
-app.use(cors({ origin: CORS_URL_MAIN, credentials: true }));
-
-const corsOptions = {
-  origin: CORS_URL_MAIN,
-  optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.use(
+  cors({
+    origin: CORS_URL_MAIN,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());

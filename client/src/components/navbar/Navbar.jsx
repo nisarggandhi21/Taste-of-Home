@@ -50,7 +50,7 @@ function Navbar() {
           <Link className="link" to="/Items">
             Explore
           </Link>
-          {!currentUser?.isSeller && <span>Become a Seller</span>}
+          {/* {!currentUser?.isSeller && <span>Become a Seller</span>} */}
           {currentUser ? (
             <div className="user" onClick={() => setOpen(!open)}>
               <img src={currentUser.img || "/img/noavatar.jpg"} alt="" />
