@@ -59,6 +59,8 @@ app.use((err, req, res, next) => {
   res.status(errorStatus).send(errorMessage);
 });
 
+connect();
+
 // const port = process.env.PORT;
 
 // app.listen(8800, () => {
