@@ -29,20 +29,23 @@ function Register() {
       return { ...prev, isSeller: e.target.checked };
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const url = await upload(file);
     try {
-      await newRequest.post("/auth/register", {
+      const res = await newRequest.post("/auth/register", {
         ...user,
         img: url,
       });
+      localStorage.setItem("currentUser", JSON.stringify(res.data));
       navigate("/");
     } catch (err) {
       console.log(err);
     }
   };
+
   return (
     <div className="register">
       <form onSubmit={handleSubmit}>

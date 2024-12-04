@@ -6,7 +6,7 @@ import Home from "./pages/home/Home";
 import Items from "./pages/items/Items";
 import Item from "./pages/item/Item";
 import Login from "./pages/login/Login";
-import Register from "./pages/register/Register";
+import Register from "./pages/register/";
 import Add from "./pages/add/Add";
 import Orders from "./pages/orders/Orders";
 import Messages from "./pages/messages/Messages";
