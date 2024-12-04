@@ -28,7 +28,10 @@ const connect = async () => {
 const CORS_URL_MAIN = process.env.CORS_URL;
 app.use(
   cors({
-    origin: CORS_URL_MAIN,
+    origin: [
+      "http://localhost:5173",
+      "https://taste-of-home-client.vercel.app",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
