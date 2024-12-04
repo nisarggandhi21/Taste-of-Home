@@ -2,19 +2,48 @@
   display: flex;
   justify-content: center;
   padding: 100px 0px;
+
   .container {
     width: 1400px;
     position: relative;
+    display: flex;
+    align-items: center;
+
+    .nav-button {
+      background-color: white;
+      border: 2px solid black;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      position: absolute;
+      z-index: 2;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+
+      &.prev {
+        left: -20px;
+      }
+
+      &.next {
+        right: -20px;
+      }
+    }
+
     .slider {
       display: flex;
-      overflow-x: scroll;
-      scrollbar-width: none; /* For Firefox */
-      -ms-overflow-style: none; /* For Internet Explorer and Edge */
-      &::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari and Opera */
-      }
+      overflow: hidden;
+      width: 100%;
+      gap: 20px; // Adds space between items
+
       .slide-item {
         flex: 0 0 auto;
+        transition: transform 0.3s ease;
+        width: calc(
+          (100% - (20px * (var(--slides-to-show) - 1))) / var(--slides-to-show)
+        );
       }
     }
   }
