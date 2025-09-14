@@ -1,15 +1,15 @@
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import authRoute from "./routes/auth.route.js";
-import userRoute from "./routes/user.route.js";
-import itemRoutes from "./routes/item.route.js";
 import conversationRoutes from "./routes/conversation.route.js";
+import itemRoutes from "./routes/item.route.js";
 import messageRoutes from "./routes/message.route.js";
 import orderRoutes from "./routes/order.route.js";
 import reviewRoutes from "./routes/review.route.js";
-import cookieParser from "cookie-parser";
-import cors from "cors";
+import userRoute from "./routes/user.route.js";
 
 const app = express();
 dotenv.config();

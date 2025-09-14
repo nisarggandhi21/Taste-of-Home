@@ -5,10 +5,16 @@ import createError from "../utils/createError.js";
 
 export const register = async (req, res, next) => {
   try {
-    const hash = await bcrypt.hash(req.body.password, 10);
+    const hash = await bcrypt.hash(req.body.password, 12);
     const newUser = new User({
-      ...req.body,
+      username: req.body.username,
+      email: req.body.email,
       password: hash,
+      img: req.body.img,
+      phone: req.body.phone,
+      location: req.body.location,
+      desc: req.body.desc,
+      isSeller: req.body.isSeller,
     });
     await newUser.save();
 

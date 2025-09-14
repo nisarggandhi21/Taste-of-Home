@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import upload from "../../utils/upload";
 import "./Register.scss";
 import newRequest from "../../utils/newRequest";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 function Register() {
   const [file, setFile] = useState(null);
@@ -17,6 +18,7 @@ function Register() {
   });
 
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setUser((prev) => {
@@ -39,7 +41,7 @@ function Register() {
         ...user,
         img: url,
       });
-      localStorage.setItem("currentUser", JSON.stringify(res.data));
+      login(res.data);
       navigate("/");
     } catch (err) {
       console.log(err);

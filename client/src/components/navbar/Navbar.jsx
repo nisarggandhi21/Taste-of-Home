@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 import newRequest from "../../utils/newRequest";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 function Navbar() {
   const [active, setActive] = useState(false);
@@ -21,14 +22,13 @@ function Navbar() {
     };
   }, []);
 
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-
   const navigate = useNavigate();
+  const { currentUser, logout } = useContext(AuthContext);
 
   const handleLogout = async () => {
     try {
       await newRequest.post("/auth/logout");
-      localStorage.setItem("currentUser", null);
+      logout();
       navigate("/");
     } catch (err) {
       console.log(err);

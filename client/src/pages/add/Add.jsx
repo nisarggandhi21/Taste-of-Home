@@ -1,10 +1,10 @@
-import React, { useReducer, useState } from "react";
-import "./Add.scss";
-import { itemReducer, INITIAL_STATE } from "../../reducers/itemReducer";
-import upload from "../../utils/upload";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import newRequest from "../../utils/newRequest";
+import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { INITIAL_STATE, itemReducer } from "../../reducers/itemReducer";
+import newRequest from "../../utils/newRequest";
+import upload from "../../utils/upload";
+import "./Add.scss";
 
 const Add = () => {
   const [singleFile, setSingleFile] = useState(undefined);
@@ -65,9 +65,6 @@ const Add = () => {
     mutation.mutate(state);
     navigate("/myitems");
   };
-
-  console.log(state);
-  console.log(mutation.isLoading, mutation.error, mutation.isSuccess);
 
   return (
     <div className="add">
