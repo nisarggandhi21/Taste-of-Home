@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { AuthContextProvider } from "./context/AuthContext";
 
@@ -29,6 +31,7 @@ const App = () => {
       <AuthContextProvider>
         <BrowserRouter>
           <div className="app">
+            <ToastContainer />
             <Navbar />
             <Routes>
               {/* Main routes within layout */}

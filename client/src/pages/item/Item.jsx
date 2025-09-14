@@ -18,7 +18,7 @@ function Item() {
       }),
   });
 
-  console.log(data);
+  
 
   const userId = data?.userId; //optional chaning operator
 

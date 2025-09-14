@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import newRequest from "../../utils/newRequest";
 
@@ -15,12 +15,7 @@ const Success = () => {
         setTimeout(() => {
           navigate("/orders");
         }, 5000);
-      } catch (err) {
-        console.log(err);
-        if (err.response.status === 401) {
-          navigate("/login");
-        }
-      }
+      } catch (err) {}
     };
 
     makeRequest();

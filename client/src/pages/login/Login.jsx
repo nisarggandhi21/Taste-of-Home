@@ -1,13 +1,12 @@
-import React, { useContext, useState } from "react";
-import "./Login.scss";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import newRequest from "../../utils/newRequest";
 import { AuthContext } from "../../context/AuthContext";
+import newRequest from "../../utils/newRequest";
+import "./Login.scss";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -20,7 +19,7 @@ function Login() {
       login(res.data);
       navigate("/");
     } catch (err) {
-      setError(err.response.data);
+      // error is handled by the interceptor
     }
   };
 
@@ -44,7 +43,6 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
-        {error && error}
       </form>
     </div>
   );

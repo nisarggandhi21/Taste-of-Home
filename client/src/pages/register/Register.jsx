@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
-import upload from "../../utils/upload";
-import "./Register.scss";
-import newRequest from "../../utils/newRequest";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import newRequest from "../../utils/newRequest";
+import upload from "../../utils/upload";
+import "./Register.scss";
 
 function Register() {
   const [file, setFile] = useState(null);
@@ -43,9 +43,7 @@ function Register() {
       });
       login(res.data);
       navigate("/");
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   return (
