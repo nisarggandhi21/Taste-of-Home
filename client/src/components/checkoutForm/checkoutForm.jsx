@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
 import {
-  PaymentElement,
   LinkAuthenticationElement,
-  useStripe,
+  PaymentElement,
   useElements,
+  useStripe,
 } from "@stripe/react-stripe-js";
+import { useEffect, useState } from "react";
 
 const CheckoutForm = () => {
   const stripe = useStripe();
@@ -55,7 +55,7 @@ const CheckoutForm = () => {
     }
 
     setIsLoading(true);
-    const successUrl = import.meta.env.SUCCESS_URL;
+    const successUrl = import.meta.env.VITE_SUCCESS_URL;
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
