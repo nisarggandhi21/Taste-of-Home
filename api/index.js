@@ -58,11 +58,12 @@ app.use((err, req, res, next) => {
 
 connect();
 
-// const port = process.env.PORT;
+const port = process.env.PORT || 8800;
 
-// app.listen(8800, () => {
-//   connect();
-//   console.log(`Backend server is running on port ${port}!`);
-// });
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    console.log(`Backend server is running on port ${port}!`);
+  });
+}
 
 export default app;
