@@ -1,24 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import "./MyItems.scss";
-import newRequest from "../../utils/newRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AuthContext } from "../../context/AuthContext";
+import { itemService } from "../../services/itemService";
 
 function MyItems() {
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const { currentUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["myItems"],
-    queryFn: () =>
-      newRequest.get(`/items?userId=${currentUser._id}`).then((res) => {
-        return res.data;
-      }),
+    queryFn: () => itemService.getItems(`?userId=${currentUser._id}`),
   });
 
   const mutation = useMutation({
     mutationFn: (id) => {
-      return newRequest.delete(`/items/${id}`);
+      return itemService.deleteItem(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["myItems"]);

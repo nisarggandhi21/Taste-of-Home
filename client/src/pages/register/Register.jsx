@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import newRequest from "../../utils/newRequest";
+import { authService } from "../../services/authService";
 import upload from "../../utils/upload";
 import "./Register.scss";
 
@@ -37,11 +37,11 @@ function Register() {
 
     const url = await upload(file);
     try {
-      const res = await newRequest.post("/auth/register", {
+      const res = await authService.register({
         ...user,
         img: url,
       });
-      login(res.data);
+      login(res);
       navigate("/");
     } catch (err) {}
   };

@@ -1,17 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useReducer, useState } from "react";
+import { useContext, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import { INITIAL_STATE, itemReducer } from "../../reducers/itemReducer";
-import newRequest from "../../utils/newRequest";
+import { itemService } from "../../services/itemService";
 import upload from "../../utils/upload";
 import "./Add.scss";
 
 const Add = () => {
+  const { currentUser } = useContext(AuthContext);
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
-  const [state, dispatch] = useReducer(itemReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(itemReducer, {
+    ...INITIAL_STATE,
+    userId: currentUser._id,
+  });
 
   const handleChange = (e) => {
     dispatch({
@@ -53,7 +58,7 @@ const Add = () => {
 
   const mutation = useMutation({
     mutationFn: (item) => {
-      return newRequest.post("/items/", item);
+      return itemService.createItem(item);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["myItems"]);

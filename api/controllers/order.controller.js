@@ -1,7 +1,7 @@
+import Stripe from "stripe";
+import Item from "../models/item.model.js";
 import Order from "../models/order.model.js";
 import createError from "../utils/createError.js";
-import Item from "../models/item.model.js";
-import Stripe from "stripe";
 
 export const intent = async (req, res, next) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -9,8 +9,9 @@ export const intent = async (req, res, next) => {
   const item = await Item.findById(req.params.id);
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: item.price * 100,
+    amount: item.price,
     currency: "usd",
+    description: item.title,
     automatic_payment_methods: {
       enabled: true,
     },

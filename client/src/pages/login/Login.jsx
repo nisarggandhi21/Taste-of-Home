@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import newRequest from "../../utils/newRequest";
+import { authService } from "../../services/authService";
 import "./Login.scss";
 
 function Login() {
@@ -15,8 +15,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await newRequest.post("/auth/login", { username, password });
-      login(res.data);
+      const res = await authService.login({ username, password });
+      login(res);
       navigate("/");
     } catch (err) {
       // error is handled by the interceptor

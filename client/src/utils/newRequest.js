@@ -10,7 +10,8 @@ const newRequest = axios.create({
 newRequest.interceptors.response.use(
   (response) => response,
   (error) => {
-    const errorMessage = error.response?.data || "Something went wrong!";
+    const errorMessage =
+      error.response?.data?.message || error.response?.data || "Something went wrong!";
     toast.error(errorMessage);
 
     if (error.response?.status === 401) {

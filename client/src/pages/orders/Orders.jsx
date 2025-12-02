@@ -1,19 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Orders.scss";
 import { useQuery } from "@tanstack/react-query";
-import newRequest from "../../utils/newRequest";
+import { AuthContext } from "../../context/AuthContext";
+import { conversationService } from "../../services/conversationService";
+import { orderService } from "../../services/orderService";
 
 const Orders = () => {
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const { currentUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
   const { isLoading, error, data } = useQuery({
     queryKey: ["orders"],
-    queryFn: () =>
-      newRequest.get(`/orders`).then((res) => {
-        return res.data;
-      }),
+    queryFn: () => orderService.getOrders(),
   });
 
   const handleContact = async (order) => {
@@ -22,14 +21,14 @@ const Orders = () => {
     const id = sellerId + buyerId;
 
     try {
-      const res = await newRequest.get(`/conversations/single/${id}`);
-      navigate(`/message/${res.data.id}`);
+      const res = await conversationService.getSingleConversation(id);
+      navigate(`/message/${res.id}`);
     } catch (err) {
       if (err.response.status === 404) {
-        const res = await newRequest.post(`/conversations/`, {
+        const res = await conversationService.createConversation({
           to: currentUser.seller ? buyerId : sellerId,
         });
-        navigate(`/message/${res.data.id}`);
+        navigate(`/message/${res.id}`);
       }
     }
   };
@@ -46,30 +45,34 @@ const Orders = () => {
             <h1>Orders</h1>
           </div>
           <table>
-            <tr>
-              <th>Image</th>
-              <th>Title</th>
-              <th>Price</th>
-              <th>Contact</th>
-            </tr>
-            {data.map((order) => (
-              <tr key={order._id}>
-                <td>
-                  <img className="image" src={order.img} alt="" />
-                </td>
-                <td>{order.title}</td>
-                <td>{order.price}</td>
-
-                <td>
-                  <img
-                    className="message"
-                    src="./img/message.png"
-                    alt=""
-                    onClick={() => handleContact(order)}
-                  />
-                </td>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Contact</th>
               </tr>
-            ))}
+            </thead>
+            <tbody>
+              {data.map((order) => (
+                <tr key={order._id}>
+                  <td>
+                    <img className="image" src={order.img} alt="" />
+                  </td>
+                  <td>{order.title}</td>
+                  <td>{order.price}</td>
+
+                  <td>
+                    <img
+                      className="message"
+                      src="./img/message.png"
+                      alt=""
+                      onClick={() => handleContact(order)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       )}

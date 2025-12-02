@@ -1,26 +1,68 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import newRequest from "../../utils/newRequest";
+import { io } from "socket.io-client";
+import { AuthContext } from "../../context/AuthContext";
+import { conversationService } from "../../services/conversationService";
+import { messageService } from "../../services/messageService";
+import { userService } from "../../services/userService";
 import "./Message.scss";
 
 const Message = () => {
   const { id } = useParams();
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const { currentUser } = useContext(AuthContext);
+  const socket = useRef();
+  const SOCKET_URL = import.meta.env.VITE_BASEURL.replace("/api/", "");
 
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["messages"],
-    queryFn: () =>
-      newRequest.get(`/messages/${id}`).then((res) => {
-        return res.data;
-      }),
+    queryFn: () => messageService.getMessages(id),
   });
+
+  const { data: conversation } = useQuery({
+    queryKey: ["conversation", id],
+    queryFn: () => conversationService.getSingleConversation(id),
+    enabled: !!id,
+  });
+
+  const receiverId =
+    conversation?.sellerId === currentUser._id
+      ? conversation.buyerId
+      : conversation.sellerId;
+
+  const { data: user } = useQuery({
+    queryKey: ["user", receiverId],
+    queryFn: () => userService.getUser(receiverId),
+    enabled: !!receiverId,
+  });
+
+  useEffect(() => {
+    socket.current = io(SOCKET_URL);
+    socket.current.on("connect", () => {
+      socket.current.emit("addUser", currentUser._id);
+    });
+    return () => {
+      socket.current.disconnect();
+    };
+  }, [currentUser, SOCKET_URL]);
+
+  useEffect(() => {
+    const handleMessage = (data) => {
+      queryClient.setQueryData(["messages"], (old) => {
+        return [...old, { userId: data.senderId, desc: data.text, _id: Date.now() }];
+      });
+    };
+    socket.current.on("getMessage", handleMessage);
+    return () => {
+      socket.current.off("getMessage", handleMessage);
+    };
+  }, [queryClient]);
 
   const mutation = useMutation({
     mutationFn: (message) => {
-      return newRequest.post(`/messages`, message);
+      return messageService.sendMessage(message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["messages"]);
@@ -29,9 +71,18 @@ const Message = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const text = e.target[0].value;
+    if (!text) return;
+
+    socket.current.emit("sendMessage", {
+      senderId: currentUser._id,
+      receiverId,
+      text,
+    });
+
     mutation.mutate({
       conversationId: id,
-      desc: e.target[0].value,
+      desc: text,
     });
     e.target[0].value = "";
   };
@@ -40,7 +91,7 @@ const Message = () => {
     <div className="message">
       <div className="container">
         <span className="breadcrumbs">
-          <Link to="/messages">Messages</Link> {">"} John Doe {">"}
+          <Link to="/messages">Messages</Link> {">"} {user?.username || "User"} {">"}
         </span>
         {isLoading ? (
           "loading"
@@ -54,7 +105,11 @@ const Message = () => {
                 key={m._id}
               >
                 <img
-                  src="https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=1600"
+                  src={
+                    m.userId === currentUser._id
+                      ? currentUser.img || "/img/noavatar.jpg"
+                      : user?.img || "/img/noavatar.jpg"
+                  }
                   alt=""
                 />
                 <p>{m.desc}</p>

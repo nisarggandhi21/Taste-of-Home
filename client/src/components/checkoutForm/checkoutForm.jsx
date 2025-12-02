@@ -56,11 +56,31 @@ const CheckoutForm = () => {
 
     setIsLoading(true);
     const successUrl = import.meta.env.VITE_SUCCESS_URL;
+    
+    if (!successUrl) {
+      console.error("Success URL is missing. Check your .env file.");
+      setMessage("Configuration error: Success URL is missing.");
+      setIsLoading(false);
+      return;
+    }
+
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
         return_url: successUrl,
+        payment_method_data: {
+          billing_details: {
+            name: "Test User",
+            address: {
+              line1: "123 Test St",
+              city: "Test City",
+              state: "Test State",
+              postal_code: "123456",
+              country: "US",
+            },
+          },
+        },
       },
     });
 
@@ -69,10 +89,9 @@ const CheckoutForm = () => {
     // your `return_url`. For some payment methods like iDEAL, your customer will
     // be redirected to an intermediate site first to authorize the payment, then
     // redirected to the `return_url`.
-    if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message);
-    } else {
-      setMessage("An unexpected error occurred.");
+    if (error) {
+        console.error("Stripe confirm payment error:", error);
+        setMessage(error.message || "An unexpected error occurred.");
     }
 
     setIsLoading(false);

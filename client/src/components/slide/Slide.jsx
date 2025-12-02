@@ -25,6 +25,7 @@ const Slide = ({ children, slidesToShow }) => {
         <div className="slider">
           {React.Children.map(children, (child, index) => (
             <div
+              key={index}
               draggable="true"
               className={`slide-item ${index < slidesToShow ? "show" : ""}`}
               style={{

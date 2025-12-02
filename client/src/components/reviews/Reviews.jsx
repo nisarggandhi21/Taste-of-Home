@@ -1,7 +1,7 @@
 import React from "react";
 import Review from "../review/Review";
-import newRequest from "../../utils/newRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { reviewService } from "../../services/reviewService";
 import "./Reviews.scss";
 
 const Reviews = ({ itemId }) => {
@@ -9,15 +9,12 @@ const Reviews = ({ itemId }) => {
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["reviews"],
-    queryFn: () =>
-      newRequest.get(`/reviews/${itemId}`).then((res) => {
-        return res.data;
-      }),
+    queryFn: () => reviewService.getReviews(itemId),
   });
 
   const mutation = useMutation({
     mutationFn: (review) => {
-      return newRequest.post("/reviews", review);
+      return reviewService.createReview(review);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["reviews"]);

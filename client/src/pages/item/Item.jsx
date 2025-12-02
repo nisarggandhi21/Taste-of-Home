@@ -3,19 +3,17 @@ import "./Item.scss";
 // import { Slider } from "infinite-react-carousel/lib";
 import Slide from "../../components/slide/Slide";
 import { useQuery } from "@tanstack/react-query";
-import newRequest from "../../utils/newRequest";
 import { Link, useParams } from "react-router-dom";
 import Reviews from "../../components/reviews/Reviews";
+import { itemService } from "../../services/itemService";
+import { userService } from "../../services/userService";
 
 function Item() {
   const { id } = useParams();
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["item"],
-    queryFn: () =>
-      newRequest.get(`/items/single/${id}`).then((res) => {
-        return res.data;
-      }),
+    queryFn: () => itemService.getSingleItem(id),
   });
 
   
@@ -28,10 +26,7 @@ function Item() {
     data: dataUser,
   } = useQuery({
     queryKey: ["user"],
-    queryFn: () =>
-      newRequest.get(`/users/${userId}`).then((res) => {
-        return res.data;
-      }),
+    queryFn: () => userService.getUser(userId),
     enabled: !!userId, //enable usequery function whenever userId is not null
   });
 

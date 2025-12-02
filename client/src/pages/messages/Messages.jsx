@@ -1,23 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import "./Messages.scss";
 import moment from "moment";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import newRequest from "../../utils/newRequest";
+import { AuthContext } from "../../context/AuthContext";
+import { conversationService } from "../../services/conversationService";
 
 const Messages = () => {
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const { currentUser } = useContext(AuthContext);
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["messages"],
-    queryFn: () => newRequest.get(`/conversations`).then((res) => res.data),
+    queryFn: () => conversationService.getConversations(),
   });
 
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (id) => {
-      return newRequest.put(`/conversations/${id}`);
+      return conversationService.markAsRead(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["conversations"]);

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./Items.scss";
 
 import ItemCard from "../../components/itemCard/ItemCard";
-import newRequest from "../../utils/newRequest";
+import { itemService } from "../../services/itemService";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 
@@ -18,20 +18,20 @@ function Items() {
     queryKey: ["items"],
     queryFn: () => {
       // Construct the URL with query parameters
-      let url = `/items`;
+      let queryString = "";
 
       // Append the search parameter if it exists
       if (search) {
-        url += `${search}&`;
+        queryString += `${search}&`;
       } else {
-        url += `?`;
+        queryString += `?`;
       }
 
       // Append other parameters
-      url += `min=${minRef.current.value}&max=${maxRef.current.value}&sort=${sort}`;
+      queryString += `min=${minRef.current.value}&max=${maxRef.current.value}&sort=${sort}`;
 
       // Make the API request using the constructed URL
-      return newRequest.get(url).then((res) => res.data);
+      return itemService.getItems(queryString);
     },
   });
 

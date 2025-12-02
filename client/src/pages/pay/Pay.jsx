@@ -3,7 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CheckoutForm from "../../components/checkoutForm/checkoutForm";
-import newRequest from "../../utils/newRequest";
+import { orderService } from "../../services/orderService";
 import "./Pay.scss";
 
 const stripePromise = loadStripe(
@@ -18,10 +18,8 @@ const Pay = () => {
   useEffect(() => {
     const makeRequest = async () => {
       try {
-        const res = await newRequest.post(
-          `/orders/create-payment-intent/${id}`
-        );
-        setClientSecret(res.data.clientSecret);
+        const res = await orderService.createPaymentIntent(id);
+        setClientSecret(res.clientSecret);
       } catch (err) {
         console.log(err);
       }
