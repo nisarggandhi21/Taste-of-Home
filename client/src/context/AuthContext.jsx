@@ -1,10 +1,10 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from 'react';
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(
-    JSON.parse(localStorage.getItem("currentUser")) || null
+    JSON.parse(localStorage.getItem('currentUser')) || null
   );
 
   const login = (userInfo) => {
@@ -16,12 +16,10 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
   }, [currentUser]);
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ currentUser, login, logout }}>{children}</AuthContext.Provider>
   );
 };

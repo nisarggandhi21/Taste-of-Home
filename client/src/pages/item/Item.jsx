@@ -1,22 +1,20 @@
-import React from "react";
-import "./Item.scss";
+import React from 'react';
+import './Item.scss';
 // import { Slider } from "infinite-react-carousel/lib";
-import Slide from "../../components/slide/Slide";
-import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
-import Reviews from "../../components/reviews/Reviews";
-import { itemService } from "../../services/itemService";
-import { userService } from "../../services/userService";
+import Slide from '../../components/slide/Slide';
+import { useQuery } from '@tanstack/react-query';
+import { Link, useParams } from 'react-router-dom';
+import Reviews from '../../components/reviews/Reviews';
+import { itemService } from '../../services/itemService';
+import { userService } from '../../services/userService';
 
 function Item() {
   const { id } = useParams();
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ["item"],
+    queryKey: ['item'],
     queryFn: () => itemService.getSingleItem(id),
   });
-
-  
 
   const userId = data?.userId; //optional chaning operator
 
@@ -25,7 +23,7 @@ function Item() {
     error: errorUser,
     data: dataUser,
   } = useQuery({
-    queryKey: ["user"],
+    queryKey: ['user'],
     queryFn: () => userService.getUser(userId),
     enabled: !!userId, //enable usequery function whenever userId is not null
   });
@@ -33,27 +31,23 @@ function Item() {
   return (
     <div className="item">
       {isLoading ? (
-        "loading"
+        'loading'
       ) : error ? (
-        "Something went wrong!"
+        'Something went wrong!'
       ) : (
         <div className="container">
           <div className="left">
             <span className="breadcrumbs">
-              Taste of Home {">"} {data.cat} {">"}
+              Taste of Home {'>'} {data.cat} {'>'}
             </span>
             <h1>{data.title}</h1>
             {isLoadingUser ? (
-              "loading"
+              'loading'
             ) : errorUser ? (
-              "Something went wrong"
+              'Something went wrong'
             ) : (
               <div className="user">
-                <img
-                  className="pp"
-                  src={dataUser.img || "/img/noavatar.jpg"}
-                  alt=""
-                />
+                <img className="pp" src={dataUser.img || '/img/noavatar.jpg'} alt="" />
                 <span>{dataUser.username}</span>
                 {!isNaN(data.totalStars / data.starNumber) && (
                   <div className="stars">
@@ -76,14 +70,14 @@ function Item() {
             <h2>About This Item</h2>
             <p>{data.desc}</p>
             {isLoadingUser ? (
-              "loading"
+              'loading'
             ) : errorUser ? (
-              "Something went wrong!"
+              'Something went wrong!'
             ) : (
               <div className="seller">
                 <h2>About The Seller</h2>
                 <div className="user">
-                  <img src={dataUser.img || "/img/noavatar.jpg"} alt="" />
+                  <img src={dataUser.img || '/img/noavatar.jpg'} alt="" />
                   <div className="info">
                     <span>{dataUser.username}</span>
                     {!isNaN(data.totalStars / data.starNumber) && (
@@ -93,9 +87,7 @@ function Item() {
                           .map((item, i) => (
                             <img src="/img/star.png" alt="" key={i} />
                           ))}
-                        <span>
-                          {Math.round(data.totalStars / data.starNumber)}
-                        </span>
+                        <span>{Math.round(data.totalStars / data.starNumber)}</span>
                       </div>
                     )}
                     <button>Contact Me</button>
@@ -105,9 +97,7 @@ function Item() {
                   <div className="items">
                     <div className="item">
                       <span className="title">From</span>
-                      <span className="desc">
-                        {dataUser.location || "Location not specified"}
-                      </span>
+                      <span className="desc">{dataUser.location || 'Location not specified'}</span>
                     </div>
                     <div className="item">
                       <span className="title">Member since</span>
@@ -127,7 +117,7 @@ function Item() {
                     </div>
                   </div>
                   <hr />
-                  <p>{dataUser.desc || "No description provided"}</p>
+                  <p>{dataUser.desc || 'No description provided'}</p>
                 </div>
               </div>
             )}

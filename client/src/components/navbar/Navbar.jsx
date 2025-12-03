@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import "./Navbar.scss";
-import newRequest from "../../utils/newRequest";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import './Navbar.scss';
+import newRequest from '../../utils/newRequest';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 
 function Navbar() {
   const [active, setActive] = useState(false);
@@ -16,9 +16,9 @@ function Navbar() {
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", isActive);
+    window.addEventListener('scroll', isActive);
     return () => {
-      window.removeEventListener("scroll", isActive);
+      window.removeEventListener('scroll', isActive);
     };
   }, []);
 
@@ -27,14 +27,14 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await newRequest.post("/auth/logout");
+      await newRequest.post('/auth/logout');
       logout();
-      navigate("/");
+      navigate('/');
     } catch (err) {}
   };
 
   return (
-    <div className={active || pathname !== "/" ? "navbar active" : "navbar"}>
+    <div className={active || pathname !== '/' ? 'navbar active' : 'navbar'}>
       <div className="container">
         <div className="logo">
           <Link className="link" to="/">
@@ -51,7 +51,7 @@ function Navbar() {
           {/* {!currentUser?.isSeller && <span>Become a Seller</span>} */}
           {currentUser ? (
             <div className="user" onClick={() => setOpen(!open)}>
-              <img src={currentUser.img || "/img/noavatar.jpg"} alt="" />
+              <img src={currentUser.img || '/img/noavatar.jpg'} alt="" />
               <span>{currentUser?.username}</span>
               {open && (
                 <div className="options">
@@ -89,7 +89,7 @@ function Navbar() {
           )}
         </div>
       </div>
-      {(active || pathname !== "/") && (
+      {(active || pathname !== '/') && (
         <>
           <hr />
           <div className="menu">

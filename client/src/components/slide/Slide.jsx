@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "./Slide.scss";
+import React, { useState } from 'react';
+import './Slide.scss';
 
 const Slide = ({ children, slidesToShow }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -10,9 +10,7 @@ const Slide = ({ children, slidesToShow }) => {
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex < React.Children.count(children) - slidesToShow
-        ? prevIndex + 1
-        : prevIndex
+      prevIndex < React.Children.count(children) - slidesToShow ? prevIndex + 1 : prevIndex
     );
   };
 
@@ -27,7 +25,7 @@ const Slide = ({ children, slidesToShow }) => {
             <div
               key={index}
               draggable="true"
-              className={`slide-item ${index < slidesToShow ? "show" : ""}`}
+              className={`slide-item ${index < slidesToShow ? 'show' : ''}`}
               style={{
                 transform: `translateX(-${currentIndex * 100}%)`,
               }}

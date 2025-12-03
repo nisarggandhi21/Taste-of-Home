@@ -1,4 +1,4 @@
-import newRequest from "../utils/newRequest";
+import newRequest from '../utils/newRequest';
 
 export const messageService = {
   getMessages: async (id) => {
@@ -6,7 +6,7 @@ export const messageService = {
     return res.data;
   },
   sendMessage: async (messageData) => {
-    const res = await newRequest.post("/messages", messageData);
+    const res = await newRequest.post('/messages', messageData);
     return res.data;
   },
 };

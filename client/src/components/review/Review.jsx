@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { userService } from "../../services/userService";
-import "./Review.scss";
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { userService } from '../../services/userService';
+import './Review.scss';
 
 const Review = ({ review }) => {
   const { isLoading, error, data } = useQuery({
@@ -12,12 +12,12 @@ const Review = ({ review }) => {
   return (
     <div className="review">
       {isLoading ? (
-        "loading"
+        'loading'
       ) : error ? (
-        "error"
+        'error'
       ) : (
         <div className="user">
-          <img className="pp" src={data.img || "/img/noavatar.jpg"} alt="" />
+          <img className="pp" src={data.img || '/img/noavatar.jpg'} alt="" />
           <div className="info">
             <span>{data.username}</span>
             <div className="country">

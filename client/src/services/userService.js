@@ -1,4 +1,4 @@
-import newRequest from "../utils/newRequest";
+import newRequest from '../utils/newRequest';
 
 export const userService = {
   getUser: async (userId) => {

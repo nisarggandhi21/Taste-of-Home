@@ -1,8 +1,8 @@
-import newRequest from "../utils/newRequest";
+import newRequest from '../utils/newRequest';
 
 export const conversationService = {
   getConversations: async () => {
-    const res = await newRequest.get("/conversations");
+    const res = await newRequest.get('/conversations');
     return res.data;
   },
   getSingleConversation: async (id) => {
@@ -10,7 +10,7 @@ export const conversationService = {
     return res.data;
   },
   createConversation: async (data) => {
-    const res = await newRequest.post("/conversations/", data);
+    const res = await newRequest.post('/conversations/', data);
     return res.data;
   },
   markAsRead: async (id) => {

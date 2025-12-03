@@ -1,4 +1,4 @@
-import createError from "../utils/createError.js";
+import createError from '../utils/createError.js';
 
 const validate = (schema) => (req, res, next) => {
   try {
@@ -10,7 +10,7 @@ const validate = (schema) => (req, res, next) => {
     next();
   } catch (err) {
     if (err.errors) {
-      const errorMessage = err.errors.map((e) => e.message).join(", ");
+      const errorMessage = err.errors.map((e) => e.message).join(', ');
       return next(createError(400, errorMessage));
     }
     next(err);

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const ConversationSchema = new Schema(
@@ -34,4 +34,6 @@ const ConversationSchema = new Schema(
   }
 );
 
-export default mongoose.model("Conversation", ConversationSchema);
+ConversationSchema.index({ sellerId: 1, buyerId: 1 });
+
+export default mongoose.model('Conversation', ConversationSchema);

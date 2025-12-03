@@ -1,10 +1,10 @@
-import React from "react";
-import "./Home.scss";
-import Featured from "../../components/featured/Featured";
-import Slide from "../../components/slide/Slide";
-import CatCard from "../../components/catCard/CatCard";
-import ProjectCard from "../../components/projectCard/ProjectCard";
-import { cards, projects } from "../../data";
+import React from 'react';
+import './Home.scss';
+import Featured from '../../components/featured/Featured';
+import Slide from '../../components/slide/Slide';
+import CatCard from '../../components/catCard/CatCard';
+import ProjectCard from '../../components/projectCard/ProjectCard';
+import { cards, projects } from '../../data';
 
 function Home() {
   return (
@@ -157,25 +157,23 @@ function Home() {
               An online solution crafted for <i>food enthusiasts</i>
             </h1>
             <p>
-              Elevate your dining experience with a curated platform filled with
-              tools and perks dedicated to food lovers.
+              Elevate your dining experience with a curated platform filled with tools and perks
+              dedicated to food lovers.
             </p>
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Connect with passionate home cooks offering proven culinary
-              expertise
+              Connect with passionate home cooks offering proven culinary expertise
             </div>
 
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Discover the perfect homemade dishes with assistance from our
-              culinary experts
+              Discover the perfect homemade dishes with assistance from our culinary experts
             </div>
 
             <div className="title">
               <img src="./img/check.png" alt="" />
-              Manage your food orders seamlessly and enhance your culinary
-              journey with a user-friendly platform
+              Manage your food orders seamlessly and enhance your culinary journey with a
+              user-friendly platform
             </div>
             <button>Explore Home-Cooked Delights</button>
           </div>

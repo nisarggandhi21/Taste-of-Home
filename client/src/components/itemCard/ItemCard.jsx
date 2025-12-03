@@ -1,8 +1,8 @@
-import React from "react";
-import "./ItemCard.scss";
-import { Link } from "react-router-dom";
-import newRequest from "../../utils/newRequest";
-import { useQuery } from "@tanstack/react-query";
+import React from 'react';
+import './ItemCard.scss';
+import { Link } from 'react-router-dom';
+import newRequest from '../../utils/newRequest';
+import { useQuery } from '@tanstack/react-query';
 
 const ItemCard = ({ item }) => {
   const { isLoading, error, data } = useQuery({
@@ -19,12 +19,12 @@ const ItemCard = ({ item }) => {
         <img src={item.cover} alt="" />
         <div className="info">
           {isLoading ? (
-            "loading"
+            'loading'
           ) : error ? (
-            "Something went wrong!"
+            'Something went wrong!'
           ) : (
             <div className="user">
-              <img src={data.img || "/img/noavatar.jpg"} alt="" />
+              <img src={data.img || '/img/noavatar.jpg'} alt="" />
               <span>{data.username}</span>
             </div>
           )}

@@ -1,35 +1,39 @@
-import Stripe from "stripe";
-import Item from "../models/item.model.js";
-import Order from "../models/order.model.js";
-import createError from "../utils/createError.js";
+import Stripe from 'stripe';
+import Item from '../models/item.model.js';
+import Order from '../models/order.model.js';
+import createError from '../utils/createError.js';
 
 export const intent = async (req, res, next) => {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  const item = await Item.findById(req.params.id);
+    const item = await Item.findById(req.params.id);
 
-  const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await stripe.paymentIntents.create({
     amount: item.price,
-    currency: "usd",
+    currency: "inr",
     description: item.title,
-    automatic_payment_methods: {
-      enabled: true,
-    },
-  });
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
 
-  const newOrder = new Order({
-    itemId: item._id,
-    img: item.cover,
-    title: item.title,
-    buyerId: req.userId,
-    sellerId: item.userId,
-    price: item.price,
-    payment_intent: paymentIntent.id,
-  });
-  await newOrder.save();
-  res.status(200).send({
-    clientSecret: paymentIntent.client_secret,
-  });
+    const newOrder = new Order({
+      itemId: item._id,
+      img: item.cover,
+      title: item.title,
+      buyerId: req.userId,
+      sellerId: item.userId,
+      price: item.price,
+      payment_intent: paymentIntent.id,
+    });
+    await newOrder.save();
+    res.status(200).send({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getOrders = async (req, res, next) => {
@@ -39,7 +43,7 @@ export const getOrders = async (req, res, next) => {
     });
 
     if (!orders) {
-      throw createError(404, "No orders found");
+      throw createError(404, 'No orders found');
     }
     res.status(200).send(orders);
   } catch (err) {
@@ -60,7 +64,7 @@ export const confirm = async (req, res, next) => {
       }
     );
 
-    res.status(200).send("Order has been confirmed.");
+    res.status(200).send('Order has been confirmed.');
   } catch (err) {
     next(err);
   }

@@ -1,25 +1,25 @@
 const errorHandler = (err, req, res, next) => {
   const errorStatus = err.status || 500;
-  const errorMessage = err.message || "Something went wrong!";
+  const errorMessage = err.message || 'Something went wrong!';
 
   // Handle Mongoose CastError (Invalid ID)
-  if (err.name === "CastError") {
+  if (err.name === 'CastError') {
     return res.status(400).json({
       success: false,
       status: 400,
       message: `Invalid ${err.path}: ${err.value}`,
-      stack: process.env.NODE_ENV === "development" ? err.stack : {},
+      stack: process.env.NODE_ENV === 'development' ? err.stack : {},
     });
   }
 
   // Handle Mongoose ValidationError
-  if (err.name === "ValidationError") {
+  if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors).map((val) => val.message);
     return res.status(400).json({
       success: false,
       status: 400,
-      message: messages.join(", "),
-      stack: process.env.NODE_ENV === "development" ? err.stack : {},
+      message: messages.join(', '),
+      stack: process.env.NODE_ENV === 'development' ? err.stack : {},
     });
   }
 
@@ -30,27 +30,27 @@ const errorHandler = (err, req, res, next) => {
       success: false,
       status: 400,
       message: `Duplicate field value: ${value}. Please use another value!`,
-      stack: process.env.NODE_ENV === "development" ? err.stack : {},
+      stack: process.env.NODE_ENV === 'development' ? err.stack : {},
     });
   }
 
   // Handle JWT Error
-  if (err.name === "JsonWebTokenError") {
+  if (err.name === 'JsonWebTokenError') {
     return res.status(401).json({
       success: false,
       status: 401,
-      message: "Invalid token. Please log in again!",
-      stack: process.env.NODE_ENV === "development" ? err.stack : {},
+      message: 'Invalid token. Please log in again!',
+      stack: process.env.NODE_ENV === 'development' ? err.stack : {},
     });
   }
 
   // Handle Token Expired Error
-  if (err.name === "TokenExpiredError") {
+  if (err.name === 'TokenExpiredError') {
     return res.status(401).json({
       success: false,
       status: 401,
-      message: "Your token has expired! Please log in again.",
-      stack: process.env.NODE_ENV === "development" ? err.stack : {},
+      message: 'Your token has expired! Please log in again.',
+      stack: process.env.NODE_ENV === 'development' ? err.stack : {},
     });
   }
 
@@ -59,7 +59,7 @@ const errorHandler = (err, req, res, next) => {
     success: false,
     status: errorStatus,
     message: errorMessage,
-    stack: process.env.NODE_ENV === "development" ? err.stack : {},
+    stack: process.env.NODE_ENV === 'development' ? err.stack : {},
   });
 };
 

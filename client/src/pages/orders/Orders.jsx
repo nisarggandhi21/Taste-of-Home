@@ -1,17 +1,17 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Orders.scss";
-import { useQuery } from "@tanstack/react-query";
-import { AuthContext } from "../../context/AuthContext";
-import { conversationService } from "../../services/conversationService";
-import { orderService } from "../../services/orderService";
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Orders.scss';
+import { useQuery } from '@tanstack/react-query';
+import { AuthContext } from '../../context/AuthContext';
+import { conversationService } from '../../services/conversationService';
+import { orderService } from '../../services/orderService';
 
 const Orders = () => {
   const { currentUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
   const { isLoading, error, data } = useQuery({
-    queryKey: ["orders"],
+    queryKey: ['orders'],
     queryFn: () => orderService.getOrders(),
   });
 
@@ -36,9 +36,9 @@ const Orders = () => {
   return (
     <div className="orders">
       {isLoading ? (
-        "loading"
+        'loading'
       ) : error ? (
-        "error"
+        'error'
       ) : (
         <div className="container">
           <div className="title">

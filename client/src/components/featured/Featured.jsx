@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import "./Featured.scss";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import './Featured.scss';
+import { useNavigate } from 'react-router-dom';
 
 function Featured() {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
 
   const navigate = useNavigate();
   const handleSubmit = () => {
@@ -14,9 +14,8 @@ function Featured() {
       <div className="container">
         <div className="left">
           <h1>
-            Savor the perfection of homemade goodness with our{" "}
-            <span>expert home cooks</span> – where every bite is a journey of
-            flavor and warmth.
+            Savor the perfection of homemade goodness with our <span>expert home cooks</span> –
+            where every bite is a journey of flavor and warmth.
           </h1>
           <div className="search">
             <div className="searchInput">

@@ -1,4 +1,4 @@
-import newRequest from "../utils/newRequest";
+import newRequest from '../utils/newRequest';
 
 export const reviewService = {
   getReviews: async (itemId) => {
@@ -6,7 +6,7 @@ export const reviewService = {
     return res.data;
   },
   createReview: async (reviewData) => {
-    const res = await newRequest.post("/reviews", reviewData);
+    const res = await newRequest.post('/reviews', reviewData);
     return res.data;
   },
 };

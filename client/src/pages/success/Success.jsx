@@ -1,19 +1,19 @@
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { orderService } from "../../services/orderService";
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { orderService } from '../../services/orderService';
 
 const Success = () => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(search);
-  const payment_intent = params.get("payment_intent");
+  const payment_intent = params.get('payment_intent');
 
   useEffect(() => {
     const makeRequest = async () => {
       try {
         await orderService.confirmOrder(payment_intent);
         setTimeout(() => {
-          navigate("/orders");
+          navigate('/orders');
         }, 5000);
       } catch (err) {}
     };
@@ -23,8 +23,7 @@ const Success = () => {
 
   return (
     <div>
-      Payment successful. You are being redirected to the orders page. Please do
-      not close the page
+      Payment successful. You are being redirected to the orders page. Please do not close the page
     </div>
   );
 };

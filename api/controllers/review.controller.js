@@ -1,10 +1,9 @@
-import Review from "../models/review.model.js";
-import Item from "../models/item.model.js";
-import createError from "../utils/createError.js";
+import Review from '../models/review.model.js';
+import Item from '../models/item.model.js';
+import createError from '../utils/createError.js';
 
 export const createReview = async (req, res, next) => {
-  if (req.isSeller)
-    return next(createError(403, "You are not allowed to create reviews"));
+  if (req.isSeller) return next(createError(403, 'You are not allowed to create reviews'));
 
   const newReview = new Review({
     userId: req.userId,
@@ -19,7 +18,7 @@ export const createReview = async (req, res, next) => {
       userId: req.userId,
     });
 
-    if (review) return next(createError(403, "You already reviewed this item"));
+    if (review) return next(createError(403, 'You already reviewed this item'));
     await Item.findByIdAndUpdate(req.body.itemId, {
       $inc: { totalStars: req.body.star, starNumber: 1 },
     });
@@ -30,7 +29,7 @@ export const createReview = async (req, res, next) => {
   }
 };
 
-export const getReviews = async (req, res) => {
+export const getReviews = async (req, res, next) => {
   try {
     const reviews = await Review.find({ itemId: req.params.itemId });
     res.status(200).send(reviews);
@@ -39,7 +38,7 @@ export const getReviews = async (req, res) => {
   }
 };
 
-export const deleteReview = async (req, res) => {
+export const deleteReview = async (req, res, next) => {
   try {
   } catch (err) {
     next(err);

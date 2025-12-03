@@ -1,4 +1,4 @@
-import newRequest from "../utils/newRequest";
+import newRequest from '../utils/newRequest';
 
 export const itemService = {
   getItems: async (searchParams) => {
@@ -10,7 +10,7 @@ export const itemService = {
     return res.data;
   },
   createItem: async (itemData) => {
-    const res = await newRequest.post("/items/", itemData);
+    const res = await newRequest.post('/items/', itemData);
     return res.data;
   },
   deleteItem: async (id) => {

@@ -1,8 +1,8 @@
-import Item from "../models/item.model.js";
-import createError from "../utils/createError.js";
+import Item from '../models/item.model.js';
+import createError from '../utils/createError.js';
 
 export const createItem = async (req, res, next) => {
-  if (!req.isSeller) return next(createError("You are not a seller", 403));
+  if (!req.isSeller) return next(createError('You are not a seller', 403));
 
   const newItem = new Item({
     userId: req.userId,
@@ -21,11 +21,11 @@ export const deleteItem = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
     if (item.userId !== req.userId) {
-      return next(createError("You can delete only your item", 403));
+      return next(createError('You can delete only your item', 403));
     }
 
     await Item.findByIdAndDelete(req.params.id);
-    res.status(200).send("deleted");
+    res.status(200).send('deleted');
   } catch (error) {
     next(error);
   }
@@ -34,7 +34,7 @@ export const deleteItem = async (req, res, next) => {
 export const getItem = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
-    if (!item) next(createError(404, "Item not found!"));
+    if (!item) next(createError(404, 'Item not found!'));
     res.status(200).send(item);
   } catch (error) {
     next(error);
@@ -60,14 +60,14 @@ export const getItems = async (req, res, next) => {
   // };
   const filters = {
     ...(q.userId && { userId: q.userId }),
-    ...(q.cat && { cat: { $regex: q.cat, $options: "i" } }),
+    ...(q.cat && { cat: { $regex: q.cat, $options: 'i' } }),
     ...((q.min || q.max) && {
       price: {
         ...(q.min && { $gt: q.min }),
         ...(q.max && { $lt: q.max }),
       },
     }),
-    ...(q.search && { title: { $regex: q.search, $options: "i" } }),
+    ...(q.search && { title: { $regex: q.search, $options: 'i' } }),
   };
 
   try {

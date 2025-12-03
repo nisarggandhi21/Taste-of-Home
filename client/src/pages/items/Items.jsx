@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./Items.scss";
+import React, { useEffect, useRef, useState } from 'react';
+import './Items.scss';
 
-import ItemCard from "../../components/itemCard/ItemCard";
-import { itemService } from "../../services/itemService";
-import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "react-router-dom";
+import ItemCard from '../../components/itemCard/ItemCard';
+import { itemService } from '../../services/itemService';
+import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
 
 function Items() {
-  const [sort, setSort] = useState("sales");
+  const [sort, setSort] = useState('sales');
   const [open, setOpen] = useState(false);
   const minRef = useRef();
   const maxRef = useRef();
@@ -15,10 +15,10 @@ function Items() {
   const { search } = useLocation();
 
   const { isLoading, error, data, refetch } = useQuery({
-    queryKey: ["items"],
+    queryKey: ['items'],
     queryFn: () => {
       // Construct the URL with query parameters
-      let queryString = "";
+      let queryString = '';
 
       // Append the search parameter if it exists
       if (search) {
@@ -65,28 +65,26 @@ function Items() {
           </div>
           <div className="right">
             <span className="sortBy">Sort by</span>
-            <span className="sortType">
-              {sort === "sales" ? "Best Selling" : "Newest"}
-            </span>
+            <span className="sortType">{sort === 'sales' ? 'Best Selling' : 'Newest'}</span>
             <img src="./img/down.png" alt="" onClick={() => setOpen(!open)} />
             {open && (
               <div className="rightMenu">
-                {sort === "sales" ? (
-                  <span onClick={() => reSort("createdAt")}>Newest</span>
+                {sort === 'sales' ? (
+                  <span onClick={() => reSort('createdAt')}>Newest</span>
                 ) : (
-                  <span onClick={() => reSort("sales")}>Best Selling</span>
+                  <span onClick={() => reSort('sales')}>Best Selling</span>
                 )}
-                <span onClick={() => reSort("sales")}>Popular</span>
+                <span onClick={() => reSort('sales')}>Popular</span>
               </div>
             )}
           </div>
         </div>
         <div className="cards">
           {isLoading
-            ? "loading"
+            ? 'loading'
             : error
-            ? "Something went wrong!"
-            : data.map((item) => <ItemCard key={item._id} item={item} />)}
+              ? 'Something went wrong!'
+              : data.map((item) => <ItemCard key={item._id} item={item} />)}
         </div>
       </div>
     </div>

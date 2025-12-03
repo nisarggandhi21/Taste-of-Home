@@ -1,14 +1,14 @@
-import React from "react";
-import Review from "../review/Review";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { reviewService } from "../../services/reviewService";
-import "./Reviews.scss";
+import React from 'react';
+import Review from '../review/Review';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { reviewService } from '../../services/reviewService';
+import './Reviews.scss';
 
 const Reviews = ({ itemId }) => {
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ["reviews"],
+    queryKey: ['reviews'],
     queryFn: () => reviewService.getReviews(itemId),
   });
 
@@ -17,7 +17,7 @@ const Reviews = ({ itemId }) => {
       return reviewService.createReview(review);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["reviews"]);
+      queryClient.invalidateQueries(['reviews']);
     },
   });
 
@@ -32,10 +32,10 @@ const Reviews = ({ itemId }) => {
     <div className="reviews">
       <h2>Reviews</h2>
       {isLoading
-        ? "loading"
+        ? 'loading'
         : error
-        ? "Something went wrong!"
-        : data.map((review) => <Review key={review._id} review={review} />)}
+          ? 'Something went wrong!'
+          : data.map((review) => <Review key={review._id} review={review} />)}
       <div className="add">
         <h3>Add a review</h3>
         <form action="" className="addForm" onSubmit={handleSubmit}>

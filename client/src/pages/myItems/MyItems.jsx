@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
-import "./MyItems.scss";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AuthContext } from "../../context/AuthContext";
-import { itemService } from "../../services/itemService";
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import './MyItems.scss';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AuthContext } from '../../context/AuthContext';
+import { itemService } from '../../services/itemService';
 
 function MyItems() {
   const { currentUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ["myItems"],
+    queryKey: ['myItems'],
     queryFn: () => itemService.getItems(`?userId=${currentUser._id}`),
   });
 
@@ -19,7 +19,7 @@ function MyItems() {
       return itemService.deleteItem(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["myItems"]);
+      queryClient.invalidateQueries(['myItems']);
     },
   });
 
@@ -30,9 +30,9 @@ function MyItems() {
   return (
     <div className="myitems">
       {isLoading ? (
-        "loading"
+        'loading'
       ) : error ? (
-        "error"
+        'error'
       ) : (
         <div className="container">
           <div className="title">

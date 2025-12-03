@@ -3,14 +3,14 @@ import {
   PaymentElement,
   useElements,
   useStripe,
-} from "@stripe/react-stripe-js";
-import { useEffect, useState } from "react";
+} from '@stripe/react-stripe-js';
+import { useEffect, useState } from 'react';
 
 const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,7 +20,7 @@ const CheckoutForm = () => {
     }
 
     const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret"
+      'payment_intent_client_secret'
     );
 
     if (!clientSecret) {
@@ -29,17 +29,17 @@ const CheckoutForm = () => {
 
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {
-        case "succeeded":
-          setMessage("Payment succeeded!");
+        case 'succeeded':
+          setMessage('Payment succeeded!');
           break;
-        case "processing":
-          setMessage("Your payment is processing.");
+        case 'processing':
+          setMessage('Your payment is processing.');
           break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
+        case 'requires_payment_method':
+          setMessage('Your payment was not successful, please try again.');
           break;
         default:
-          setMessage("Something went wrong.");
+          setMessage('Something went wrong.');
           break;
       }
     });
@@ -56,10 +56,10 @@ const CheckoutForm = () => {
 
     setIsLoading(true);
     const successUrl = import.meta.env.VITE_SUCCESS_URL;
-    
+
     if (!successUrl) {
-      console.error("Success URL is missing. Check your .env file.");
-      setMessage("Configuration error: Success URL is missing.");
+      console.error('Success URL is missing. Check your .env file.');
+      setMessage('Configuration error: Success URL is missing.');
       setIsLoading(false);
       return;
     }
@@ -71,13 +71,13 @@ const CheckoutForm = () => {
         return_url: successUrl,
         payment_method_data: {
           billing_details: {
-            name: "Test User",
+            name: 'Test User',
             address: {
-              line1: "123 Test St",
-              city: "Test City",
-              state: "Test State",
-              postal_code: "123456",
-              country: "US",
+              line1: '123 Test St',
+              city: 'Test City',
+              state: 'Test State',
+              postal_code: '123456',
+              country: 'US',
             },
           },
         },
@@ -90,15 +90,15 @@ const CheckoutForm = () => {
     // be redirected to an intermediate site first to authorize the payment, then
     // redirected to the `return_url`.
     if (error) {
-        console.error("Stripe confirm payment error:", error);
-        setMessage(error.message || "An unexpected error occurred.");
+      console.error('Stripe confirm payment error:', error);
+      setMessage(error.message || 'An unexpected error occurred.');
     }
 
     setIsLoading(false);
   };
 
   const paymentElementOptions = {
-    layout: "tabs",
+    layout: 'tabs',
   };
 
   return (
@@ -110,7 +110,7 @@ const CheckoutForm = () => {
       <PaymentElement id="payment-element" options={paymentElementOptions} />
       <button disabled={isLoading || !stripe || !elements} id="submit">
         <span id="button-text">
-          {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
+          {isLoading ? <div className="spinner" id="spinner"></div> : 'Pay now'}
         </span>
       </button>
       {/* Show any error or success messages */}

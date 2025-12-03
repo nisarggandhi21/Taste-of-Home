@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
-import "./Messages.scss";
-import moment from "moment";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AuthContext } from "../../context/AuthContext";
-import { conversationService } from "../../services/conversationService";
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import './Messages.scss';
+import moment from 'moment';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AuthContext } from '../../context/AuthContext';
+import { conversationService } from '../../services/conversationService';
 
 const Messages = () => {
   const { currentUser } = useContext(AuthContext);
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ["messages"],
+    queryKey: ['messages'],
     queryFn: () => conversationService.getConversations(),
   });
 
@@ -21,7 +21,7 @@ const Messages = () => {
       return conversationService.markAsRead(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["conversations"]);
+      queryClient.invalidateQueries(['conversations']);
     },
   });
 
@@ -32,9 +32,9 @@ const Messages = () => {
   return (
     <div className="messages">
       {isLoading ? (
-        "loading"
+        'loading'
       ) : error ? (
-        "error"
+        'error'
       ) : (
         <div className="container">
           <div className="title">
@@ -42,7 +42,7 @@ const Messages = () => {
           </div>
           <table>
             <tr>
-              <th>{currentUser.isSeller ? "Buyer" : "Seller"}</th>
+              <th>{currentUser.isSeller ? 'Buyer' : 'Seller'}</th>
               <th>Last Message</th>
               <th>Date</th>
               <th>Action</th>
@@ -52,7 +52,7 @@ const Messages = () => {
               <tr
                 className={
                   (currentUser.isSeller && !c.readBySeller) ||
-                  (!currentUser.isSeller && !c.readByBuyer && "active")
+                  (!currentUser.isSeller && !c.readByBuyer && 'active')
                 }
                 key={c.id}
               >
@@ -66,9 +66,7 @@ const Messages = () => {
                 <td>
                   {(currentUser.isSeller && !c.readBySeller) ||
                     (!currentUser.isSeller && !c.readByBuyer && (
-                      <button onClick={() => handleRead(c.id)}>
-                        Mark as Read
-                      </button>
+                      <button onClick={() => handleRead(c.id)}>Mark as Read</button>
                     ))}
                 </td>
               </tr>

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const OrderSchema = new Schema(
@@ -41,4 +41,8 @@ const OrderSchema = new Schema(
   }
 );
 
-export default mongoose.model("Order", OrderSchema);
+OrderSchema.index({ sellerId: 1 });
+OrderSchema.index({ buyerId: 1 });
+OrderSchema.index({ itemId: 1 });
+
+export default mongoose.model('Order', OrderSchema);

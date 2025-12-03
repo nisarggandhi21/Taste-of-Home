@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useContext, useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-import { INITIAL_STATE, itemReducer } from "../../reducers/itemReducer";
-import { itemService } from "../../services/itemService";
-import upload from "../../utils/upload";
-import "./Add.scss";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useContext, useReducer, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import { INITIAL_STATE, itemReducer } from '../../reducers/itemReducer';
+import { itemService } from '../../services/itemService';
+import upload from '../../utils/upload';
+import './Add.scss';
 
 const Add = () => {
   const { currentUser } = useContext(AuthContext);
@@ -20,7 +20,7 @@ const Add = () => {
 
   const handleChange = (e) => {
     dispatch({
-      type: "CHANGE_INPUT",
+      type: 'CHANGE_INPUT',
       payload: { name: e.target.name, value: e.target.value },
     });
   };
@@ -28,10 +28,10 @@ const Add = () => {
   const handleFeature = (e) => {
     e.preventDefault();
     dispatch({
-      type: "ADD_FEATURE",
+      type: 'ADD_FEATURE',
       payload: e.target[0].value,
     });
-    e.target[0].value = "";
+    e.target[0].value = '';
   };
 
   const handleUpload = async () => {
@@ -46,7 +46,7 @@ const Add = () => {
         })
       );
       setUploading(false);
-      dispatch({ type: "ADD_IMAGES", payload: { cover, images } });
+      dispatch({ type: 'ADD_IMAGES', payload: { cover, images } });
     } catch (err) {
       console.log(err);
     }
@@ -61,14 +61,14 @@ const Add = () => {
       return itemService.createItem(item);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["myItems"]);
+      queryClient.invalidateQueries(['myItems']);
     },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     mutation.mutate(state);
-    navigate("/myitems");
+    navigate('/myitems');
   };
 
   return (
@@ -100,20 +100,11 @@ const Add = () => {
             <div className="images">
               <div className="imagesInputs">
                 <label htmlFor="">Cover Image</label>
-                <input
-                  type="file"
-                  onChange={(e) => setSingleFile(e.target.files[0])}
-                />
+                <input type="file" onChange={(e) => setSingleFile(e.target.files[0])} />
                 <label htmlFor="">Upload Images</label>
-                <input
-                  type="file"
-                  multiple
-                  onChange={(e) => setFiles(e.target.files)}
-                />
+                <input type="file" multiple onChange={(e) => setFiles(e.target.files)} />
               </div>
-              <button onClick={handleUpload}>
-                {uploading ? "uploading" : "Upload"}
-              </button>
+              <button onClick={handleUpload}>{uploading ? 'uploading' : 'Upload'}</button>
             </div>
             <label htmlFor="">Description</label>
             <textarea
@@ -160,11 +151,7 @@ const Add = () => {
             <div className="addedFeatures">
               {state?.features?.map((f) => (
                 <div className="item" key={f}>
-                  <button
-                    onClick={() =>
-                      dispatch({ type: "REMOVE_FEATURE", payload: f })
-                    }
-                  >
+                  <button onClick={() => dispatch({ type: 'REMOVE_FEATURE', payload: f })}>
                     {f}
                     <span>X</span>
                   </button>

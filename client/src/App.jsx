@@ -1,27 +1,27 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import { AuthContextProvider } from "./context/AuthContext";
+import { AuthContextProvider } from './context/AuthContext';
 
-import Add from "./pages/add/Add";
-import Home from "./pages/home/Home";
-import Item from "./pages/item/Item";
-import Items from "./pages/items/Items";
-import Login from "./pages/login/Login";
-import Message from "./pages/message/Message";
-import Messages from "./pages/messages/Messages";
-import MyItems from "./pages/myItems/MyItems";
-import Orders from "./pages/orders/Orders";
-import Pay from "./pages/pay/Pay";
-import Register from "./pages/register/Register";
-import Success from "./pages/success/Success";
+import Add from './pages/add/Add';
+import Home from './pages/home/Home';
+import Item from './pages/item/Item';
+import Items from './pages/items/Items';
+import Login from './pages/login/Login';
+import Message from './pages/message/Message';
+import Messages from './pages/messages/Messages';
+import MyItems from './pages/myItems/MyItems';
+import Orders from './pages/orders/Orders';
+import Pay from './pages/pay/Pay';
+import Register from './pages/register/Register';
+import Success from './pages/success/Success';
 
-import Footer from "./components/footer/Footer";
-import Navbar from "./components/navbar/Navbar";
+import Footer from './components/footer/Footer';
+import Navbar from './components/navbar/Navbar';
 
-import "./app.scss";
+import './app.scss';
 
 const queryClient = new QueryClient();
 

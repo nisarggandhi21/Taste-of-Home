@@ -1,12 +1,12 @@
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-import { authService } from "../../services/authService";
-import "./Login.scss";
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import { authService } from '../../services/authService';
+import './Login.scss';
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ function Login() {
     try {
       const res = await authService.login({ username, password });
       login(res);
-      navigate("/");
+      navigate('/');
     } catch (err) {
       // error is handled by the interceptor
     }
