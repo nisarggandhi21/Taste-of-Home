@@ -24,6 +24,7 @@ const httpServer = createServer(app);
 const io = initializeSocket(httpServer);
 
 mongoose.set('strictQuery', true);
+mongoose.set('debug', true);
 
 const connect = async () => {
   try {
