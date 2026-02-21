@@ -51,7 +51,7 @@ function Footer() {
         <div className="bottom">
           <div className="left">
             <h2>Taste of Home</h2>
-            <span>© Taste of Home Ltd. 2023</span>
+            <span>© Taste of Home Ltd. {new Date().getFullYear()}</span>
           </div>
           <div className="right">
             <div className="social">
