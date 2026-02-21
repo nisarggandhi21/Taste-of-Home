@@ -34,10 +34,14 @@ const ItemCard = ({ item }) => {
             </div>
           )}
           <p>{item.desc}</p>
-          {item.starNumber > 0 && (
+          {item.starNumber > 0 ? (
             <div className="star">
               <img src="./img/star.png" alt="" />
               <span>{calculateRating(item.totalStars, item.starNumber)}</span>
+            </div>
+          ) : (
+            <div className="star">
+              <span>No ratings yet</span>
             </div>
           )}
         </div>
