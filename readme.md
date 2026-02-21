@@ -82,7 +82,7 @@ VITE_SUCCESS_URL = http://localhost:5173/success
 MONGO = mongodb+srv://[username]:[password]@cluster
 JWT_KEY = [your-jwt-secret]
 STRIPE_SECRET_KEY = [your-stripe-secret]
-PORT = 8800
+CORS_URL=frontend.url
 ```
 
 ---
@@ -96,7 +96,6 @@ PORT = 8800
    ```
 
 2. **Install dependencies**:
-
    - For **Backend**:
 
    ```bash
@@ -112,7 +111,6 @@ PORT = 8800
    ```
 
 3. **Start the servers**:
-
    - For **Backend**:
 
    ```bash
