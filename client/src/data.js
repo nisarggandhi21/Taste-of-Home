@@ -2,55 +2,46 @@ export const cards = [
   {
     id: 1,
     title: 'North',
-
     img: 'https://images.pexels.com/photos/12365247/pexels-photo-12365247.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 2,
     title: 'South',
-
     img: 'https://images.pexels.com/photos/4331491/pexels-photo-4331491.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 3,
     title: 'Pizza',
-
     img: 'https://images.pexels.com/photos/2180875/pexels-photo-2180875.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 4,
     title: 'Burger',
-
     img: 'https://images.pexels.com/photos/2015097/pexels-photo-2015097.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 5,
     title: 'Cake',
-
     img: 'https://images.pexels.com/photos/19478187/pexels-photo-19478187/free-photo-of-strawberry-cake-on-a-plate.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 6,
     title: 'Ice Cream',
-
     img: 'https://images.pexels.com/photos/2846337/pexels-photo-2846337.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 7,
     title: 'Sandwich',
-
     img: 'https://images.pexels.com/photos/14941252/pexels-photo-14941252.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 8,
     title: 'Drinks',
-
     img: 'https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
   {
     id: 8,
     title: 'Choclates',
-
     img: 'https://images.pexels.com/photos/6167330/pexels-photo-6167330.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load',
   },
 ];

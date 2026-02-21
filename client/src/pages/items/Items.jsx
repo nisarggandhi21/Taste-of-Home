@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Items.scss';
 
-import ItemCard from '../../components/itemCard/ItemCard';
-import { itemService } from '../../services/itemService';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
+import ItemCard from '../../components/itemCard/ItemCard';
+import { itemService } from '../../services/itemService';
 
 function Items() {
   const [sort, setSort] = useState('sales');
@@ -17,20 +17,16 @@ function Items() {
   const { isLoading, error, data, refetch } = useQuery({
     queryKey: ['items'],
     queryFn: () => {
-      // Construct the URL with query parameters
       let queryString = '';
 
-      // Append the search parameter if it exists
       if (search) {
         queryString += `${search}&`;
       } else {
         queryString += `?`;
       }
 
-      // Append other parameters
       queryString += `min=${minRef.current.value}&max=${maxRef.current.value}&sort=${sort}`;
 
-      // Make the API request using the constructed URL
       return itemService.getItems(queryString);
     },
   });

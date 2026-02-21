@@ -1,8 +1,13 @@
-import React from 'react';
-import './ItemCard.scss';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import newRequest from '../../utils/newRequest';
-import { useQuery } from '@tanstack/react-query';
+import './ItemCard.scss';
+
+const calculateRating = (totalStars, starNumber) => {
+  if (starNumber === 0) return 0;
+  const average = totalStars / starNumber;
+  return !isNaN(average) ? Math.round(average) : 0;
+};
 
 const ItemCard = ({ item }) => {
   const { isLoading, error, data } = useQuery({
@@ -29,14 +34,12 @@ const ItemCard = ({ item }) => {
             </div>
           )}
           <p>{item.desc}</p>
-          <div className="star">
-            <img src="./img/star.png" alt="" />
-
-            <span>
-              {!isNaN(item.totalStars / item.starNumber) &&
-                Math.round(item.totalStars / item.starNumber)}
-            </span>
-          </div>
+          {item.starNumber > 0 && (
+            <div className="star">
+              <img src="./img/star.png" alt="" />
+              <span>{calculateRating(item.totalStars, item.starNumber)}</span>
+            </div>
+          )}
         </div>
         <hr />
         <div className="detail">
