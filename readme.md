@@ -83,6 +83,7 @@ MONGO = mongodb+srv://[username]:[password]@cluster
 JWT_KEY = [your-jwt-secret]
 STRIPE_SECRET_KEY = [your-stripe-secret]
 CORS_URL=frontend.url
+CORS_ALLOWED_ORIGINS=[url-path]
 ```
 
 ---

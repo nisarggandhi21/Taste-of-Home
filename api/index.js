@@ -2,11 +2,11 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import morgan from 'morgan';
 import helmet from 'helmet';
-import mongoose from 'mongoose';
 import { createServer } from 'http';
-import { initializeSocket } from './socket.js';
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import errorHandler from './middleware/errorHandler.js';
 import authRoute from './routes/auth.route.js';
 import conversationRoutes from './routes/conversation.route.js';
 import itemRoutes from './routes/item.route.js';
@@ -14,7 +14,7 @@ import messageRoutes from './routes/message.route.js';
 import orderRoutes from './routes/order.route.js';
 import reviewRoutes from './routes/review.route.js';
 import userRoute from './routes/user.route.js';
-import errorHandler from './middleware/errorHandler.js';
+import { initializeSocket } from './socket.js';
 import { validateEnv } from './utils/validateEnv.js';
 
 const app = express();
@@ -24,7 +24,6 @@ const httpServer = createServer(app);
 const io = initializeSocket(httpServer);
 
 mongoose.set('strictQuery', true);
-mongoose.set('debug', true);
 
 const connect = async () => {
   try {
