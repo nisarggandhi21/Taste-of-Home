@@ -128,6 +128,32 @@ CORS_ALLOWED_ORIGINS=[url-path]
 
 ---
 
+## 🐳 **Run with Docker**
+
+1. Create your Docker env file from the template:
+
+   ```bash
+   cp .env.docker.example .env.docker
+   ```
+
+2. Update `.env.docker` with your real secrets (`MONGO`, `JWT_KEY`, `STRIPE_SECRET_KEY`).
+
+3. Build the image:
+
+   ```bash
+   docker build -t taste-of-home .
+   ```
+
+4. Run the container with env values:
+
+   ```bash
+   docker run --rm -it -p 8800:8800 -p 5173:5173 --env-file .env.docker taste-of-home
+   ```
+
+5. Open the app at [http://localhost:5173](http://localhost:5173)
+
+---
+
 ## 📑 **API Routes**
 
 - **`/api/auth`**: Authentication routes
