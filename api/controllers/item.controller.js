@@ -1,5 +1,6 @@
 import Item from '../models/item.model.js';
 import createError from '../utils/createError.js';
+import jwt from 'jsonwebtoken';
 
 export const createItem = async (req, res, next) => {
   if (!req.isSeller) return next(createError('You are not a seller', 403));
@@ -43,21 +44,19 @@ export const getItem = async (req, res, next) => {
 
 export const getItems = async (req, res, next) => {
   const q = req.query;
-  // const filters = {
-  //   ...(query.userId && { userId: query.userId }),
-  //   ...(query.cat && {
-  //     cat: { $regex: query.cat, $options: "i" },
-  //   }),
-  //   ...((query.min || query.max) && {
-  //     price: {
-  //       ...(query.min && { $gt: query.min }),
-  //       ...(query.max && { $lt: query.max }),
-  //     },
-  //   }),
-  //   ...(query.title && {
-  //     title: { $regex: query.title, $options: "i" },
-  //   }),
-  // };
+
+  const token = req.cookies.accessToken;
+  let currentUserId = null;
+
+  if (token) {
+    try {
+      const payload = jwt.verify(token, process.env.JWT_KEY);
+      currentUserId = payload.id;
+    } catch (err) {
+      // Ignore invalid token for getItems
+    }
+  }
+
   const filters = {
     ...(q.userId && { userId: q.userId }),
     ...(q.cat && { cat: { $regex: q.cat, $options: 'i' } }),
@@ -68,6 +67,8 @@ export const getItems = async (req, res, next) => {
       },
     }),
     ...(q.search && { title: { $regex: q.search, $options: 'i' } }),
+    // Filter out the current user's items if they are searching and not specifically looking for their own items
+    ...(currentUserId && !q.userId && { userId: { $ne: currentUserId } }),
   };
 
   try {

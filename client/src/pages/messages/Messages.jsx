@@ -5,6 +5,50 @@ import moment from 'moment';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthContext';
 import { conversationService } from '../../services/conversationService';
+import { userService } from '../../services/userService';
+
+const MessageRow = ({ c, currentUser, handleRead }) => {
+  const otherUserId = currentUser.isSeller ? c.buyerId : c.sellerId;
+
+  const { isLoading, error, data } = useQuery({
+    queryKey: ['user', otherUserId],
+    queryFn: () => userService.getUser(otherUserId),
+    enabled: !!otherUserId,
+  });
+
+  const isUnread =
+    (currentUser.isSeller && !c.readBySeller) || (!currentUser.isSeller && !c.readByBuyer);
+
+  return (
+    <tr className={isUnread ? 'active' : ''} key={c.id}>
+      <td>
+        <div className="user-info">
+          <img src={data?.img || '/img/noavatar.jpg'} alt="" className="user-img" />
+          <span>{isLoading ? 'loading...' : error ? 'error' : data?.username}</span>
+        </div>
+      </td>
+      <td>
+        <Link to={`/message/${c.id}`} className="link">
+          {c?.lastMessage
+            ? c.lastMessage.length > 100
+              ? c.lastMessage.substring(0, 100) + '...'
+              : c.lastMessage
+            : '...'}
+        </Link>
+      </td>
+      <td>{moment(c.updatedAt).fromNow()}</td>
+      <td>
+        {isUnread ? (
+          <button onClick={() => handleRead(c.id)}>Mark as Read</button>
+        ) : (
+          <Link to={`/message/${c.id}`}>
+            <button className="view-btn">View</button>
+          </Link>
+        )}
+      </td>
+    </tr>
+  );
+};
 
 const Messages = () => {
   const { currentUser } = useContext(AuthContext);
@@ -21,7 +65,7 @@ const Messages = () => {
       return conversationService.markAsRead(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['conversations']);
+      queryClient.invalidateQueries(['messages']);
     },
   });
 
@@ -41,36 +85,19 @@ const Messages = () => {
             <h1>Messages</h1>
           </div>
           <table>
-            <tr>
-              <th>{currentUser.isSeller ? 'Buyer' : 'Seller'}</th>
-              <th>Last Message</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-
-            {data.map((c) => (
-              <tr
-                className={
-                  (currentUser.isSeller && !c.readBySeller) ||
-                  (!currentUser.isSeller && !c.readByBuyer && 'active')
-                }
-                key={c.id}
-              >
-                <td>{currentUser.isSeller ? c.buyerId : c.sellerId}</td>
-                <td>
-                  <Link to={`/message/${c.id}`} className="link">
-                    {c?.lastMessage?.substring(0, 100)}...
-                  </Link>
-                </td>
-                <td>{moment(c.updatedAt).fromNow()}</td>
-                <td>
-                  {(currentUser.isSeller && !c.readBySeller) ||
-                    (!currentUser.isSeller && !c.readByBuyer && (
-                      <button onClick={() => handleRead(c.id)}>Mark as Read</button>
-                    ))}
-                </td>
+            <thead>
+              <tr>
+                <th>{currentUser.isSeller ? 'Buyer' : 'Seller'}</th>
+                <th>Last Message</th>
+                <th>Date</th>
+                <th>Action</th>
               </tr>
-            ))}
+            </thead>
+            <tbody>
+              {data.map((c) => (
+                <MessageRow key={c.id} c={c} currentUser={currentUser} handleRead={handleRead} />
+              ))}
+            </tbody>
           </table>
         </div>
       )}

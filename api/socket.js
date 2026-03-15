@@ -1,9 +1,13 @@
 import { Server } from 'socket.io';
 
 export const initializeSocket = (httpServer) => {
+  const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
+    ? process.env.CORS_ALLOWED_ORIGINS.split(',')
+    : [];
+
   const io = new Server(httpServer, {
     cors: {
-      origin: process.env.CORS_URL,
+      origin: allowedOrigins,
     },
   });
 

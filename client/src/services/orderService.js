@@ -13,4 +13,8 @@ export const orderService = {
     const res = await newRequest.put('/orders', { payment_intent });
     return res.data;
   },
+  completeOrder: async (id) => {
+    const res = await newRequest.patch(`/orders/complete/${id}`);
+    return res.data;
+  },
 };

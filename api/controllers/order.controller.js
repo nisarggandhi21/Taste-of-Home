@@ -69,3 +69,24 @@ export const confirm = async (req, res, next) => {
     next(err);
   }
 };
+
+export const completeOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return next(createError(404, 'Order not found!'));
+
+    if (order.sellerId !== req.userId) {
+      return next(createError(403, 'You can only complete your own orders!'));
+    }
+
+    await Order.findByIdAndUpdate(req.params.id, {
+      $set: {
+        isCompleted: true,
+      },
+    });
+
+    res.status(200).send('Order has been marked as completed.');
+  } catch (err) {
+    next(err);
+  }
+};

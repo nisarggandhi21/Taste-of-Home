@@ -96,30 +96,30 @@ function Navbar() {
             <Link className="link menuLink" to="/items?cat=north">
               North
             </Link>
-            <Link className="link menuLink" to="/">
+            <Link className="link menuLink" to="/items?cat=south">
               South
             </Link>
 
-            <Link className="link menuLink" to="/items?cat=Pizza">
+            <Link className="link menuLink" to="/items?cat=pizza">
               Pizza
             </Link>
-            <Link className="link menuLink" to="/">
+            <Link className="link menuLink" to="/items?cat=burger">
               Burger
             </Link>
-            <Link className="link menuLink" to="/">
+            <Link className="link menuLink" to="/items?cat=cake">
               Cake
             </Link>
-            <Link className="link menuLink" to="/">
+            <Link className="link menuLink" to="/items?cat=icecream">
               Ice Cream
             </Link>
-            <Link className="link menuLink" to="/">
+            <Link className="link menuLink" to="/items?cat=sandwich">
               Sandwich
             </Link>
-            <Link className="link menuLink" to="/">
+            <Link className="link menuLink" to="/items?cat=drinks">
               Drinks
             </Link>
-            <Link className="link menuLink" to="/">
-              Choclates
+            <Link className="link menuLink" to="/items?cat=chocolates">
+              Chocolates
             </Link>
           </div>
           <hr />

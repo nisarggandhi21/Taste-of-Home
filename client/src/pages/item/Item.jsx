@@ -1,15 +1,14 @@
-import React from 'react';
-import './Item.scss';
-// import { Slider } from "infinite-react-carousel/lib";
-import Slide from '../../components/slide/Slide';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Reviews from '../../components/reviews/Reviews';
 import { itemService } from '../../services/itemService';
 import { userService } from '../../services/userService';
+import './Item.scss';
 
 function Item() {
   const { id } = useParams();
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const { isLoading, error, data } = useQuery({
     queryKey: ['item'],
@@ -61,12 +60,35 @@ function Item() {
                 )}
               </div>
             )}
-            {/* <Slide slidesToShow={5} arrowsScroll={5} className="slider">
-              {" "}
-              {data.images?.map((img) => (
-                <img key={img} src={img} alt="" />
-              ))}
-            </Slide> */}
+            {data.images && data.images.length > 0 && (
+              <div className="slider">
+                {data.images.length > 1 && (
+                  <div
+                    className="arrow"
+                    onClick={() =>
+                      setCurrentSlide(
+                        currentSlide === 0 ? data.images.length - 1 : currentSlide - 1
+                      )
+                    }
+                  >
+                    &#10094;
+                  </div>
+                )}
+                <img src={data.images[currentSlide]} alt="" />
+                {data.images.length > 1 && (
+                  <div
+                    className="arrow"
+                    onClick={() =>
+                      setCurrentSlide(
+                        currentSlide === data.images.length - 1 ? 0 : currentSlide + 1
+                      )
+                    }
+                  >
+                    &#10095;
+                  </div>
+                )}
+              </div>
+            )}
             <h2>About This Item</h2>
             <p>{data.desc}</p>
             {isLoadingUser ? (
@@ -126,7 +148,7 @@ function Item() {
           <div className="right">
             <div className="price">
               <h3>{data.shortTitle}</h3>
-              <h2>{data.price}</h2>
+              <h2>&#8377; {data.price}</h2>
             </div>
             <p>{data.shortDesc}</p>
             <div className="details">

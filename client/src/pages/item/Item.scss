@@ -60,8 +60,22 @@
       }
 
       .slider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
         background-color: #f5f5f5;
+        padding: 20px;
+
+        .arrow {
+          font-size: 30px;
+          color: gray;
+          cursor: pointer;
+          user-select: none;
+        }
+
         img {
+          width: 80%;
           max-height: 500px;
           object-fit: contain;
         }
@@ -200,6 +214,7 @@
         .item {
           display: flex;
           align-items: center;
+          justify-content: flex-start;
           gap: 10px;
 
           img {
@@ -209,13 +224,17 @@
       }
 
       .features {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
         .item {
           display: flex;
           align-items: center;
+          justify-content: flex-start;
           gap: 10px;
           font-weight: 300;
           color: gray;
-          margin-bottom: 5px;
 
           img {
             width: 14px;
