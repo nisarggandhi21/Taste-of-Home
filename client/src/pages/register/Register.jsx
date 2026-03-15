@@ -43,7 +43,9 @@ function Register() {
       });
       login(res);
       navigate('/');
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

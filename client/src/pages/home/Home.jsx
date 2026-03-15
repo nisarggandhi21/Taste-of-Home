@@ -4,9 +4,17 @@ import Featured from '../../components/featured/Featured';
 import Slide from '../../components/slide/Slide';
 import CatCard from '../../components/catCard/CatCard';
 import ProjectCard from '../../components/projectCard/ProjectCard';
-import { cards, projects } from '../../data';
+import { cards } from '../../data';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { itemService } from '../../services/itemService';
 
 function Home() {
+  const { isLoading, error, data } = useQuery({
+    queryKey: ['items'],
+    queryFn: () => itemService.getItems('?sort=sales'),
+  });
+
   return (
     <div className="home">
       <Featured />
@@ -175,7 +183,9 @@ function Home() {
               Manage your food orders seamlessly and enhance your culinary journey with a
               user-friendly platform
             </div>
-            <button>Explore Home-Cooked Delights</button>
+            <Link to="/items">
+              <button>Explore Home-Cooked Delights</button>
+            </Link>
           </div>
           <div className="item">
             <img
@@ -185,11 +195,17 @@ function Home() {
           </div>
         </div>
       </div>
-      <Slide slidesToShow={4} arrowsScroll={4}>
-        {projects.map((card) => (
-          <ProjectCard key={card.id} card={card} />
-        ))}
-      </Slide>
+      {isLoading ? (
+        'loading'
+      ) : error ? (
+        'Something went wrong!'
+      ) : (
+        <Slide slidesToShow={4} arrowsScroll={4}>
+          {data.map((item) => (
+            <ProjectCard key={item._id} item={item} />
+          ))}
+        </Slide>
+      )}
     </div>
   );
 }

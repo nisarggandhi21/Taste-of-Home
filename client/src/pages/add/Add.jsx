@@ -62,13 +62,13 @@ const Add = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['myItems']);
+      navigate('/myitems');
     },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     mutation.mutate(state);
-    navigate('/myitems');
   };
 
   return (
@@ -86,7 +86,7 @@ const Add = () => {
             />
             <label htmlFor="">Category</label>
             <select name="cat" id="cat" onChange={handleChange}>
-              <option value="north">Select any Category</option>
+              <option value="">Select any Category</option>
               <option value="north">North</option>
               <option value="south">South</option>
               <option value="pizza">Pizza</option>
@@ -95,7 +95,7 @@ const Add = () => {
               <option value="icecream">Ice Cream</option>
               <option value="sandwich">Sandwich</option>
               <option value="drinks">Drinks</option>
-              <option value="choclate">Choclate</option>
+              <option value="chocolates">Chocolates</option>
             </select>
             <div className="images">
               <div className="imagesInputs">

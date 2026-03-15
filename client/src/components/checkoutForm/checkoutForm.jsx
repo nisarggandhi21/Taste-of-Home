@@ -69,6 +69,7 @@ const CheckoutForm = () => {
       confirmParams: {
         // Make sure to change this to your payment completion page
         return_url: successUrl,
+        receipt_email: email,
         payment_method_data: {
           billing_details: {
             name: 'Test User',

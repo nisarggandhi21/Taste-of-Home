@@ -1,5 +1,6 @@
 import React from 'react';
 import './Footer.scss';
+import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
@@ -8,15 +9,33 @@ function Footer() {
         <div className="top">
           <div className="item">
             <h2>Categories</h2>
-            <span>North</span>
-            <span>South</span>
-            <span>Pizza</span>
-            <span>Burger</span>
-            <span>Cake</span>
-            <span>Ice Cream</span>
-            <span>Sandwich</span>
-            <span>Drinks</span>
-            <span>Choclates</span>
+            <Link className="link" to="/items?cat=north">
+              <span>North</span>
+            </Link>
+            <Link className="link" to="/items?cat=south">
+              <span>South</span>
+            </Link>
+            <Link className="link" to="/items?cat=pizza">
+              <span>Pizza</span>
+            </Link>
+            <Link className="link" to="/items?cat=burger">
+              <span>Burger</span>
+            </Link>
+            <Link className="link" to="/items?cat=cake">
+              <span>Cake</span>
+            </Link>
+            <Link className="link" to="/items?cat=icecream">
+              <span>Ice Cream</span>
+            </Link>
+            <Link className="link" to="/items?cat=sandwich">
+              <span>Sandwich</span>
+            </Link>
+            <Link className="link" to="/items?cat=drinks">
+              <span>Drinks</span>
+            </Link>
+            <Link className="link" to="/items?cat=chocolates">
+              <span>Chocolates</span>
+            </Link>
           </div>
           <div className="item">
             <h2>About</h2>

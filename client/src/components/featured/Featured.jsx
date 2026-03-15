@@ -9,6 +9,11 @@ function Featured() {
   const handleSubmit = () => {
     navigate(`/items?search=${input}`);
   };
+
+  const handleCategoryClick = (cat) => {
+    navigate(`/items?cat=${cat.toLowerCase()}`);
+  };
+
   return (
     <div className="featured">
       <div className="container">
@@ -30,10 +35,10 @@ function Featured() {
           </div>
           <div className="popular">
             <span>Popular:</span>
-            <button>North</button>
-            <button>South</button>
-            <button>Dessert</button>
-            <button>Cake</button>
+            <button onClick={() => handleCategoryClick('north')}>North</button>
+            <button onClick={() => handleCategoryClick('south')}>South</button>
+            <button onClick={() => handleCategoryClick('dessert')}>Dessert</button>
+            <button onClick={() => handleCategoryClick('cake')}>Cake</button>
           </div>
         </div>
         <div className="right">

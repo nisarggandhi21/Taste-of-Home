@@ -30,7 +30,9 @@ function Navbar() {
       await newRequest.post('/auth/logout');
       logout();
       navigate('/');
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

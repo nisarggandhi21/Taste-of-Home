@@ -15,7 +15,7 @@ function Items() {
   const { search } = useLocation();
 
   const { isLoading, error, data, refetch } = useQuery({
-    queryKey: ['items'],
+    queryKey: ['items', search],
     queryFn: () => {
       let queryString = '';
 

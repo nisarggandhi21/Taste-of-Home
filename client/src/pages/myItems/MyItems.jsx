@@ -57,7 +57,7 @@ function MyItems() {
                   <img className="image" src={item.cover} alt="" />
                 </td>
                 <td>{item.title}</td>
-                <td>{item.price}</td>
+                <td>&#8377; {item.price}</td>
                 <td>{item.sales}</td>
                 <td>
                   <img
