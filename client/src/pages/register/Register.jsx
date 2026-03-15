@@ -1,9 +1,9 @@
 import { useContext, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import upload from '../../utils/upload';
-import { Helmet } from 'react-helmet-async';
 import './Register.scss';
 
 function Register() {
