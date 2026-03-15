@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { HelmetProvider } from 'react-helmet-async';
 
 import { AuthContextProvider } from './context/AuthContext';
 
@@ -28,32 +29,34 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
-        <BrowserRouter>
-          <div className="app">
-            <ToastContainer />
-            <Navbar />
-            <Routes>
-              {/* Main routes within layout */}
-              <Route path="/" element={<Home />} />
-              <Route path="/items" element={<Items />} />
-              <Route path="/myitems" element={<MyItems />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/message/:id" element={<Message />} />
-              <Route path="/add" element={<Add />} />
-              <Route path="/item/:id" element={<Item />} />
-              <Route path="/pay/:id" element={<Pay />} />
-              <Route path="/success" element={<Success />} />
+      <HelmetProvider>
+        <AuthContextProvider>
+          <BrowserRouter>
+            <div className="app">
+              <ToastContainer />
+              <Navbar />
+              <Routes>
+                {/* Main routes within layout */}
+                <Route path="/" element={<Home />} />
+                <Route path="/items" element={<Items />} />
+                <Route path="/myitems" element={<MyItems />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/message/:id" element={<Message />} />
+                <Route path="/add" element={<Add />} />
+                <Route path="/item/:id" element={<Item />} />
+                <Route path="/pay/:id" element={<Pay />} />
+                <Route path="/success" element={<Success />} />
 
-              {/* Authentication routes */}
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-            </Routes>
-            <Footer />
-          </div>
-        </BrowserRouter>
-      </AuthContextProvider>
+                {/* Authentication routes */}
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+              </Routes>
+              <Footer />
+            </div>
+          </BrowserRouter>
+        </AuthContextProvider>
+      </HelmetProvider>
     </QueryClientProvider>
   );
 };

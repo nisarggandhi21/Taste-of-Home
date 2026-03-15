@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 import ItemCard from '../../components/itemCard/ItemCard';
 import { itemService } from '../../services/itemService';
+import { Helmet } from 'react-helmet-async';
 
 function Items() {
   const [sort, setSort] = useState('sales');
@@ -13,6 +14,8 @@ function Items() {
   const maxRef = useRef();
 
   const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const cat = params.get('cat');
 
   const { isLoading, error, data, refetch } = useQuery({
     queryKey: ['items', search],
@@ -46,6 +49,21 @@ function Items() {
 
   return (
     <div className="items">
+      <Helmet>
+        <title>
+          {cat
+            ? `Authentic ${cat.charAt(0).toUpperCase() + cat.slice(1)} | Taste of Home`
+            : 'Explore Homemade Delights | Taste of Home'}
+        </title>
+        <meta
+          name="description"
+          content={
+            cat
+              ? `Browse and order the best homemade ${cat} prepared by expert home cooks.`
+              : 'Explore a wide variety of authentic homemade dishes from local home cooks.'
+          }
+        />
+      </Helmet>
       <div className="container">
         {/* <span className="breadcrumbs">
           Taste of Home {">"} North {">"}

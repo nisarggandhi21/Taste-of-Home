@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import Reviews from '../../components/reviews/Reviews';
 import { itemService } from '../../services/itemService';
 import { userService } from '../../services/userService';
+import { Helmet } from 'react-helmet-async';
 import './Item.scss';
 
 function Item() {
@@ -35,6 +36,16 @@ function Item() {
         'Something went wrong!'
       ) : (
         <div className="container">
+          <Helmet>
+            <title>{`${data.title} | Taste of Home`}</title>
+            <meta name="description" content={data.desc?.substring(0, 160)} />
+            <meta property="og:title" content={`${data.title} | Taste of Home`} />
+            <meta
+              property="og:description"
+              content={data.shortDesc || data.desc?.substring(0, 160)}
+            />
+            <meta property="og:image" content={data.cover} />
+          </Helmet>
           <div className="left">
             <span className="breadcrumbs">
               Taste of Home {'>'} {data.cat} {'>'}
@@ -66,9 +77,7 @@ function Item() {
                   <div
                     className="arrow"
                     onClick={() =>
-                      setCurrentSlide(
-                        currentSlide === 0 ? data.images.length - 1 : currentSlide - 1
-                      )
+                      setCurrentSlide(currentSlide === 0 ? data.images.length - 1 : currentSlide - 1)
                     }
                   >
                     &#10094;
@@ -79,9 +88,7 @@ function Item() {
                   <div
                     className="arrow"
                     onClick={() =>
-                      setCurrentSlide(
-                        currentSlide === data.images.length - 1 ? 0 : currentSlide + 1
-                      )
+                      setCurrentSlide(currentSlide === data.images.length - 1 ? 0 : currentSlide + 1)
                     }
                   >
                     &#10095;

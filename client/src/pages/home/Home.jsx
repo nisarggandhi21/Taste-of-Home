@@ -8,6 +8,7 @@ import { cards } from '../../data';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { itemService } from '../../services/itemService';
+import { Helmet } from 'react-helmet-async';
 
 function Home() {
   const { isLoading, error, data } = useQuery({
@@ -17,6 +18,13 @@ function Home() {
 
   return (
     <div className="home">
+      <Helmet>
+        <title>Taste of Home | Authentic Homemade Food Marketplace</title>
+        <meta
+          name="description"
+          content="Discover and order delicious, authentic homemade food from local expert cooks. Taste of Home connects you with the best culinary talents in your neighborhood."
+        />
+      </Helmet>
       <Featured />
       <Slide slidesToShow={5} arrowsScroll={5}>
         {cards.map((card) => (

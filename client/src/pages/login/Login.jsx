@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
+import { Helmet } from 'react-helmet-async';
 import './Login.scss';
 
 function Login() {
@@ -25,6 +26,10 @@ function Login() {
 
   return (
     <div className="login">
+      <Helmet>
+        <title>Login | Taste of Home</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <form onSubmit={handleSubmit}>
         <h1>Sign in</h1>
         <label htmlFor="">Username</label>

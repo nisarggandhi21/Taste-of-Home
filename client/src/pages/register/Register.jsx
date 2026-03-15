@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import upload from '../../utils/upload';
+import { Helmet } from 'react-helmet-async';
 import './Register.scss';
 
 function Register() {
@@ -50,6 +51,10 @@ function Register() {
 
   return (
     <div className="register">
+      <Helmet>
+        <title>Join Us | Taste of Home</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <form onSubmit={handleSubmit}>
         <div className="left">
           <h1>Create a new account</h1>
