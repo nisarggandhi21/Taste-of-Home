@@ -27,6 +27,12 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
+    // Set once Stripe confirms the payment.
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    // Set by the seller once the order has been fulfilled.
     isCompleted: {
       type: Boolean,
       default: false,
@@ -44,5 +50,6 @@ const OrderSchema = new Schema(
 OrderSchema.index({ sellerId: 1 });
 OrderSchema.index({ buyerId: 1 });
 OrderSchema.index({ itemId: 1 });
+OrderSchema.index({ payment_intent: 1 });
 
 export default mongoose.model('Order', OrderSchema);

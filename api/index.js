@@ -11,6 +11,7 @@ import authRoute from './routes/auth.route.js';
 import conversationRoutes from './routes/conversation.route.js';
 import itemRoutes from './routes/item.route.js';
 import messageRoutes from './routes/message.route.js';
+import { stripeWebhook } from './controllers/order.controller.js';
 import orderRoutes from './routes/order.route.js';
 import reviewRoutes from './routes/review.route.js';
 import userRoute from './routes/user.route.js';
@@ -22,6 +23,7 @@ dotenv.config();
 validateEnv();
 const httpServer = createServer(app);
 const io = initializeSocket(httpServer);
+app.set('io', io);
 
 mongoose.set('strictQuery', true);
 
@@ -56,6 +58,8 @@ app.use(
 );
 
 app.use(morgan('dev'));
+// Stripe signs the raw request body, so this route must be registered before express.json().
+app.post('/api/orders/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -77,7 +81,8 @@ connect();
 
 const port = process.env.PORT || 8800;
 
-if (process.env.NODE_ENV !== 'production') {
+// Vercel invokes the exported app itself; everywhere else we run a long-lived server.
+if (!process.env.VERCEL) {
   httpServer.listen(port, () => {
     console.log(`Backend server is running on port ${port}!`);
   });
