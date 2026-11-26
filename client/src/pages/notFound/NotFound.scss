@@ -1,0 +1,33 @@
+.notFound {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 20px;
+  text-align: center;
+
+  h1 {
+    font-size: 72px;
+    color: #1dbf73;
+  }
+
+  p {
+    color: #555;
+    max-width: 420px;
+    line-height: 1.5;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+
+    a {
+      color: #1dbf73;
+      font-weight: 500;
+    }
+  }
+}

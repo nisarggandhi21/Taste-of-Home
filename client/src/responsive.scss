@@ -1,0 +1,265 @@
+// Layout adjustments for tablets and phones.
+//
+// The page styles were written for a 1400px desktop. Rather than rewriting each of them, the
+// rules for smaller screens live here, using the same selectors. This file is imported last,
+// so at equal specificity its rules win.
+
+$tablet: 1024px;
+$phone: 640px;
+
+// Every page keeps its content in a fixed-width container. Let those shrink with the window
+// and keep a gutter at the edges.
+.navbar .container,
+.navbar .menu,
+.slide .container,
+.footer .container,
+.featured .container,
+.home .features .container,
+.home .explore .container,
+.items .container,
+.item .container,
+.favourites .container,
+.orders .container,
+.myitems .container,
+.messages .container,
+.message .container,
+.add .container,
+.register form,
+.login form {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1440px) {
+  .navbar .container,
+  .navbar .menu,
+  .slide .container,
+  .footer .container,
+  .featured .container,
+  .home .features .container,
+  .home .explore .container,
+  .items .container,
+  .item .container,
+  .favourites .container,
+  .orders .container,
+  .myitems .container,
+  .messages .container,
+  .message .container,
+  .add .container,
+  .register form,
+  .login form {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+// Wide tables scroll sideways inside their page instead of stretching it.
+.orders .container,
+.myitems .container,
+.messages .container {
+  overflow-x: auto;
+}
+
+@media (max-width: $tablet) {
+  // Category strip: one scrollable row.
+  .navbar .menu {
+    justify-content: flex-start;
+    gap: 24px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  // Hero: text only.
+  .featured {
+    height: auto;
+    padding: 50px 0;
+
+    .container .right {
+      display: none;
+    }
+  }
+
+  .slide {
+    padding: 50px 0;
+
+    .container .nav-button {
+      &.prev {
+        left: 4px;
+      }
+
+      &.next {
+        right: 4px;
+      }
+    }
+  }
+
+  // Two-column sections stack.
+  .home .features {
+    padding: 50px 0;
+
+    .container {
+      flex-direction: column;
+      gap: 40px;
+    }
+  }
+
+  .item .container {
+    flex-direction: column;
+    gap: 30px;
+
+    .right {
+      position: static;
+      flex: none;
+    }
+  }
+
+  .add .container .sections {
+    flex-direction: column;
+    gap: 30px;
+
+    // Let the form controls shrink with the screen.
+    .info,
+    .details {
+      min-width: 0;
+    }
+
+    input,
+    select,
+    textarea {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .images,
+    .addedFeatures {
+      flex-wrap: wrap;
+    }
+  }
+
+  .register form {
+    flex-direction: column;
+    gap: 40px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .footer .container .top {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 30px;
+
+    .item {
+      flex: 1 1 40%;
+    }
+  }
+
+  .orders table,
+  .myitems table {
+    min-width: 860px;
+  }
+
+  .messages table {
+    min-width: 640px;
+  }
+}
+
+@media (max-width: $phone) {
+  .navbar .container {
+    padding-top: 14px;
+    padding-bottom: 14px;
+
+    .logo {
+      font-size: 24px;
+    }
+
+    .links {
+      gap: 14px;
+
+      // The logo already says it.
+      > .link:first-child {
+        display: none;
+      }
+
+      button {
+        padding: 8px 14px;
+      }
+
+      // Keep the account menu on screen.
+      .user .options {
+        right: 0;
+      }
+    }
+  }
+
+  .featured .container .left {
+    h1 {
+      font-size: 30px;
+    }
+
+    .popular {
+      flex-wrap: wrap;
+    }
+  }
+
+  .home .features .container .item {
+    h1 {
+      font-size: 26px;
+    }
+
+    video {
+      width: 100%;
+    }
+  }
+
+  .item .container .left {
+    .slider {
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .seller {
+      .user img {
+        width: 64px;
+        height: 64px;
+      }
+
+      .box .items .item {
+        width: 45%;
+      }
+    }
+  }
+
+  .message .container {
+    .messages {
+      padding: 20px 0;
+
+      .item,
+      .item p {
+        max-width: 100%;
+      }
+    }
+
+    .write {
+      gap: 10px;
+    }
+  }
+
+  .footer .container .bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+
+    .left {
+      flex-wrap: wrap;
+    }
+  }
+
+  .reviews .add .addForm select {
+    width: 100%;
+  }
+
+  .login form,
+  .register form {
+    width: 100%;
+  }
+}

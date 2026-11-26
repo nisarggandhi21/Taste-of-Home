@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import { Helmet } from 'react-helmet-async';
@@ -10,6 +10,7 @@ function Login() {
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { login } = useContext(AuthContext);
 
@@ -18,7 +19,8 @@ function Login() {
     try {
       const res = await authService.login({ username, password });
       login(res);
-      navigate('/');
+      // Go back to the page that asked for the login, if there was one.
+      navigate(location.state?.from || '/', { replace: true });
     } catch (err) {
       // error is handled by the interceptor
     }
