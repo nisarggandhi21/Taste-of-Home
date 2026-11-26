@@ -20,6 +20,15 @@ const ReviewSchema = new Schema(
       type: String,
       required: true,
     },
+    // Ids of the users who found this review helpful, or not.
+    helpful: {
+      type: [String],
+      default: [],
+    },
+    notHelpful: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

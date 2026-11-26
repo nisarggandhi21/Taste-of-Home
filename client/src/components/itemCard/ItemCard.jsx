@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { averageRating } from '../../constants/food';
+import { useFavourites } from '../../hooks/useFavourites';
 import { userService } from '../../services/userService';
 import DietBadge from '../dietBadge/DietBadge';
 import './ItemCard.scss';
@@ -10,6 +11,18 @@ const ItemCard = ({ item }) => {
     queryKey: ['user', item.userId],
     queryFn: () => userService.getUser(item.userId),
   });
+
+  const navigate = useNavigate();
+  const favourites = useFavourites();
+  const saved = favourites.isFavourite(item._id);
+
+  // The heart sits inside the card link, so the click must not open the item.
+  const handleFavourite = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!favourites.isLoggedIn) return navigate('/login');
+    favourites.toggle(item._id);
+  };
 
   return (
     <Link to={`/item/${item._id}`} className="link">
@@ -43,7 +56,15 @@ const ItemCard = ({ item }) => {
         </div>
         <hr />
         <div className="detail">
-          <img src="/img/heart.png" alt="" />
+          <button
+            type="button"
+            className={saved ? 'favourite saved' : 'favourite'}
+            aria-pressed={saved}
+            aria-label={saved ? 'Remove from favourites' : 'Save to favourites'}
+            onClick={handleFavourite}
+          >
+            {saved ? '♥' : '♡'}
+          </button>
           <div className="price">
             <span>PRICE</span>
             <h2>&#8377; {item.price}</h2>

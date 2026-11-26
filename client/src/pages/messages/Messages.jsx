@@ -8,7 +8,8 @@ import { conversationService } from '../../services/conversationService';
 import { userService } from '../../services/userService';
 
 const MessageRow = ({ c, currentUser, handleRead }) => {
-  const otherUserId = currentUser.isSeller ? c.buyerId : c.sellerId;
+  const isSellerSide = c.sellerId === currentUser._id;
+  const otherUserId = isSellerSide ? c.buyerId : c.sellerId;
 
   const { isLoading, error, data } = useQuery({
     queryKey: ['user', otherUserId],
@@ -16,8 +17,7 @@ const MessageRow = ({ c, currentUser, handleRead }) => {
     enabled: !!otherUserId,
   });
 
-  const isUnread =
-    (currentUser.isSeller && !c.readBySeller) || (!currentUser.isSeller && !c.readByBuyer);
+  const isUnread = isSellerSide ? !c.readBySeller : !c.readByBuyer;
 
   return (
     <tr className={isUnread ? 'active' : ''} key={c.id}>
@@ -87,7 +87,7 @@ const Messages = () => {
           <table>
             <thead>
               <tr>
-                <th>{currentUser.isSeller ? 'Buyer' : 'Seller'}</th>
+                <th>With</th>
                 <th>Last Message</th>
                 <th>Date</th>
                 <th>Action</th>

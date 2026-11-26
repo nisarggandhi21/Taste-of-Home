@@ -7,6 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthContextProvider } from './context/AuthContext';
 
 import Add from './pages/add/Add';
+import Favourites from './pages/favourites/Favourites';
 import Home from './pages/home/Home';
 import Item from './pages/item/Item';
 import Items from './pages/items/Items';
@@ -44,6 +45,8 @@ const App = () => {
                 <Route path="/messages" element={<Messages />} />
                 <Route path="/message/:id" element={<Message />} />
                 <Route path="/add" element={<Add />} />
+                <Route path="/edit/:id" element={<Add />} />
+                <Route path="/favourites" element={<Favourites />} />
                 <Route path="/item/:id" element={<Item />} />
                 <Route path="/pay/:id" element={<Pay />} />
                 <Route path="/success" element={<Success />} />

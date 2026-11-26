@@ -37,6 +37,11 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    // Ids of the items this user saved.
+    favourites: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

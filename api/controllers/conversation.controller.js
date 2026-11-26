@@ -19,9 +19,16 @@ export const createConversation = async (req, res, next) => {
       return next(createError(404, 'User not found!'));
     }
 
-    const id = req.isSeller ? req.userId + to : to + req.userId;
-    const existing = await Conversation.findOne({ id });
+    // One conversation per pair of people, whichever of them started it.
+    const existing = await Conversation.findOne({
+      $or: [
+        { sellerId: req.userId, buyerId: to },
+        { sellerId: to, buyerId: req.userId },
+      ],
+    });
     if (existing) return res.status(200).send(existing);
+
+    const id = req.isSeller ? req.userId + to : to + req.userId;
 
     const savedConversation = await new Conversation({
       id,
@@ -73,9 +80,9 @@ export const getSingleConversation = async (req, res, next) => {
 
 export const getConversations = async (req, res, next) => {
   try {
-    const conversations = await Conversation.find(
-      req.isSeller ? { sellerId: req.userId } : { buyerId: req.userId }
-    ).sort({ updatedAt: -1 });
+    const conversations = await Conversation.find({
+      $or: [{ sellerId: req.userId }, { buyerId: req.userId }],
+    }).sort({ updatedAt: -1 });
     res.status(200).send(conversations);
   } catch (err) {
     next(err);

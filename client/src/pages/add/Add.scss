@@ -114,3 +114,11 @@
     }
   }
 }
+
+.add .container .sections .info .coverPreview {
+  width: 160px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #e4e5e7;
+}

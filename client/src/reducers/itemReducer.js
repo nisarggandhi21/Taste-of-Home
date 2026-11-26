@@ -15,6 +15,11 @@ export const INITIAL_STATE = {
 
 export const itemReducer = (state, action) => {
   switch (action.type) {
+    // Fill the form from an existing item, keeping only the fields a seller can edit.
+    case 'LOAD':
+      return Object.fromEntries(
+        Object.keys(INITIAL_STATE).map((key) => [key, action.payload[key] ?? INITIAL_STATE[key]])
+      );
     case 'CHANGE_INPUT':
       return {
         ...state,

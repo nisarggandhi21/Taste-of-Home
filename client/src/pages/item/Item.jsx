@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import moment from 'moment';
+import { useContext, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import { conversationService } from '../../services/conversationService';
 import Reviews from '../../components/reviews/Reviews';
 import { itemService } from '../../services/itemService';
 import DietBadge from '../../components/dietBadge/DietBadge';
@@ -11,6 +14,8 @@ import './Item.scss';
 
 function Item() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { currentUser } = useContext(AuthContext);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const { isLoading, error, data } = useQuery({
@@ -29,6 +34,26 @@ function Item() {
     queryFn: () => userService.getUser(userId),
     enabled: !!userId, //enable usequery function whenever userId is not null
   });
+
+  const { data: stats } = useQuery({
+    queryKey: ['sellerStats', userId],
+    queryFn: () => userService.getStats(userId),
+    enabled: !!userId,
+  });
+
+  const isOwner = !!currentUser && currentUser._id === userId;
+  const isAvailable = data?.isAvailable !== false;
+
+  const handleContact = async () => {
+    if (!currentUser) return navigate('/login');
+    try {
+      // Returns the existing conversation with the seller, or starts one.
+      const conversation = await conversationService.createConversation({ to: userId });
+      navigate(`/message/${conversation.id}`);
+    } catch {
+      // The request interceptor already shows the error.
+    }
+  };
 
   return (
     <div className="item">
@@ -125,7 +150,11 @@ function Item() {
                         <span>{Math.round(data.totalStars / data.starNumber)}</span>
                       </div>
                     )}
-                    <button>Contact Me</button>
+                    {!isOwner && (
+                      <button type="button" onClick={handleContact}>
+                        Contact Me
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="box">
@@ -134,22 +163,36 @@ function Item() {
                       <span className="title">From</span>
                       <span className="desc">{dataUser.location || 'Location not specified'}</span>
                     </div>
-                    <div className="item">
-                      <span className="title">Member since</span>
-                      <span className="desc">Aug 2022</span>
-                    </div>
-                    <div className="item">
-                      <span className="title">Avg. response time</span>
-                      <span className="desc">4 hours</span>
-                    </div>
-                    <div className="item">
-                      <span className="title">Last delivery</span>
-                      <span className="desc">1 day</span>
-                    </div>
-                    <div className="item">
-                      <span className="title">Languages</span>
-                      <span className="desc">English</span>
-                    </div>
+                    {stats && (
+                      <>
+                        <div className="item">
+                          <span className="title">Member since</span>
+                          <span className="desc">
+                            {moment(stats.memberSince).format('MMM YYYY')}
+                          </span>
+                        </div>
+                        <div className="item">
+                          <span className="title">Orders delivered</span>
+                          <span className="desc">{stats.ordersDelivered}</span>
+                        </div>
+                        <div className="item">
+                          <span className="title">Last delivery</span>
+                          <span className="desc">
+                            {stats.lastDeliveryAt
+                              ? moment(stats.lastDeliveryAt).fromNow()
+                              : 'No deliveries yet'}
+                          </span>
+                        </div>
+                        <div className="item">
+                          <span className="title">Rating across all items</span>
+                          <span className="desc">
+                            {stats.rating
+                              ? `${stats.rating} from ${stats.reviews} review${stats.reviews === 1 ? '' : 's'}`
+                              : 'No reviews yet'}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <hr />
                   <p>{dataUser.desc || 'No description provided'}</p>
@@ -190,9 +233,17 @@ function Item() {
                 </div>
               ))}
             </div>
-            <Link to={`/pay/${id}`}>
-              <button>Continue</button>
-            </Link>
+            {isOwner ? (
+              <Link to={`/edit/${id}`}>
+                <button>Edit this item</button>
+              </Link>
+            ) : isAvailable ? (
+              <Link to={`/pay/${id}`}>
+                <button>Continue</button>
+              </Link>
+            ) : (
+              <p className="unavailable">This item is not available right now.</p>
+            )}
           </div>
         </div>
       )}

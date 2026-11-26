@@ -107,3 +107,17 @@
     font-weight: 400;
   }
 }
+
+.itemCard .detail .favourite {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
+  color: #74767e;
+  cursor: pointer;
+
+  &.saved {
+    color: #e0245e;
+  }
+}

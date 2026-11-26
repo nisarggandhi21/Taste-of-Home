@@ -71,6 +71,11 @@ const itemSchema = new Schema(
       type: Number,
       default: 0,
     },
+    // Sellers can pause an item without deleting it. Missing means available.
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

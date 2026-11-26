@@ -133,20 +133,14 @@ const Orders = () => {
   });
 
   const handleContact = async (order) => {
-    const sellerId = order.sellerId;
-    const buyerId = order.buyerId;
-    const id = sellerId + buyerId;
-
     try {
-      const res = await conversationService.getSingleConversation(id);
-      navigate(`/message/${res.id}`);
-    } catch (err) {
-      if (err.response?.status === 404) {
-        const res = await conversationService.createConversation({
-          to: currentUser._id === sellerId ? buyerId : sellerId,
-        });
-        navigate(`/message/${res.id}`);
-      }
+      // Returns the existing conversation with this person, or starts one.
+      const conversation = await conversationService.createConversation({
+        to: currentUser._id === order.sellerId ? order.buyerId : order.sellerId,
+      });
+      navigate(`/message/${conversation.id}`);
+    } catch {
+      // The request interceptor already shows the error.
     }
   };
 

@@ -14,6 +14,11 @@ export const orderService = {
     const res = await newRequest.put('/orders', { payment_intent });
     return res.data;
   },
+  // Seller totals: { earned, inProgress, delivered, active, cancelled, topItems }
+  getSummary: async () => {
+    const res = await newRequest.get('/orders/summary');
+    return res.data;
+  },
   updateStatus: async (id, status) => {
     const res = await newRequest.patch(`/orders/${id}/status`, { status });
     return res.data;

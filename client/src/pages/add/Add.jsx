@@ -1,18 +1,33 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useReducer, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useReducer, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ALLERGENS, DIETS } from '../../constants/food';
 import { INITIAL_STATE, itemReducer } from '../../reducers/itemReducer';
 import { itemService } from '../../services/itemService';
 import upload from '../../utils/upload';
 import './Add.scss';
 
+// Used for both "Add New Item" (/add) and "Edit Item" (/edit/:id).
 const Add = () => {
+  const { id } = useParams();
+  const isEdit = !!id;
+
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
   const [state, dispatch] = useReducer(itemReducer, INITIAL_STATE);
+
+  const { data: existing, isLoading } = useQuery({
+    queryKey: ['item', id],
+    queryFn: () => itemService.getSingleItem(id),
+    enabled: isEdit,
+  });
+
+  // Fill the form once the item to edit has loaded.
+  useEffect(() => {
+    if (existing) dispatch({ type: 'LOAD', payload: existing });
+  }, [existing]);
 
   const handleChange = (e) => {
     dispatch({
@@ -23,6 +38,7 @@ const Add = () => {
 
   const handleFeature = (e) => {
     e.preventDefault();
+    if (!e.target[0].value.trim()) return;
     dispatch({
       type: 'ADD_FEATURE',
       payload: e.target[0].value,
@@ -33,18 +49,15 @@ const Add = () => {
   const handleUpload = async () => {
     setUploading(true);
     try {
-      const cover = await upload(singleFile);
-
-      const images = await Promise.all(
-        [...files].map(async (file) => {
-          const url = await upload(file);
-          return url;
-        })
-      );
-      setUploading(false);
+      // When editing, a picture that is not replaced keeps its current image.
+      const cover = singleFile ? await upload(singleFile) : state.cover;
+      const images =
+        files.length > 0 ? await Promise.all([...files].map((file) => upload(file))) : state.images;
       dispatch({ type: 'ADD_IMAGES', payload: { cover, images } });
     } catch (err) {
       console.log(err);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -53,11 +66,11 @@ const Add = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (item) => {
-      return itemService.createItem(item);
-    },
+    mutationFn: (item) =>
+      isEdit ? itemService.updateItem(id, item) : itemService.createItem(item),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myItems'] });
+      queryClient.invalidateQueries({ queryKey: ['item', id] });
       navigate('/myitems');
     },
   });
@@ -72,10 +85,12 @@ const Add = () => {
     });
   };
 
+  if (isEdit && isLoading) return <div className="add">loading</div>;
+
   return (
     <div className="add">
       <div className="container">
-        <h1>Add New Item</h1>
+        <h1>{isEdit ? 'Edit Item' : 'Add New Item'}</h1>
         <div className="sections">
           <div className="info">
             <label htmlFor="">Title</label>
@@ -83,10 +98,11 @@ const Add = () => {
               type="text"
               name="title"
               placeholder="Enter Food Title"
+              value={state.title}
               onChange={handleChange}
             />
             <label htmlFor="">Category</label>
-            <select name="cat" id="cat" onChange={handleChange}>
+            <select name="cat" id="cat" value={state.cat} onChange={handleChange}>
               <option value="">Select any Category</option>
               <option value="north">North</option>
               <option value="south">South</option>
@@ -107,6 +123,7 @@ const Add = () => {
               </div>
               <button onClick={handleUpload}>{uploading ? 'uploading' : 'Upload'}</button>
             </div>
+            {state.cover && <img className="coverPreview" src={state.cover} alt="Current cover" />}
             <label htmlFor="">Description</label>
             <textarea
               name="desc"
@@ -114,23 +131,20 @@ const Add = () => {
               placeholder="Enter Food Description"
               cols="0"
               rows="16"
+              value={state.desc}
               onChange={handleChange}
             ></textarea>
-            <button onClick={handleSubmit}>Create</button>
+            <button onClick={handleSubmit} disabled={mutation.isPending}>
+              {isEdit ? 'Save changes' : 'Create'}
+            </button>
           </div>
           <div className="details">
-            {/* <label htmlFor="">Service Title</label>
-            <input
-              type="text"
-              name="shortTitle"
-              placeholder="e.g. One-page web design"
-              onChange={handleChange}
-            /> */}
             <label htmlFor="">Short Title</label>
             <input
               type="text"
               name="shortTitle"
               placeholder="short title"
+              value={state.shortTitle}
               onChange={handleChange}
             />
             <label htmlFor="">Short Description</label>
@@ -141,9 +155,15 @@ const Add = () => {
               placeholder="Short description of your food"
               cols="30"
               rows="10"
+              value={state.shortDesc}
             ></textarea>
             <label htmlFor="">Delivery Time (e.g. 3 hours)</label>
-            <input type="number" name="deliveryTime" onChange={handleChange} />
+            <input
+              type="number"
+              name="deliveryTime"
+              value={state.deliveryTime || ''}
+              onChange={handleChange}
+            />
             <label htmlFor="diet">Diet</label>
             <select name="diet" id="diet" value={state.diet} onChange={handleChange}>
               <option value="">Select veg, egg or non-veg</option>
@@ -182,7 +202,7 @@ const Add = () => {
               ))}
             </div>
             <label htmlFor="">Price</label>
-            <input type="number" onChange={handleChange} name="price" />
+            <input type="number" onChange={handleChange} name="price" value={state.price || ''} />
           </div>
         </div>
       </div>

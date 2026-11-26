@@ -3,6 +3,7 @@ import {
   cancelOrder,
   confirm,
   getOrders,
+  getSummary,
   intent,
   updateStatus,
 } from '../controllers/order.controller.js';
@@ -13,6 +14,7 @@ import { cancelSchema, checkoutSchema, updateStatusSchema } from '../schemas/ord
 const router = express.Router();
 
 router.get('/', verifyToken, getOrders);
+router.get('/summary', verifyToken, getSummary);
 router.post('/create-payment-intent/:id', verifyToken, validate(checkoutSchema), intent);
 router.put('/', verifyToken, confirm);
 router.patch('/:id/status', verifyToken, validate(updateStatusSchema), updateStatus);

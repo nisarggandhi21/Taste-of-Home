@@ -70,6 +70,9 @@ function Navbar() {
                   <Link className="link" to="/orders">
                     Orders
                   </Link>
+                  <Link className="link" to="/favourites">
+                    Favourites
+                  </Link>
                   <Link className="link" to="/messages">
                     Messages
                   </Link>

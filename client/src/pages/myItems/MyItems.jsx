@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import './MyItems.scss';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthContext';
 import { itemService } from '../../services/itemService';
+import { orderService } from '../../services/orderService';
 
 function MyItems() {
   const { currentUser } = useContext(AuthContext);
@@ -14,17 +15,25 @@ function MyItems() {
     queryFn: () => itemService.getItems({ userId: currentUser._id, limit: 100 }),
   });
 
-  const mutation = useMutation({
-    mutationFn: (id) => {
-      return itemService.deleteItem(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myItems'] });
-    },
+  const { data: summary } = useQuery({
+    queryKey: ['orderSummary'],
+    queryFn: () => orderService.getSummary(),
   });
 
-  const handleDelete = (id) => {
-    mutation.mutate(id);
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['myItems'] });
+
+  const remove = useMutation({
+    mutationFn: (id) => itemService.deleteItem(id),
+    onSuccess: refresh,
+  });
+
+  const availability = useMutation({
+    mutationFn: ({ id, isAvailable }) => itemService.setAvailability(id, isAvailable),
+    onSuccess: refresh,
+  });
+
+  const handleDelete = (item) => {
+    if (window.confirm(`Delete "${item.title}"? This cannot be undone.`)) remove.mutate(item._id);
   };
 
   return (
@@ -43,33 +52,103 @@ function MyItems() {
               </Link>
             )}
           </div>
-          <table>
-            <tr>
-              <th>Image</th>
-              <th>Title</th>
-              <th>Price</th>
-              <th>Sales</th>
-              <th>Action</th>
-            </tr>
-            {data.items.map((item) => (
-              <tr key={item._id}>
-                <td>
-                  <img className="image" src={item.cover} alt="" />
-                </td>
-                <td>{item.title}</td>
-                <td>&#8377; {item.price}</td>
-                <td>{item.sales}</td>
-                <td>
-                  <img
-                    className="delete"
-                    src="./img/delete.png"
-                    alt=""
-                    onClick={() => handleDelete(item._id)}
-                  />
-                </td>
-              </tr>
-            ))}
-          </table>
+
+          {summary && (
+            <div className="summary">
+              <div className="stat">
+                <span className="label">Earned</span>
+                <strong>&#8377; {summary.earned}</strong>
+                <span className="detail">
+                  {summary.delivered} order{summary.delivered === 1 ? '' : 's'} delivered
+                </span>
+              </div>
+              <div className="stat">
+                <span className="label">In progress</span>
+                <strong>&#8377; {summary.inProgress}</strong>
+                <span className="detail">
+                  {summary.active} order{summary.active === 1 ? '' : 's'} to fulfil
+                </span>
+              </div>
+              <div className="stat">
+                <span className="label">Cancelled</span>
+                <strong>{summary.cancelled}</strong>
+                <span className="detail">refunded to buyers</span>
+              </div>
+              <div className="stat">
+                <span className="label">Best seller</span>
+                <strong>{summary.topItems[0]?.title || '—'}</strong>
+                <span className="detail">
+                  {summary.topItems[0]
+                    ? `${summary.topItems[0].portions} portions sold`
+                    : 'No sales yet'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {data.items.length === 0 ? (
+            <p className="empty">You have not added any items yet.</p>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Title</th>
+                  <th>Price</th>
+                  <th>Sales</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.items.map((item) => {
+                  const isAvailable = item.isAvailable !== false;
+                  return (
+                    <tr key={item._id}>
+                      <td>
+                        <img className="image" src={item.cover} alt="" />
+                      </td>
+                      <td>
+                        <Link className="link" to={`/item/${item._id}`}>
+                          {item.title}
+                        </Link>
+                      </td>
+                      <td>&#8377; {item.price}</td>
+                      <td>{item.sales}</td>
+                      <td>
+                        <span className={isAvailable ? 'state available' : 'state paused'}>
+                          {isAvailable ? 'Available' : 'Paused'}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="actions">
+                          <button
+                            type="button"
+                            className="toggle"
+                            disabled={availability.isPending}
+                            onClick={() =>
+                              availability.mutate({ id: item._id, isAvailable: !isAvailable })
+                            }
+                          >
+                            {isAvailable ? 'Pause' : 'Resume'}
+                          </button>
+                          <Link className="edit" to={`/edit/${item._id}`}>
+                            Edit
+                          </Link>
+                          <img
+                            className="delete"
+                            src="/img/delete.png"
+                            alt="Delete"
+                            onClick={() => handleDelete(item)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@ import Item from '../models/item.model.js';
 import User from '../models/user.model.js';
 import { itemsQuerySchema } from '../schemas/item.schema.js';
 import createError from '../utils/createError.js';
-import { verifyAccessToken } from '../utils/token.js';
+import { readUser } from '../middleware/jwt.js';
 
 // The id is a tie-breaker so that pages never overlap.
 const SORTS = {
@@ -28,6 +28,35 @@ export const createItem = async (req, res, next) => {
   try {
     const savedItem = await newItem.save();
     res.status(201).json(savedItem);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Loads an item and makes sure the logged-in user owns it.
+const findOwnItem = async (req) => {
+  const item = await Item.findById(req.params.id);
+  if (!item) throw createError(404, 'Item not found!');
+  if (item.userId !== req.userId) throw createError(403, 'You can change only your own items');
+  return item;
+};
+
+export const updateItem = async (req, res, next) => {
+  try {
+    const item = await findOwnItem(req);
+    // req.body has been reduced to the validated, seller-editable fields.
+    item.set(req.body);
+    res.status(200).json(await item.save());
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const setAvailability = async (req, res, next) => {
+  try {
+    const item = await findOwnItem(req);
+    item.isAvailable = req.body.isAvailable;
+    res.status(200).json(await item.save());
   } catch (error) {
     next(error);
   }
@@ -65,16 +94,7 @@ export const getItems = async (req, res, next) => {
   }
   const q = parsed.data;
 
-  const token = req.cookies.accessToken;
-  let currentUserId = null;
-
-  if (token) {
-    try {
-      currentUserId = verifyAccessToken(token).id;
-    } catch {
-      // Ignore invalid token for getItems
-    }
-  }
+  const currentUserId = readUser(req)?.id;
 
   try {
     const userId = {};
@@ -100,6 +120,8 @@ export const getItems = async (req, res, next) => {
         },
       }),
       ...(q.search && { title: { $regex: escapeRegex(q.search), $options: 'i' } }),
+      // Paused items are only listed for their owner.
+      ...(!(q.userId && q.userId === currentUserId) && { isAvailable: { $ne: false } }),
       ...(q.diet && { diet: q.diet }),
       // Items without declared allergens never count as free from anything.
       ...(q.freeFrom?.length && { allergens: { $exists: true, $nin: q.freeFrom } }),

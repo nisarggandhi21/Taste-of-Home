@@ -15,3 +15,10 @@ export const createReviewSchema = z.object({
       .max(5, 'Rating must be between 1 and 5'),
   }),
 });
+
+export const voteSchema = z.object({
+  body: z.object({
+    // true = helpful, false = not helpful, null = take the vote back
+    helpful: z.boolean('helpful must be true, false or null').nullable(),
+  }),
+});

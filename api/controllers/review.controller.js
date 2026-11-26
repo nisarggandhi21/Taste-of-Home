@@ -1,6 +1,7 @@
 import Item from '../models/item.model.js';
 import Order, { PAID_ORDER_FILTER } from '../models/order.model.js';
 import Review from '../models/review.model.js';
+import { readUser } from '../middleware/jwt.js';
 import createError from '../utils/createError.js';
 
 export const createReview = async (req, res, next) => {
@@ -32,10 +33,52 @@ export const createReview = async (req, res, next) => {
   }
 };
 
+// Voter ids stay private: a review goes out with counts and the visitor's own vote only.
+const serialize = (review, userId) => {
+  const { helpful, notHelpful, ...rest } = review.toObject();
+  return {
+    ...rest,
+    helpfulCount: helpful.length,
+    notHelpfulCount: notHelpful.length,
+    myVote: !userId
+      ? null
+      : helpful.includes(userId)
+        ? true
+        : notHelpful.includes(userId)
+          ? false
+          : null,
+  };
+};
+
 export const getReviews = async (req, res, next) => {
   try {
-    const reviews = await Review.find({ itemId: req.params.itemId });
-    res.status(200).send(reviews);
+    const reviews = await Review.find({ itemId: req.params.itemId }).sort({ createdAt: -1 });
+    const userId = readUser(req)?.id;
+    res.status(200).send(reviews.map((review) => serialize(review, userId)));
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const voteReview = async (req, res, next) => {
+  try {
+    const { helpful } = req.body;
+    const review = await Review.findById(req.params.id);
+    if (!review) return next(createError(404, 'Review not found!'));
+    if (review.userId === req.userId) {
+      return next(createError(400, 'You cannot vote on your own review'));
+    }
+
+    // One vote per user: any earlier vote is replaced.
+    const update =
+      helpful === null
+        ? { $pull: { helpful: req.userId, notHelpful: req.userId } }
+        : {
+            $pull: { [helpful ? 'notHelpful' : 'helpful']: req.userId },
+            $addToSet: { [helpful ? 'helpful' : 'notHelpful']: req.userId },
+          };
+    const updated = await Review.findByIdAndUpdate(review._id, update, { new: true });
+    res.status(200).send(serialize(updated, req.userId));
   } catch (err) {
     next(err);
   }

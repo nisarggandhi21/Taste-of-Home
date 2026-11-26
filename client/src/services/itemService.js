@@ -19,6 +19,14 @@ export const itemService = {
     const res = await newRequest.post('/items/', itemData);
     return res.data;
   },
+  updateItem: async (id, itemData) => {
+    const res = await newRequest.put(`/items/${id}`, itemData);
+    return res.data;
+  },
+  setAvailability: async (id, isAvailable) => {
+    const res = await newRequest.patch(`/items/${id}/availability`, { isAvailable });
+    return res.data;
+  },
   deleteItem: async (id) => {
     const res = await newRequest.delete(`/items/${id}`);
     return res.data;

@@ -49,6 +49,9 @@ export const intent = async (req, res, next) => {
     if (item.userId === req.userId) {
       return next(createError(400, 'You cannot order your own item'));
     }
+    if (item.isAvailable === false) {
+      return next(createError(400, 'This item is not available right now'));
+    }
 
     const total = item.price * quantity;
     const paymentIntent = await getStripe().paymentIntents.create({
@@ -92,6 +95,47 @@ export const getOrders = async (req, res, next) => {
     }).sort({ createdAt: -1 });
 
     res.status(200).send(orders.map(serialize));
+  } catch (err) {
+    next(err);
+  }
+};
+
+// What a seller has earned: delivered orders count as earned, paid orders still on their way
+// as in progress. Cancelled orders were refunded and count for neither.
+export const getSummary = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ $and: [{ sellerId: req.userId }, PAID_ORDER_FILTER] });
+
+    const summary = { earned: 0, inProgress: 0, delivered: 0, active: 0, cancelled: 0 };
+    const byItem = new Map();
+    for (const order of orders) {
+      const status = effectiveStatus(order);
+      if (status === 'cancelled') {
+        summary.cancelled += 1;
+        continue;
+      }
+      if (status === 'delivered') {
+        summary.earned += order.price;
+        summary.delivered += 1;
+      } else {
+        summary.inProgress += order.price;
+        summary.active += 1;
+      }
+      const entry = byItem.get(order.itemId) || {
+        itemId: order.itemId,
+        title: order.title,
+        portions: 0,
+        total: 0,
+      };
+      entry.portions += order.quantity || 1;
+      entry.total += order.price;
+      byItem.set(order.itemId, entry);
+    }
+
+    res.status(200).send({
+      ...summary,
+      topItems: [...byItem.values()].sort((a, b) => b.total - a.total).slice(0, 5),
+    });
   } catch (err) {
     next(err);
   }

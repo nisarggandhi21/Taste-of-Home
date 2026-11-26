@@ -33,6 +33,12 @@ export const createItemSchema = z.object({
 const optional = (schema) =>
   z.preprocess((value) => (value === '' ? undefined : value), schema.optional());
 
+export const availabilitySchema = z.object({
+  body: z.object({
+    isAvailable: z.boolean('isAvailable must be true or false'),
+  }),
+});
+
 export const PAGE_SIZE = 12;
 export const MAX_PAGE_SIZE = 100;
 
