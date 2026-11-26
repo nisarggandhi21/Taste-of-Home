@@ -1,5 +1,4 @@
 export const INITIAL_STATE = {
-  userId: null,
   title: '',
   cat: '',
   cover: '',

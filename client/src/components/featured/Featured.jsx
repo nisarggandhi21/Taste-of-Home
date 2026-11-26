@@ -37,7 +37,7 @@ function Featured() {
             <span>Popular:</span>
             <button onClick={() => handleCategoryClick('north')}>North</button>
             <button onClick={() => handleCategoryClick('south')}>South</button>
-            <button onClick={() => handleCategoryClick('dessert')}>Dessert</button>
+            <button onClick={() => handleCategoryClick('pizza')}>Pizza</button>
             <button onClick={() => handleCategoryClick('cake')}>Cake</button>
           </div>
         </div>

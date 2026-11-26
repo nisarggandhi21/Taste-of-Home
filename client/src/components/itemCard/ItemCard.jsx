@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import newRequest from '../../utils/newRequest';
+import { userService } from '../../services/userService';
 import './ItemCard.scss';
 
 const calculateRating = (totalStars, starNumber) => {
@@ -11,11 +11,8 @@ const calculateRating = (totalStars, starNumber) => {
 
 const ItemCard = ({ item }) => {
   const { isLoading, error, data } = useQuery({
-    queryKey: [item.userId],
-    queryFn: () =>
-      newRequest.get(`/users/${item.userId}`).then((res) => {
-        return res.data;
-      }),
+    queryKey: ['user', item.userId],
+    queryFn: () => userService.getUser(item.userId),
   });
 
   return (

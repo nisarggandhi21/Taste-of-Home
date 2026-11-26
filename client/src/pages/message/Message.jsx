@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { AuthContext } from '../../context/AuthContext';
@@ -11,14 +11,16 @@ import './Message.scss';
 const Message = () => {
   const { id } = useParams();
   const { currentUser } = useContext(AuthContext);
-  const socket = useRef();
+  const [socketConnected, setSocketConnected] = useState(false);
   const SOCKET_URL = import.meta.env.VITE_BASEURL.replace('/api/', '');
 
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['messages'],
+    queryKey: ['messages', id],
     queryFn: () => messageService.getMessages(id),
+    // Without a live socket (e.g. on serverless hosting) fall back to polling.
+    refetchInterval: socketConnected ? false : 5000,
   });
 
   const { data: conversation } = useQuery({
@@ -37,35 +39,33 @@ const Message = () => {
     enabled: !!receiverId,
   });
 
+  // The server authenticates the socket with the login cookie and pushes new messages to it.
   useEffect(() => {
     if (!currentUser) return;
-    socket.current = io(SOCKET_URL);
-    socket.current.on('connect', () => {
-      socket.current.emit('addUser', currentUser._id);
-    });
-    return () => {
-      socket.current.disconnect();
-    };
-  }, [currentUser, SOCKET_URL]);
+    const socket = io(SOCKET_URL, { withCredentials: true, reconnectionAttempts: 5 });
 
-  useEffect(() => {
-    const handleMessage = (data) => {
-      queryClient.setQueryData(['messages'], (old) => {
-        return [...old, { userId: data.senderId, desc: data.text, _id: Date.now() }];
-      });
-    };
-    socket.current.on('getMessage', handleMessage);
+    socket.on('connect', () => setSocketConnected(true));
+    socket.on('disconnect', () => setSocketConnected(false));
+    socket.on('getMessage', (message) => {
+      if (message.conversationId !== id) return;
+      queryClient.setQueryData(['messages', id], (old = []) =>
+        old.some((m) => m._id === message._id) ? old : [...old, message]
+      );
+    });
+
     return () => {
-      socket.current.off('getMessage', handleMessage);
+      socket.disconnect();
+      setSocketConnected(false);
     };
-  }, [queryClient]);
+  }, [currentUser, SOCKET_URL, id, queryClient]);
 
   const mutation = useMutation({
     mutationFn: (message) => {
       return messageService.sendMessage(message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['messages']);
+      queryClient.invalidateQueries({ queryKey: ['messages', id] });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
   });
 
@@ -73,12 +73,6 @@ const Message = () => {
     e.preventDefault();
     const text = e.target[0].value;
     if (!text) return;
-
-    socket.current.emit('sendMessage', {
-      senderId: currentUser._id,
-      receiverId,
-      text,
-    });
 
     mutation.mutate({
       conversationId: id,

@@ -82,9 +82,18 @@ VITE_SUCCESS_URL = http://localhost:5173/success
 MONGO = mongodb+srv://[username]:[password]@cluster
 JWT_KEY = [your-jwt-secret]
 STRIPE_SECRET_KEY = [your-stripe-secret]
+STRIPE_WEBHOOK_SECRET = [your-stripe-webhook-secret]  # optional
 CORS_URL=frontend.url
 CORS_ALLOWED_ORIGINS=[url-path]
 ```
+
+**Payments.** An order is only marked as paid after the API has checked the payment with Stripe.
+To also cover buyers who close the tab before returning to the site, add a Stripe webhook for the
+`payment_intent.succeeded` event pointing at `/api/orders/webhook` and set `STRIPE_WEBHOOK_SECRET`.
+
+**Real-time chat.** Live message delivery uses Socket.IO and needs the API to run as a long-lived
+server (Docker, Render, Railway, a VM, ...). On serverless hosting such as Vercel the chat still
+works, but falls back to checking for new messages every few seconds.
 
 ---
 

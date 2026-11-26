@@ -54,7 +54,7 @@ const Messages = () => {
   const { currentUser } = useContext(AuthContext);
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['messages'],
+    queryKey: ['conversations'],
     queryFn: () => conversationService.getConversations(),
   });
 
@@ -65,7 +65,7 @@ const Messages = () => {
       return conversationService.markAsRead(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['messages']);
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
   });
 
