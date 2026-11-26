@@ -6,7 +6,7 @@ import {
 } from '@stripe/react-stripe-js';
 import { useEffect, useState } from 'react';
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ billingDetails }) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -71,16 +71,7 @@ const CheckoutForm = () => {
         return_url: successUrl,
         receipt_email: email,
         payment_method_data: {
-          billing_details: {
-            name: 'Test User',
-            address: {
-              line1: '123 Test St',
-              city: 'Test City',
-              state: 'Test State',
-              postal_code: '123456',
-              country: 'US',
-            },
-          },
+          billing_details: billingDetails,
         },
       },
     });

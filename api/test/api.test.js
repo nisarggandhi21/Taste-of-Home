@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import { createClient, sampleItem } from './support/client.js';
-import FakeStripe, { markSucceeded, paymentIntents } from './support/fake-stripe.js';
+import { createClient, sampleCheckout, sampleItem } from './support/client.js';
+import FakeStripe, { markSucceeded, paymentIntents, refunds } from './support/fake-stripe.js';
 import { CLIENT_ORIGIN, JWT_KEY, WEBHOOK_SECRET, startTestServer } from './support/server.js';
 
 const newId = () => String(new mongoose.Types.ObjectId());
@@ -13,7 +13,12 @@ const intentIdOf = (res) => res.data.clientSecret.split('_secret')[0];
 
 let server, db, call, register, connectSocket;
 let seller, buyer, outsider;
-let itemId, convId;
+let itemId, convId, firstOrderId, webhookOrderId;
+
+const placeOrder = (user, body = sampleCheckout) =>
+  call('POST', `/api/orders/create-payment-intent/${itemId}`, { cookie: user.cookie, body });
+const setStatus = (user, orderId, status) =>
+  call('PATCH', `/api/orders/${orderId}/status`, { cookie: user.cookie, body: { status } });
 
 before(async () => {
   server = await startTestServer();
@@ -116,20 +121,45 @@ test('creating and deleting items', async () => {
   assert.equal(res.status, 404);
 });
 
-test('orders are only paid once Stripe says so', async () => {
-  let res = await call('POST', `/api/orders/create-payment-intent/${itemId}`, {
-    cookie: buyer.cookie,
+test('checkout needs a quantity and a delivery address', async () => {
+  const checkout = (body, cookie = buyer.cookie, id = itemId) =>
+    call('POST', `/api/orders/create-payment-intent/${id}`, { cookie, body });
+  const { deliveryAddress } = sampleCheckout;
+
+  assert.equal((await checkout(undefined)).status, 400);
+  assert.equal((await checkout({ quantity: 0, deliveryAddress })).status, 400);
+  assert.equal((await checkout({ quantity: 21, deliveryAddress })).status, 400);
+  assert.equal((await checkout({ quantity: 1 })).status, 400);
+
+  const badPincode = await checkout({
+    quantity: 1,
+    deliveryAddress: { ...deliveryAddress, pincode: '12' },
   });
+  assert.equal(badPincode.status, 400);
+  assert.match(badPincode.data.message, /Pincode must be 6 digits/);
+
+  const own = await checkout(sampleCheckout, seller.cookie);
+  assert.equal(own.status, 400);
+  assert.match(own.data.message, /your own item/);
+
+  assert.equal((await checkout(sampleCheckout, buyer.cookie, newId())).status, 404);
+  assert.equal(await db.collection('orders').countDocuments(), 0, 'nothing was created');
+});
+
+test('orders are only paid once Stripe says so', async () => {
+  let res = await placeOrder(buyer, { ...sampleCheckout, quantity: 2 });
   const intentId = intentIdOf(res);
-  assert.equal(paymentIntents.get(intentId).amount, 25000, '250 rupees is charged as 25000 paise');
+  assert.equal(res.data.total, 500);
+  assert.equal(paymentIntents.get(intentId).amount, 50000, '2 x 250 rupees is charged in paise');
   assert.equal(paymentIntents.get(intentId).currency, 'inr');
 
   res = await call('GET', '/api/orders', { cookie: buyer.cookie });
   assert.deepEqual(res.data, [], 'unpaid orders are hidden');
 
   const order = await db.collection('orders').findOne({ payment_intent: intentId });
-  res = await call('PATCH', `/api/orders/complete/${order._id}`, { cookie: seller.cookie });
-  assert.equal(res.status, 400, 'an unpaid order cannot be completed');
+  firstOrderId = String(order._id);
+  res = await setStatus(seller, firstOrderId, 'accepted');
+  assert.equal(res.status, 400, 'an unpaid order cannot be advanced');
 
   res = await call('PUT', '/api/orders', {
     cookie: outsider.cookie,
@@ -157,24 +187,42 @@ test('orders are only paid once Stripe says so', async () => {
 
   res = await call('GET', '/api/orders', { cookie: seller.cookie });
   assert.equal(res.data.length, 1);
-  assert.equal(res.data[0].isPaid, true);
-  assert.equal(res.data[0].isCompleted, false);
+  const [listed] = res.data;
+  assert.equal(listed.status, 'placed');
+  assert.equal(listed.isPaid, true);
+  assert.equal(listed.quantity, 2);
+  assert.equal(listed.unitPrice, 250);
+  assert.equal(listed.price, 500);
+  assert.equal(listed.deliveryAddress.city, 'Mumbai');
 
   res = await call('GET', `/api/items/single/${itemId}`);
-  assert.equal(res.data.sales, 1, 'confirming twice counts one sale');
+  assert.equal(res.data.sales, 2, 'confirming twice counts the two portions once');
+});
 
-  res = await call('PATCH', `/api/orders/complete/${order._id}`, { cookie: buyer.cookie });
-  assert.equal(res.status, 403);
-  res = await call('PATCH', `/api/orders/complete/${order._id}`, { cookie: seller.cookie });
-  assert.equal(res.status, 200);
-  const completed = await db.collection('orders').findOne({ _id: order._id });
-  assert.equal(completed.isCompleted, true);
+test('the seller moves an order through its stages', async () => {
+  assert.equal((await setStatus(buyer, firstOrderId, 'accepted')).status, 403);
+  assert.equal((await setStatus(seller, firstOrderId, 'preparing')).status, 400, 'no skipping');
+  assert.equal((await setStatus(seller, firstOrderId, 'placed')).status, 400);
+  assert.equal((await setStatus(seller, firstOrderId, 'teleported')).status, 400);
+  assert.equal((await setStatus(seller, newId(), 'accepted')).status, 404);
+
+  for (const stage of ['accepted', 'preparing', 'out_for_delivery', 'delivered']) {
+    const res = await setStatus(seller, firstOrderId, stage);
+    assert.equal(res.status, 200, stage);
+    assert.equal(res.data.status, stage);
+    assert.equal(res.data.isCompleted, stage === 'delivered');
+  }
+
+  const order = await db.collection('orders').findOne({ payment_intent: 'pi_test_1' });
+  assert.deepEqual(
+    order.statusHistory.map((entry) => entry.status),
+    ['placed', 'accepted', 'preparing', 'out_for_delivery', 'delivered']
+  );
+  assert.equal((await setStatus(seller, firstOrderId, 'delivered')).status, 400, 'already done');
 });
 
 test('Stripe webhook marks an order paid', async () => {
-  let res = await call('POST', `/api/orders/create-payment-intent/${itemId}`, {
-    cookie: buyer.cookie,
-  });
+  let res = await placeOrder(buyer);
   const intentId = intentIdOf(res);
   const payload = JSON.stringify({
     id: 'evt_1',
@@ -199,19 +247,82 @@ test('Stripe webhook marks an order paid', async () => {
   assert.equal(res.status, 200);
   const order = await db.collection('orders').findOne({ payment_intent: intentId });
   assert.equal(order.isPaid, true);
-  assert.equal(order.isCompleted, false);
+  assert.equal(order.status, 'placed');
+  webhookOrderId = String(order._id);
+  markSucceeded(intentId); // what Stripe would report for this payment from now on
 });
 
-test('orders created before isPaid existed are still listed', async () => {
+test('cancelling an order refunds the buyer', async () => {
+  const cancel = (user, id, body) =>
+    call('POST', `/api/orders/${id}/cancel`, { cookie: user.cookie, body });
+  const sales = async () => (await call('GET', `/api/items/single/${itemId}`)).data.sales;
+  assert.equal(await sales(), 3);
+
+  // The buyer can cancel until the seller accepts.
+  assert.equal((await cancel(outsider, webhookOrderId)).status, 403);
+  let res = await cancel(buyer, webhookOrderId);
+  assert.equal(res.status, 200);
+  assert.equal(res.data.status, 'cancelled');
+  assert.equal(res.data.cancelledBy, 'buyer');
+  assert.equal(refunds.length, 1);
+  assert.equal(refunds[0].amount, 25000);
+  assert.equal(res.data.refundId, refunds[0].id);
+  assert.equal(await sales(), 2, 'the sale is taken back');
+
+  assert.equal((await cancel(buyer, webhookOrderId)).status, 400, 'already cancelled');
+  assert.equal(refunds.length, 1, 'no second refund');
+  assert.equal((await setStatus(seller, webhookOrderId, 'accepted')).status, 400);
+
+  // Once accepted only the seller can still cancel, and only before it is out for delivery.
+  const paid = async (user) => {
+    const intentId = intentIdOf(await placeOrder(user));
+    markSucceeded(intentId);
+    await call('PUT', '/api/orders', { cookie: user.cookie, body: { payment_intent: intentId } });
+    const order = await db.collection('orders').findOne({ payment_intent: intentId });
+    return String(order._id);
+  };
+  const accepted = await paid(buyer);
+  await setStatus(seller, accepted, 'accepted');
+  assert.equal((await cancel(buyer, accepted)).status, 400);
+  res = await cancel(seller, accepted, { reason: 'Ran out of paneer' });
+  assert.equal(res.status, 200);
+  assert.equal(res.data.cancelledBy, 'seller');
+  assert.equal(res.data.cancelReason, 'Ran out of paneer');
+  assert.equal(refunds.length, 2);
+
+  assert.equal((await cancel(seller, firstOrderId)).status, 400, 'delivered orders stay');
+
+  // A cancelled order does not entitle the buyer to a review.
+  const cancelledOnly = await paid(outsider);
+  assert.equal((await cancel(outsider, cancelledOnly)).status, 200);
+  res = await call('POST', '/api/reviews', {
+    cookie: outsider.cookie,
+    body: { itemId, desc: 'I cancelled it', star: 1 },
+  });
+  assert.equal(res.status, 403);
+  assert.equal(await sales(), 2);
+
+  // Cancelled orders stay in the order history.
+  res = await call('GET', '/api/orders', { cookie: buyer.cookie });
+  assert.deepEqual(res.data.map((order) => order.status).sort(), [
+    'cancelled',
+    'cancelled',
+    'delivered',
+  ]);
+});
+
+test('orders created before order stages existed are still listed', async () => {
   const legacy = { itemId, price: 10, sellerId: seller.id, buyerId: buyer.id };
   await db.collection('orders').insertMany([
     { ...legacy, title: 'Legacy', isCompleted: true, payment_intent: 'pi_legacy_1' },
     { ...legacy, title: 'LegacyAbandoned', isCompleted: false, payment_intent: 'pi_legacy_2' },
+    { ...legacy, title: 'LegacyPaid', isPaid: true, payment_intent: 'pi_legacy_3' },
   ]);
   const res = await call('GET', '/api/orders', { cookie: buyer.cookie });
-  const titles = res.data.map((order) => order.title);
-  assert.equal(titles.includes('Legacy'), true);
-  assert.equal(titles.includes('LegacyAbandoned'), false);
+  const statusOf = (title) => res.data.find((order) => order.title === title)?.status;
+  assert.equal(statusOf('Legacy'), 'delivered');
+  assert.equal(statusOf('LegacyPaid'), 'placed');
+  assert.equal(statusOf('LegacyAbandoned'), undefined, 'never paid, so not listed');
 });
 
 test('requests from other websites are refused', async () => {
@@ -220,12 +331,17 @@ test('requests from other websites are refused', async () => {
 
   let res = await call('POST', path, {
     cookie: buyer.cookie,
+    body: sampleCheckout,
     headers: { Origin: 'https://evil.example' },
   });
   assert.equal(res.status, 403);
   assert.equal(await db.collection('orders').countDocuments(), before);
 
-  res = await call('POST', path, { cookie: buyer.cookie, headers: { Origin: CLIENT_ORIGIN } });
+  res = await call('POST', path, {
+    cookie: buyer.cookie,
+    body: sampleCheckout,
+    headers: { Origin: CLIENT_ORIGIN },
+  });
   assert.equal(res.status, 200);
 
   const evil = await connectSocket({ cookie: seller.cookie, origin: 'https://evil.example' });

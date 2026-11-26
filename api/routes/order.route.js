@@ -1,14 +1,21 @@
 import express from 'express';
+import {
+  cancelOrder,
+  confirm,
+  getOrders,
+  intent,
+  updateStatus,
+} from '../controllers/order.controller.js';
 import { verifyToken } from '../middleware/jwt.js';
-import { getOrders, intent, confirm, completeOrder } from '../controllers/order.controller.js';
+import validate from '../middleware/validate.js';
+import { cancelSchema, checkoutSchema, updateStatusSchema } from '../schemas/order.schema.js';
 
 const router = express.Router();
 
-// router.post("/:itemId", verifyToken, createOrder);
-
 router.get('/', verifyToken, getOrders);
-router.post('/create-payment-intent/:id', verifyToken, intent);
+router.post('/create-payment-intent/:id', verifyToken, validate(checkoutSchema), intent);
 router.put('/', verifyToken, confirm);
-router.patch('/complete/:id', verifyToken, completeOrder);
+router.patch('/:id/status', verifyToken, validate(updateStatusSchema), updateStatus);
+router.post('/:id/cancel', verifyToken, validate(cancelSchema), cancelOrder);
 
 export default router;

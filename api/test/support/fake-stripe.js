@@ -5,6 +5,9 @@ import RealStripe from 'stripe';
 // Payment intents created by the API, keyed by id. Tests flip `status` to simulate a payment.
 export const paymentIntents = new Map();
 
+// Refunds issued by the API, in order.
+export const refunds = [];
+
 export const markSucceeded = (id) => {
   const intent = paymentIntents.get(id);
   if (!intent) throw new Error(`Unknown payment intent ${id}`);
@@ -24,6 +27,26 @@ export default class FakeStripe {
         const intent = paymentIntents.get(id);
         if (!intent) throw new Error(`No such payment_intent: ${id}`);
         return { ...intent };
+      },
+    };
+    this.refunds = {
+      // Like Stripe, a repeated request with the same idempotency key returns the first refund.
+      create: async (params, options = {}) => {
+        const intent = paymentIntents.get(params.payment_intent);
+        if (!intent) throw new Error(`No such payment_intent: ${params.payment_intent}`);
+        if (intent.status !== 'succeeded') throw new Error('This payment has not succeeded');
+        const repeat = refunds.find(
+          (r) => r.idempotencyKey && r.idempotencyKey === options.idempotencyKey
+        );
+        if (repeat) return repeat;
+        const refund = {
+          id: `re_test_${refunds.length + 1}`,
+          payment_intent: intent.id,
+          amount: intent.amount,
+          idempotencyKey: options.idempotencyKey,
+        };
+        refunds.push(refund);
+        return refund;
       },
     };
   }

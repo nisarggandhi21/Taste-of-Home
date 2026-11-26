@@ -11,9 +11,9 @@ export const createReview = async (req, res, next) => {
   try {
     if (!(await Item.exists({ _id: itemId }))) return next(createError(404, 'Item not found!'));
 
-    // Only buyers with a paid order for this item can review it.
+    // Only buyers with a paid order for this item that was not cancelled can review it.
     const hasOrdered = await Order.exists({
-      $and: [{ itemId, buyerId: req.userId }, PAID_ORDER_FILTER],
+      $and: [{ itemId, buyerId: req.userId, status: { $ne: 'cancelled' } }, PAID_ORDER_FILTER],
     });
     if (!hasOrdered) {
       return next(createError(403, 'You can only review items you have ordered'));

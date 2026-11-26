@@ -6,7 +6,9 @@ $primary-color: #5469d4;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 40px 16px;
+  box-sizing: border-box;
 
   button {
     background: $primary-color;
@@ -30,6 +32,141 @@ $primary-color: #5469d4;
     &:disabled {
       opacity: 0.5;
       cursor: default;
+    }
+  }
+
+  .panel {
+    width: 30vw;
+    min-width: 500px;
+    box-sizing: border-box;
+
+    @media only screen and (max-width: 600px) {
+      width: 100%;
+      min-width: initial;
+    }
+  }
+
+  .panel form {
+    width: 100%;
+    min-width: initial;
+    box-sizing: border-box;
+  }
+
+  .summary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    margin-bottom: 20px;
+    background: #f6f8fa;
+    border-radius: 7px;
+
+    img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    span {
+      color: #697386;
+      font-size: 14px;
+    }
+
+    .total {
+      margin-left: auto;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+  }
+
+  .deliverTo {
+    color: #697386;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .linkButton {
+    display: inline;
+    width: auto;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    color: $primary-color;
+    font-size: 14px;
+    text-decoration: underline;
+  }
+
+  .checkout {
+    display: flex;
+    flex-direction: column;
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #30313d;
+      margin: 12px 0 6px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      font-size: 16px;
+      border: 1px solid #d5d9e0;
+      border-radius: 5px;
+
+      &:focus {
+        outline: 2px solid rgba($primary-color, 0.35);
+        border-color: $primary-color;
+      }
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+
+      > div {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      button {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        font-size: 20px;
+      }
+
+      span {
+        min-width: 24px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
+    .primary {
+      margin-top: 24px;
     }
   }
 

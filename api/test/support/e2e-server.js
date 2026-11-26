@@ -4,7 +4,7 @@
 //   API:      http://localhost:8800
 //   Control:  http://localhost:8801   GET /ready, POST /payment-intents/:id/succeed
 import http from 'node:http';
-import { createClient, sampleItem } from './client.js';
+import { createClient, sampleCheckout, sampleItem } from './client.js';
 import { markSucceeded } from './fake-stripe.js';
 import { startTestServer } from './server.js';
 
@@ -26,10 +26,10 @@ await must('POST', '/api/items', {
   body: { ...sampleItem, title: 'Veg Burger', cat: 'burger', shortTitle: 'Burger', price: 120 },
 });
 
-// Two paid orders; the first one is also completed by the seller.
+// Two paid orders; the first one has also been delivered by the seller.
 const paidOrder = async () => {
   const path = `/api/orders/create-payment-intent/${thali.data._id}`;
-  const intent = await must('POST', path, { cookie: buyer.cookie });
+  const intent = await must('POST', path, { cookie: buyer.cookie, body: sampleCheckout });
   const id = intent.data.clientSecret.split('_secret')[0];
   markSucceeded(id);
   await must('PUT', '/api/orders', { cookie: buyer.cookie, body: { payment_intent: id } });
@@ -38,7 +38,12 @@ const paidOrder = async () => {
 const firstIntent = await paidOrder();
 await paidOrder();
 const first = await server.db.collection('orders').findOne({ payment_intent: firstIntent });
-await must('PATCH', `/api/orders/complete/${first._id}`, { cookie: seller.cookie });
+for (const status of ['accepted', 'preparing', 'out_for_delivery', 'delivered']) {
+  await must('PATCH', `/api/orders/${first._id}/status`, {
+    cookie: seller.cookie,
+    body: { status },
+  });
+}
 
 const conversation = await must('POST', '/api/conversations', {
   cookie: buyer.cookie,

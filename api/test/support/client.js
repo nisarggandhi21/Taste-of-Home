@@ -62,3 +62,15 @@ export const sampleItem = {
   features: ['fresh'],
   price: 250,
 };
+
+export const sampleCheckout = {
+  quantity: 1,
+  deliveryAddress: {
+    name: 'Stefan Buyer',
+    phone: '+91 98765 43210',
+    line1: '12 Marine Drive, Flat 4B',
+    city: 'Mumbai',
+    pincode: '400002',
+    notes: 'Ring the bell twice',
+  },
+};
