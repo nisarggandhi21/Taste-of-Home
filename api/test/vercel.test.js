@@ -35,6 +35,17 @@ test('the exported app serves requests', async () => {
   assert.deepEqual(items.data.items, []);
 });
 
+test('without an AI key the AI features are off and nothing else changes', async () => {
+  assert.deepEqual((await call('GET', '/api/ai/status')).data, { enabled: false });
+  const assistant = await call('POST', '/api/ai/assistant', {
+    body: { messages: [{ role: 'user', text: 'Something spicy' }] },
+  });
+  assert.equal(assistant.status, 503);
+  const search = await call('GET', '/api/items?search=spicy&sort=relevance');
+  assert.equal(search.status, 200);
+  assert.equal(search.data.smart, false);
+});
+
 test('auth works behind the platform proxy', async () => {
   assert.equal(server.app.get('trust proxy'), 1);
   // Vercel forwards the visitor address in this header; the rate limiter must accept it.

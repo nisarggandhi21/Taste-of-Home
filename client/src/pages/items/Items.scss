@@ -166,3 +166,14 @@
     }
   }
 }
+
+.items .container .smart {
+  margin-left: 12px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  vertical-align: middle;
+}

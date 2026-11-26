@@ -60,7 +60,10 @@ export const itemsQuerySchema = z.object({
   // Only items whose seller declared that they contain none of these allergens.
   freeFrom: optional(list(z.array(z.enum(ALLERGENS, 'Unknown allergen')).max(ALLERGENS.length))),
   sort: optional(
-    z.enum(['sales', 'createdAt', 'rating', 'price', 'priceAsc'], 'Unknown sort option')
+    z.enum(
+      ['relevance', 'sales', 'createdAt', 'rating', 'price', 'priceAsc'],
+      'Unknown sort option'
+    )
   ).default('createdAt'),
   page: optional(z.coerce.number('Page must be a number').int().min(1)).default(1),
   limit: optional(

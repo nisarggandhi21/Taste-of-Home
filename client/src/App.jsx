@@ -31,6 +31,7 @@ import Profile from './pages/profile/Profile';
 import Register from './pages/register/Register';
 import Success from './pages/success/Success';
 
+import Assistant from './components/assistant/Assistant';
 import Footer from './components/footer/Footer';
 import RequireAuth from './components/requireAuth/RequireAuth';
 import ScrollToTop from './components/scrollToTop/ScrollToTop';
@@ -97,6 +98,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   <Footer />
+                  <Assistant />
                 </div>
               </BrowserRouter>
             </CartContextProvider>

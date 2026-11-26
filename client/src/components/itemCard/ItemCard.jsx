@@ -46,7 +46,7 @@ const ItemCard = ({ item }) => {
             <div className="star">
               <img src="/img/star.png" alt="" />
               <span>{averageRating(item)}</span>
-              <span className="reviews">({item.starNumber})</span>
+              <span className="reviewCount">({item.starNumber})</span>
             </div>
           ) : (
             <div className="star">

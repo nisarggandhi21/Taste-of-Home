@@ -20,6 +20,10 @@ export const itemReducer = (state, action) => {
       return Object.fromEntries(
         Object.keys(INITIAL_STATE).map((key) => [key, action.payload[key] ?? INITIAL_STATE[key]])
       );
+    // Fields drafted by AI from the photo replace what was typed; price, delivery time and
+    // the pictures themselves are left alone.
+    case 'APPLY_DRAFT':
+      return { ...state, ...action.payload };
     case 'CHANGE_INPUT':
       return {
         ...state,

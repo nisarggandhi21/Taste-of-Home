@@ -20,7 +20,10 @@ function Items() {
   const [filters, setFilters] = useState(NO_FILTERS);
   // Typed values only take effect on "Apply", so the list does not reload on every keystroke.
   const [typed, setTyped] = useState({ min: '', max: '', location: '' });
-  const [sort, setSort] = useState('sales');
+  // null until the buyer picks an order: searches then start by best match, browsing by
+  // best selling.
+  const [chosenSort, setSort] = useState(null);
+  const sort = chosenSort || (text ? 'relevance' : 'sales');
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -92,7 +95,14 @@ function Items() {
         />
       </Helmet>
       <div className="container">
-        <p>{text ? `Results for “${text}”` : 'Explore the Food'}</p>
+        <p>
+          {text ? `Results for “${text}”` : 'Explore the Food'}
+          {text && data?.smart && (
+            <span className="smart" title="Matches by meaning as well as by words">
+              Smart search
+            </span>
+          )}
+        </p>
 
         <div className="filters">
           <form className="group" onSubmit={applyTyped}>
@@ -148,6 +158,7 @@ function Items() {
                 setPage(1);
               }}
             >
+              {text && <option value="relevance">Best match</option>}
               {SORTS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}

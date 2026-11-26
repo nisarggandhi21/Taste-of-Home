@@ -7,10 +7,16 @@
 //                                     GET /emails?to=address   (emails the API "sent")
 import http from 'node:http';
 import { createClient, sampleCheckout, sampleItem } from './client.js';
+import { installFakeImageHost } from './fake-images.js';
 import { markSucceeded } from './fake-stripe.js';
 import { startTestServer } from './server.js';
 
-const server = await startTestServer({ port: 8800 });
+// The AI features are on, answered by the local stand-in for the model.
+const server = await startTestServer({
+  port: 8800,
+  env: { GEMINI_API_KEY: 'fake-key', AI_HOURLY_LIMIT: '1000', AI_DAILY_LIMIT: '5000' },
+});
+installFakeImageHost();
 const { call, register } = createClient(server.baseUrl);
 
 const must = async (...args) => {
@@ -72,6 +78,28 @@ for (const status of ['accepted', 'preparing', 'out_for_delivery', 'delivered'])
   await must('PATCH', `/api/orders/${first._id}/status`, {
     cookie: seller.cookie,
     body: { status },
+  });
+}
+
+// Three buyers have ordered and reviewed the biryani, enough for a "what buyers say" summary.
+const biryani = await server.db.collection('items').findOne({ title: 'Chicken Biryani' });
+const opinions = [
+  'Fragrant and filling',
+  'Great spice, generous portion',
+  'Tasty but arrived late',
+];
+for (const [i, name] of ['asha', 'bala', 'chitra'].entries()) {
+  const reviewer = await register(name);
+  const intent = await must('POST', `/api/orders/create-payment-intent/${biryani._id}`, {
+    cookie: reviewer.cookie,
+    body: sampleCheckout,
+  });
+  const id = intent.data.clientSecret.split('_secret')[0];
+  markSucceeded(id);
+  await must('PUT', '/api/orders', { cookie: reviewer.cookie, body: { payment_intent: id } });
+  await must('POST', '/api/reviews', {
+    cookie: reviewer.cookie,
+    body: { itemId: String(biryani._id), star: 5 - i, desc: opinions[i] },
   });
 }
 

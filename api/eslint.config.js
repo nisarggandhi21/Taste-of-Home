@@ -16,4 +16,9 @@ export default [
       'no-console': 'warn',
     },
   },
+  {
+    // Command-line scripts print their results.
+    files: ['ai/scripts/**', 'ai/evals/**'],
+    rules: { 'no-console': 'off' },
+  },
 ];

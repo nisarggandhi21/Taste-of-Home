@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import './Featured.scss';
 import { useNavigate } from 'react-router-dom';
+import { useAiEnabled } from '../../hooks/useAiEnabled';
 
 function Featured() {
   const [input, setInput] = useState('');
 
   const navigate = useNavigate();
+  const smartSearch = useAiEnabled();
   const handleSubmit = () => {
-    navigate(`/items?search=${input}`);
+    navigate(`/items?search=${encodeURIComponent(input)}`);
   };
 
   const handleCategoryClick = (cat) => {
@@ -27,7 +29,7 @@ function Featured() {
               <img src="./img/search.png" alt="" />
               <input
                 type="text"
-                placeholder='Try "cake"'
+                placeholder={smartSearch ? 'Try "something light for dinner"' : 'Try "cake"'}
                 onChange={(e) => setInput(e.target.value)}
               />
             </div>

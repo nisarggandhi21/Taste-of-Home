@@ -475,6 +475,27 @@ h3 {
       }
     }
 
+    .info .aiDraft {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--primary-soft);
+
+      button {
+        flex: none;
+        padding: 10px 18px;
+        white-space: nowrap;
+      }
+
+      span {
+        font-size: 14px;
+        line-height: 1.45;
+        color: var(--text-muted);
+      }
+    }
+
     .details .addedFeatures button {
       background: var(--danger-soft);
       color: var(--danger-text);

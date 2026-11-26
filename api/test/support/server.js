@@ -1,4 +1,5 @@
-// Boots the real API against a throwaway in-memory MongoDB and the Stripe fake.
+// Boots the real API against a throwaway in-memory MongoDB, the Stripe fake and the AI fake.
+// The AI features stay off unless a test passes env: { GEMINI_API_KEY: ... }.
 import { once } from 'node:events';
 import { register } from 'node:module';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';

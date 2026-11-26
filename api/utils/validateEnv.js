@@ -21,6 +21,12 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
+  // Optional: turns on the AI features (see ai/config.js).
+  GEMINI_API_KEY: z.string().optional(),
+  AI_MODEL: z.string().optional(),
+  AI_EMBEDDING_MODEL: z.string().optional(),
+  AI_DAILY_LIMIT: z.string().optional(),
+  AI_HOURLY_LIMIT: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
 });
 

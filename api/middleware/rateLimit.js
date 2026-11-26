@@ -43,3 +43,11 @@ export const uploadLimiter = limiter({
   limit: 60,
   message: 'Too many uploads. Please try again later.',
 });
+
+// Each of these requests costs model usage, so they are limited per visitor as well as by
+// the site-wide daily allowance (see ai/usage.js).
+export const aiLimiter = limiter({
+  windowMs: 60 * 60 * 1000,
+  limit: Number(process.env.AI_HOURLY_LIMIT) || 30,
+  message: 'You have used the AI helper a lot in the last hour. Please try again later.',
+});

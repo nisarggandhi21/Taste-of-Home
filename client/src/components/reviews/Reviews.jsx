@@ -1,5 +1,6 @@
 import React from 'react';
 import Review from '../review/Review';
+import ReviewSummary from '../reviewSummary/ReviewSummary';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { reviewService } from '../../services/reviewService';
 import './Reviews.scss';
@@ -32,6 +33,7 @@ const Reviews = ({ itemId }) => {
   return (
     <div className="reviews">
       <h2>Reviews</h2>
+      <ReviewSummary itemId={itemId} reviewCount={data?.length || 0} />
       {isLoading
         ? 'loading'
         : error

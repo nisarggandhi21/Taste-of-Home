@@ -71,6 +71,30 @@ const itemSchema = new Schema(
       type: Number,
       default: 0,
     },
+    // Search vector for this dish (see ai/embeddings.js). Left out of normal reads.
+    embedding: {
+      type: [Number],
+      default: undefined,
+      select: false,
+    },
+    embeddingModel: {
+      type: String,
+      select: false,
+    },
+    // AI summary of the reviews, with the number of reviews it was written from.
+    reviewSummary: {
+      type: new Schema(
+        {
+          text: String,
+          pros: [String],
+          cons: [String],
+          reviewCount: Number,
+          generatedAt: Date,
+        },
+        { _id: false }
+      ),
+      default: undefined,
+    },
     // Sellers can pause an item without deleting it. Missing means available.
     isAvailable: {
       type: Boolean,

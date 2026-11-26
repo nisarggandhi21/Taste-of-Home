@@ -46,6 +46,55 @@ A **full-stack web application** connecting **home cooks** with **food enthusias
 
 ---
 
+### 🤖 **AI features**
+
+Optional, and off unless the API has a `GEMINI_API_KEY` (a free key from Google AI Studio works):
+
+- **Ordering assistant**: a chat helper that turns "something light and vegetarian under ₹150"
+  into a search of the real menu. It can only read listings; it cannot order or change anything,
+  and it only ever shows dishes that exist.
+- **Smart search**: finds dishes by what they are ("comfort food for a cold") as well as by the
+  words in their title, and still respects every filter.
+- **Listing from a photo**: a seller uploads a photo and gets a draft title, description,
+  category, diet and allergens to review and edit.
+- **What buyers say**: a short summary of a dish's reviews, written once there are three and
+  rewritten only when a new review arrives.
+
+How it is built (see `api/ai/`):
+
+- One file (`gemini.js`) talks to the model provider; the features use three functions from it,
+  so changing provider means rewriting that file only.
+- Model output is never trusted: every answer is validated against a schema, the assistant's
+  tool arguments go through the same validation as a visitor's request, and its dish cards are
+  built from database records, never from what the model wrote.
+- Listing and review text is written by the public, so the model is given it as data and told
+  not to follow instructions inside it; the assistant has read-only tools, so the worst a
+  hostile listing can do is earn a bad recommendation.
+- Usage is controlled and recorded: a per-visitor hourly limit, a site-wide daily allowance,
+  and one database row per model call (`npm run ai:usage` prints calls, failures, speed and
+  tokens for the last week).
+- Everything degrades quietly: without a key, or when the model is down, search falls back to
+  keywords, saving a dish still works, and the AI parts of the page are hidden.
+
+Commands (run in `api/`):
+
+```bash
+npm run ai:eval      # scores search, the assistant and summaries against the real model
+```
+
+```bash
+npm run ai:reindex   # gives dishes created before AI was turned on a search vector
+```
+
+```bash
+npm run ai:usage     # last week's model usage
+```
+
+On Gemini's free tier, requests may be used by Google to improve its products; use a paid key
+before sending real customers' data.
+
+---
+
 ## ⚙️ **Tech Stack**
 
 ### 🖥️ **Frontend**
@@ -98,6 +147,7 @@ STRIPE_WEBHOOK_SECRET = [your-stripe-webhook-secret]  # optional
 CORS_URL=frontend.url
 CORS_ALLOWED_ORIGINS=[url-path]
 TRUST_PROXY=1  # optional, see below
+GEMINI_API_KEY=[your-gemini-api-key]  # optional, turns on the AI features
 ```
 
 **Sessions and rate limits.** Logins last 7 days. Failed logins are limited to 10 per 15 minutes

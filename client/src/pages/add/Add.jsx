@@ -2,7 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ALLERGENS, DIETS } from '../../constants/food';
+import { useAiEnabled } from '../../hooks/useAiEnabled';
 import { INITIAL_STATE, itemReducer } from '../../reducers/itemReducer';
+import { aiService } from '../../services/aiService';
 import { itemService } from '../../services/itemService';
 import upload from '../../utils/upload';
 import './Add.scss';
@@ -15,6 +17,9 @@ const Add = () => {
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const aiEnabled = useAiEnabled();
+  const [drafting, setDrafting] = useState(false);
+  const [drafted, setDrafted] = useState(false);
 
   const [state, dispatch] = useReducer(itemReducer, INITIAL_STATE);
 
@@ -58,6 +63,20 @@ const Add = () => {
       console.log(err);
     } finally {
       setUploading(false);
+    }
+  };
+
+  // Asks the AI helper to draft the listing from the uploaded cover photo.
+  const handleDraft = async () => {
+    setDrafting(true);
+    try {
+      const draft = await aiService.draftListing(state.cover);
+      dispatch({ type: 'APPLY_DRAFT', payload: draft });
+      setDrafted(true);
+    } catch {
+      // The request interceptor already shows the error.
+    } finally {
+      setDrafting(false);
     }
   };
 
@@ -124,6 +143,18 @@ const Add = () => {
               <button onClick={handleUpload}>{uploading ? 'uploading' : 'Upload'}</button>
             </div>
             {state.cover && <img className="coverPreview" src={state.cover} alt="Current cover" />}
+            {aiEnabled && state.cover && (
+              <div className="aiDraft">
+                <button type="button" onClick={handleDraft} disabled={drafting}>
+                  {drafting ? 'Looking at your photo…' : '✨ Fill in from photo'}
+                </button>
+                <span>
+                  {drafted
+                    ? 'Drafted by AI from your photo. Check every field before saving, especially diet and allergens.'
+                    : 'Let AI draft the title, description, diet and allergens from your cover photo.'}
+                </span>
+              </div>
+            )}
             <label htmlFor="">Description</label>
             <textarea
               name="desc"
