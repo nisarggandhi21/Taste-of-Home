@@ -64,7 +64,7 @@ app.use(
   })
 );
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
 // Stripe signs the raw request body, so this route must be registered before express.json().
 app.post('/api/orders/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 app.use(express.json());
@@ -95,4 +95,6 @@ if (!process.env.VERCEL) {
   });
 }
 
+// The named export is for the tests; Vercel uses the default export.
+export { httpServer };
 export default app;

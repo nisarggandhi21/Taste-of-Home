@@ -177,6 +177,26 @@ works, but falls back to checking for new messages every few seconds.
 
 ---
 
+## ✅ **Tests**
+
+No database, Stripe account or other service is needed: the tests start an in-memory MongoDB
+and use a local stand-in for Stripe. They also run on every push through GitHub Actions.
+
+- **API tests** (includes a check that the API loads the way Vercel runs it):
+
+  ```bash
+  cd api && npm test
+  ```
+
+- **Browser tests** (start the API and the client themselves; run `npm install` in `api`,
+  `client` and `e2e` first, and `npx playwright install chromium` once):
+
+  ```bash
+  cd e2e && npm test
+  ```
+
+---
+
 ## 📑 **API Routes**
 
 - **`/api/auth`**: Authentication routes
