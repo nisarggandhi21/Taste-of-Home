@@ -24,10 +24,10 @@ export const mockUploads = async (context) => {
   return uploads;
 };
 
-export const login = async (page, username) => {
+export const login = async (page, username, password = PASSWORD) => {
   await page.goto('/login');
   await page.fill('input[name=username]', username);
-  await page.fill('input[name=password]', PASSWORD);
+  await page.fill('input[name=password]', password);
   await page.click('button[type=submit]');
   await expect(page.locator('.navbar .user span')).toHaveText(username);
 };

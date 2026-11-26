@@ -80,9 +80,12 @@ VITE_CLOUDINARY_CLOUD_NAME = [your-cloudinary-cloud-name]
 VITE_CLOUDINARY_UPLOAD_PRESET = [your-unsigned-upload-preset]
 ```
 
-**Image uploads.** Images go straight from the browser to Cloudinary through an unsigned upload
-preset. The client only accepts JPG, PNG and WebP up to 5 MB, but that check can be bypassed, so
-set the same limits (allowed formats, max file size) on the preset in the Cloudinary console.
+**Image uploads.** Images go straight from the browser to Cloudinary. Set `CLOUDINARY_CLOUD_NAME`,
+`CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` on the **server** to use signed uploads: the API
+signs each upload, the secret never reaches the browser, and Cloudinary itself refuses anything
+that is not a JPG, PNG or WebP. You can then turn off unsigned uploads in the Cloudinary console.
+Without those settings the client falls back to the unsigned upload preset below, where the
+format and 5 MB size checks run only in the browser and can be bypassed.
 
 ### **Server** Environment Variables
 
@@ -142,10 +145,10 @@ works, but falls back to checking for new messages every few seconds.
    ```
 
 3. **Start the servers**:
-   - For **Backend**:
+   - For **Backend** (restarts when files change; `npm start` runs it without that):
 
    ```bash
-   npm start
+   npm run dev
    ```
 
    - For **Frontend**:
@@ -160,27 +163,26 @@ works, but falls back to checking for new messages every few seconds.
 
 ## 🐳 **Run with Docker**
 
-1. Create your Docker env file from the template:
+`docker compose` starts the database, the API and the client as three production containers.
+
+1. Create your Docker env file from the template and fill in your secrets (`JWT_KEY`,
+   `STRIPE_SECRET_KEY`):
 
    ```bash
    cp .env.docker.example .env.docker
    ```
 
-2. Update `.env.docker` with your real secrets (`MONGO`, `JWT_KEY`, `STRIPE_SECRET_KEY`).
-
-3. Build the image:
+2. Build and start everything:
 
    ```bash
-   docker build -t taste-of-home .
+   docker compose --env-file .env.docker up --build
    ```
 
-4. Run the container with env values:
+3. Open the app at [http://localhost:5173](http://localhost:5173). The API is at
+   [http://localhost:8800](http://localhost:8800).
 
-   ```bash
-   docker run --rm -it -p 8800:8800 -p 5173:5173 --env-file .env.docker taste-of-home
-   ```
-
-5. Open the app at [http://localhost:5173](http://localhost:5173)
+The client's settings (`VITE_...`) are baked in when its image is built, so rebuild after
+changing them.
 
 ---
 

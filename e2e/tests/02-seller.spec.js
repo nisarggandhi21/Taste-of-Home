@@ -55,3 +55,37 @@ test('a non-image upload is refused before it leaves the browser', async ({ page
   await expect(page.locator('.Toastify__toast')).toContainText('Only JPG, PNG or WebP');
   expect(uploads).toHaveLength(0);
 });
+
+test('uploads are signed by the API when it has Cloudinary credentials', async ({ page, context }) => {
+  // Stand in for an API that is configured for signed uploads.
+  await context.route('**/api/uploads/signature', (route) =>
+    route.fulfill({
+      json: {
+        cloudName: 'signed-cloud',
+        apiKey: 'key-123',
+        signature: 'signature-abc',
+        params: { allowed_formats: 'jpg,jpeg,png,webp', folder: 'taste-of-home', timestamp: 1700000000 },
+      },
+    })
+  );
+  let sent;
+  await context.route('https://api.cloudinary.com/**', (route) => {
+    sent = { url: route.request().url(), body: route.request().postData() };
+    return route.fulfill({ json: { secure_url: 'https://example.com/signed.png' } });
+  });
+  await login(page, SELLER);
+
+  await page.goto('/add');
+  await page
+    .locator('input[type=file]')
+    .first()
+    .setInputFiles({ name: 'cover.png', mimeType: 'image/png', buffer: Buffer.from('x') });
+  await page.click('.images button');
+  await expect(page.locator('.coverPreview')).toHaveAttribute('src', 'https://example.com/signed.png');
+
+  expect(sent.url).toContain('/v1_1/signed-cloud/image/upload');
+  for (const field of ['api_key', 'key-123', 'signature-abc', 'allowed_formats', 'taste-of-home', '1700000000']) {
+    expect(sent.body).toContain(field);
+  }
+  expect(sent.body).not.toContain('upload_preset');
+});

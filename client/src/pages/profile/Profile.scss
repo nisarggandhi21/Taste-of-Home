@@ -111,3 +111,16 @@
     }
   }
 }
+
+.profile .container .section.danger {
+  border-color: #f1c0bb;
+
+  p {
+    color: #555;
+    line-height: 1.5;
+  }
+
+  button {
+    background-color: #c0392b;
+  }
+}

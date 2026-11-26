@@ -20,6 +20,11 @@ export const userService = {
     const res = await newRequest.patch('/users/me', changes);
     return res.data;
   },
+  // Permanent. The password is asked for again as a safeguard.
+  deleteAccount: async (userId, password) => {
+    const res = await newRequest.delete(`/users/${userId}`, { data: { password } });
+    return res.data;
+  },
   getFavourites: async () => {
     const res = await newRequest.get('/users/me/favourites');
     return res.data;

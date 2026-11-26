@@ -1,9 +1,14 @@
+import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import Item from '../models/item.model.js';
 import Order from '../models/order.model.js';
 import User, { ownProfile } from '../models/user.model.js';
+import { deleteUserAndTheirTraces } from '../utils/cleanup.js';
 import createError from '../utils/createError.js';
+import { cookieOptions } from '../utils/token.js';
 
+// Deleting an account is permanent, so it asks for the password again and is refused while
+// the user still has orders on their way, as buyer or as seller.
 export const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -12,8 +17,29 @@ export const deleteUser = async (req, res, next) => {
     if (req.userId !== user._id.toString()) {
       return next(createError(403, 'You can delete only your account!'));
     }
-    await User.findByIdAndDelete(req.params.id);
-    res.status(200).send('deleted');
+
+    const password = req.body?.password;
+    if (typeof password !== 'string' || !(await bcrypt.compare(password, user.password))) {
+      return next(createError(400, 'Your password is not correct.'));
+    }
+
+    const openOrders = await Order.countDocuments({
+      $or: [{ buyerId: req.userId }, { sellerId: req.userId }],
+      isPaid: true,
+      isCompleted: { $ne: true },
+      status: { $ne: 'cancelled' },
+    });
+    if (openOrders > 0) {
+      return next(
+        createError(
+          409,
+          `You still have ${openOrders} open order${openOrders === 1 ? '' : 's'}. Complete or cancel them before deleting your account.`
+        )
+      );
+    }
+
+    await deleteUserAndTheirTraces(user._id);
+    res.clearCookie('accessToken', cookieOptions).status(200).send('deleted');
   } catch (error) {
     next(error);
   }

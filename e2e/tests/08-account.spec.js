@@ -102,3 +102,25 @@ test('a forgotten password is reset from the emailed link', async ({ page, reque
   await page.click('button[type=submit]');
   await expect(page.locator('.navbar .user span')).toHaveText('newcomer');
 });
+
+test('a user deletes their account', async ({ page }) => {
+  await login(page, 'newcomer', 'brand-new-secret');
+  await page.goto('/profile');
+
+  page.on('dialog', (dialog) => dialog.accept());
+  await page.fill('#deletePassword', 'not-my-password');
+  await page.click('button:has-text("Delete my account")');
+  await expect(page.locator('.Toastify__toast', { hasText: 'password is not correct' })).toBeVisible();
+
+  await page.fill('#deletePassword', 'brand-new-secret');
+  await page.click('button:has-text("Delete my account")');
+  await expect(page).toHaveURL('/');
+  await expect(page.locator('.navbar a[href="/login"]')).toBeVisible();
+
+  // The account is gone: signing in no longer works.
+  await page.goto('/login');
+  await page.fill('input[name=username]', 'newcomer');
+  await page.fill('input[name=password]', 'brand-new-secret');
+  await page.click('button[type=submit]');
+  await expect(page.locator('.Toastify__toast', { hasText: 'Wrong username or password' })).toBeVisible();
+});

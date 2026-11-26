@@ -36,5 +36,7 @@ const ReviewSchema = new Schema(
 );
 
 ReviewSchema.index({ itemId: 1 });
+// One review per buyer per item, enforced by the database as well as the controller.
+ReviewSchema.index({ itemId: 1, userId: 1 }, { unique: true });
 
 export default mongoose.model('Review', ReviewSchema);

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
@@ -9,8 +10,9 @@ import upload from '../../utils/upload';
 import './Profile.scss';
 
 function Profile() {
-  const { currentUser, login } = useContext(AuthContext);
+  const { currentUser, login, logout } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     isLoading,
@@ -24,6 +26,7 @@ function Profile() {
   const [form, setForm] = useState({ location: '', phone: '', desc: '' });
   const [file, setFile] = useState(null);
   const [passwords, setPasswords] = useState({ current: '', next: '' });
+  const [deletePassword, setDeletePassword] = useState('');
 
   useEffect(() => {
     if (me) setForm({ location: me.location || '', phone: me.phone || '', desc: me.desc || '' });
@@ -49,6 +52,16 @@ function Profile() {
     onSuccess: (res) => {
       setPasswords({ current: '', next: '' });
       toast.success(res.message);
+    },
+  });
+
+  const deleteAccount = useMutation({
+    mutationFn: () => userService.deleteAccount(me._id, deletePassword),
+    onSuccess: () => {
+      queryClient.clear();
+      logout();
+      navigate('/');
+      toast.success('Your account has been deleted.');
     },
   });
 
@@ -144,6 +157,34 @@ function Profile() {
           />
           <button type="submit" disabled={changePassword.isPending}>
             {changePassword.isPending ? 'Saving...' : 'Change password'}
+          </button>
+        </form>
+
+        <form
+          className="section danger"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (window.confirm('Delete your account for good? This cannot be undone.')) {
+              deleteAccount.mutate();
+            }
+          }}
+        >
+          <h2>Delete account</h2>
+          <p>
+            This removes your account{me.isSeller ? ', your items' : ''}, your reviews and your
+            conversations for good. Orders you have open must be completed or cancelled first.
+          </p>
+          <label htmlFor="deletePassword">Your password</label>
+          <input
+            id="deletePassword"
+            type="password"
+            autoComplete="current-password"
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={deleteAccount.isPending}>
+            {deleteAccount.isPending ? 'Deleting...' : 'Delete my account'}
           </button>
         </form>
       </div>

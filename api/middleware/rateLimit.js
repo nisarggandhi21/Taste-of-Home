@@ -37,3 +37,9 @@ export const passwordLimiter = limiter({
   skipSuccessfulRequests: true,
   message: 'Too many attempts. Please try again in 15 minutes.',
 });
+
+export const uploadLimiter = limiter({
+  windowMs: 60 * 60 * 1000,
+  limit: 60,
+  message: 'Too many uploads. Please try again later.',
+});

@@ -1,4 +1,5 @@
 import Item from '../models/item.model.js';
+import { deleteItemsAndTheirTraces } from '../utils/cleanup.js';
 import User from '../models/user.model.js';
 import { itemsQuerySchema } from '../schemas/item.schema.js';
 import createError from '../utils/createError.js';
@@ -70,7 +71,7 @@ export const deleteItem = async (req, res, next) => {
       return next(createError(403, 'You can delete only your item'));
     }
 
-    await Item.findByIdAndDelete(req.params.id);
+    await deleteItemsAndTheirTraces([item._id]);
     res.status(200).send('deleted');
   } catch (error) {
     next(error);
