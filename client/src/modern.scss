@@ -1,0 +1,842 @@
+// Shared look for pages, panels, forms, tables and chips.
+//
+// The per-page stylesheets hold each page's layout. This file gives them one visual language
+// (rounded surfaces, soft shadows, pill buttons, frosted panels in the glass theme) using the
+// same selectors, and is imported after them so that at equal specificity it wins.
+
+// A raised panel: the building block of every card, form and box.
+@mixin panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+@mixin primary-button {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+  }
+}
+
+@mixin field {
+  background-color: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+// Small soft-coloured label.
+@mixin chip($soft, $text) {
+  background-color: var($soft);
+  color: var($text);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  > .footer {
+    margin-top: auto;
+  }
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+}
+
+// Icons that are dark pictures need lightening on a dark background.
+[data-theme='dark'] {
+  .featured .searchInput img,
+  .item .details img,
+  .review .helpful img,
+  .footer img {
+    filter: invert(1) brightness(1.6);
+  }
+}
+
+// ------------------------------------------------------------------------- home
+
+.slide {
+  padding: 56px 0;
+
+  .container .nav-button {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    font-size: 16px;
+    font-weight: 700;
+
+    &:hover {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: var(--on-primary);
+    }
+  }
+}
+
+.home .features {
+  background-color: transparent;
+  padding: 24px 0;
+
+  &.dark {
+    background-color: transparent;
+
+    button {
+      @include primary-button;
+      padding: 12px 24px;
+      font-size: 15px;
+    }
+  }
+
+  .container {
+    @include panel;
+    border-radius: 32px;
+    padding: 56px 64px;
+    box-sizing: border-box;
+    gap: 80px;
+
+    .item {
+      h1 {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      p {
+        letter-spacing: 0;
+        font-weight: 400;
+      }
+
+      img {
+        border-radius: var(--radius);
+      }
+    }
+  }
+}
+
+// ------------------------------------------------------------------------- footer
+
+.footer {
+  margin: 60px 0 0;
+  padding: 48px 0 32px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+
+  .container {
+    .top .item {
+      gap: 12px;
+
+      h2 {
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      span {
+        font-weight: 400;
+        font-size: 14px;
+      }
+
+      .link span:hover {
+        color: var(--primary);
+      }
+    }
+
+    hr {
+      margin: 36px 0 24px;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .bottom .left h2 {
+      color: var(--text);
+      font-weight: 800;
+    }
+  }
+}
+
+// ------------------------------------------------------------------------- browse
+
+.items .container,
+.favourites .container {
+  > p:first-child,
+  h1 {
+    color: var(--text);
+    font-size: 28px;
+    font-weight: 800;
+  }
+
+  .filters,
+  .freeFrom {
+    button[type='submit'] {
+      @include primary-button;
+      padding: 8px 18px;
+    }
+
+    input,
+    select {
+      @include field;
+      padding: 8px 12px;
+    }
+
+    .chip {
+      border-color: var(--border);
+      background: var(--surface);
+      font-weight: 500;
+
+      &.active {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        color: var(--on-primary);
+      }
+    }
+
+    .clear {
+      color: var(--primary);
+    }
+  }
+
+  .pager button {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+
+    &:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    &:disabled {
+      color: var(--text-faint);
+    }
+  }
+}
+
+// ------------------------------------------------------------------------- item page
+
+.item .container {
+  .left {
+    h1 {
+      font-size: 34px;
+      font-weight: 800;
+    }
+
+    .slider {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+
+      img {
+        border-radius: var(--radius-sm);
+      }
+    }
+
+    .seller {
+      .user .info button {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: var(--radius-pill);
+        padding: 9px 18px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover {
+          border-color: var(--primary);
+          color: var(--primary);
+        }
+      }
+
+      .box {
+        @include panel;
+        padding: 24px;
+
+        hr {
+          border: none;
+          border-top: 1px solid var(--border);
+        }
+      }
+    }
+  }
+
+  .left h2 {
+    font-weight: 700;
+  }
+
+  .right {
+    @include panel;
+    padding: 24px;
+    box-shadow: var(--shadow);
+
+    .price {
+      h3 {
+        font-weight: 700;
+      }
+
+      h2 {
+        font-weight: 800;
+        color: var(--primary);
+      }
+    }
+
+    button {
+      @include primary-button;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+    }
+
+    .unavailable {
+      border-radius: var(--radius-sm);
+    }
+  }
+}
+
+.reviews {
+  .add .addForm {
+    input,
+    select {
+      @include field;
+      padding: 14px 16px;
+    }
+
+    button {
+      @include primary-button;
+      padding: 12px 22px;
+      width: auto;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+}
+
+.review .helpful .vote {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-muted);
+
+  &.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-soft);
+  }
+}
+
+// ------------------------------------------------------------------------- forms
+
+.login,
+.register {
+  form {
+    h1 {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    input,
+    textarea {
+      @include field;
+      padding: 14px 16px;
+      font-size: 16px;
+    }
+
+    button {
+      @include primary-button;
+      padding: 14px;
+      font-size: 16px;
+    }
+  }
+}
+
+.login form {
+  @include panel;
+  margin: 60px 0;
+  padding: 40px;
+  box-sizing: content-box;
+  gap: 14px;
+  box-shadow: var(--shadow);
+}
+
+.account .card {
+  @include panel;
+  padding: 36px;
+  box-shadow: var(--shadow);
+
+  h1 {
+    color: var(--text);
+    font-weight: 800;
+  }
+
+  input {
+    @include field;
+    padding: 14px 16px;
+  }
+
+  button {
+    @include primary-button;
+    padding: 14px;
+  }
+
+  a {
+    color: var(--primary);
+    font-weight: 600;
+  }
+}
+
+.add .container {
+  h1 {
+    color: var(--text);
+    font-weight: 800;
+  }
+
+  .sections {
+    gap: 32px;
+    align-items: flex-start;
+
+    .info,
+    .details {
+      @include panel;
+      padding: 28px;
+      background-color: var(--surface);
+
+      input,
+      select,
+      textarea {
+        @include field;
+        padding: 14px 16px;
+      }
+
+      input[type='file'] {
+        padding: 10px 12px;
+      }
+
+      input[type='checkbox'] {
+        accent-color: var(--primary);
+      }
+
+      button {
+        @include primary-button;
+        padding: 14px 22px;
+      }
+    }
+
+    .details .addedFeatures button {
+      background: var(--danger-soft);
+      color: var(--danger-text);
+      border: none;
+      padding: 0 12px;
+      font-weight: 600;
+    }
+  }
+}
+
+.profile .container {
+  .section {
+    @include panel;
+
+    input,
+    textarea {
+      @include field;
+    }
+
+    button {
+      @include primary-button;
+      padding: 12px 22px;
+    }
+
+    &.danger {
+      border-color: var(--danger-border);
+
+      button {
+        background-color: var(--danger);
+        color: #fff;
+
+        &:hover:not(:disabled) {
+          background-color: var(--danger);
+          filter: brightness(0.92);
+        }
+      }
+    }
+  }
+
+  .header .badge {
+    @include chip(--warning-soft, --warning-text);
+    padding: 2px 10px;
+    font-size: 12px;
+
+    &.confirmed {
+      @include chip(--success-soft, --success-text);
+      padding: 2px 10px;
+      font-size: 12px;
+    }
+  }
+
+  .notice {
+    border-radius: var(--radius-sm);
+
+    button {
+      background: transparent;
+      border-radius: var(--radius-pill);
+      font-weight: 600;
+    }
+  }
+}
+
+// ------------------------------------------------------------------------- tables
+
+.orders .container,
+.myitems .container,
+.messages .container {
+  .title {
+    margin-bottom: 20px;
+
+    h1 {
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    button {
+      @include primary-button;
+      padding: 10px 20px;
+    }
+  }
+
+  table {
+    @include panel;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+
+    th {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--row-tint);
+    }
+
+    td .image {
+      width: 56px;
+      height: 40px;
+      border-radius: 8px;
+    }
+  }
+}
+
+.orders .container table td {
+  .status {
+    @include chip(--neutral-soft, --neutral-text);
+
+    &.placed {
+      @include chip(--warning-soft, --warning-text);
+    }
+
+    &.accepted,
+    &.preparing {
+      @include chip(--info-soft, --info-text);
+    }
+
+    &.out_for_delivery {
+      @include chip(--purple-soft, --purple-text);
+    }
+
+    &.delivered {
+      @include chip(--success-soft, --success-text);
+    }
+
+    &.cancelled {
+      @include chip(--neutral-soft, --neutral-text);
+    }
+  }
+
+  .note,
+  .quantity {
+    color: var(--text-muted);
+  }
+
+  .actions {
+    .advance-btn {
+      @include primary-button;
+      padding: 7px 14px;
+      font-size: 13px;
+    }
+
+    .cancel-btn {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+      border-radius: var(--radius-pill);
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+
+      &:hover:not(:disabled) {
+        background: var(--danger-soft);
+        color: var(--danger-text);
+      }
+    }
+  }
+}
+
+.myitems .container {
+  color: var(--text-muted);
+
+  .summary .stat {
+    @include panel;
+
+    .label {
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 800;
+    }
+  }
+
+  table {
+    .state {
+      &.available {
+        @include chip(--success-soft, --success-text);
+      }
+
+      &.paused {
+        @include chip(--neutral-soft, --neutral-text);
+      }
+    }
+
+    .actions {
+      .toggle {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: var(--radius-pill);
+        padding: 6px 14px;
+        font-weight: 600;
+
+        &:hover:not(:disabled) {
+          border-color: var(--primary);
+          color: var(--primary);
+        }
+      }
+
+      .edit {
+        color: var(--primary);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.messages .container table {
+  tr.active {
+    background-color: var(--primary-soft);
+  }
+
+  button {
+    @include primary-button;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .view-btn {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+
+    &:hover:not(:disabled) {
+      background: transparent;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  }
+}
+
+// ------------------------------------------------------------------------- chat
+
+.message .container {
+  .messages {
+    @include panel;
+    padding: 28px;
+
+    .item {
+      p {
+        background-color: var(--surface-2);
+        color: var(--text);
+        border-radius: 4px 18px 18px 18px;
+        padding: 12px 16px;
+        line-height: 1.45;
+      }
+
+      &.owner p {
+        background-color: var(--primary);
+        color: var(--on-primary);
+        border-radius: 18px 4px 18px 18px;
+      }
+    }
+  }
+
+  hr {
+    border: none;
+    margin: 16px 0;
+  }
+
+  .write {
+    textarea {
+      @include field;
+      padding: 14px 16px;
+    }
+
+    button {
+      @include primary-button;
+      padding: 14px 24px;
+    }
+  }
+}
+
+// ------------------------------------------------------------------------- checkout
+
+.pay {
+  .panel.checkout,
+  .panel form {
+    @include panel;
+    box-shadow: var(--shadow);
+  }
+
+  button {
+    @include primary-button;
+    border-radius: var(--radius-sm);
+  }
+
+  .linkButton {
+    background: none;
+    color: var(--primary);
+    border-radius: 0;
+
+    &:hover:not(:disabled) {
+      background: none;
+    }
+  }
+
+  .summary {
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+
+    h2,
+    .total {
+      color: var(--text);
+    }
+
+    span {
+      color: var(--text-muted);
+    }
+  }
+
+  .deliverTo {
+    color: var(--text-muted);
+  }
+
+  .checkout {
+    h1,
+    label {
+      color: var(--text);
+    }
+
+    input,
+    textarea {
+      @include field;
+    }
+
+    .quantity button {
+      border-radius: 50%;
+    }
+  }
+}
+
+.success {
+  h1 {
+    color: var(--primary);
+    font-weight: 800;
+  }
+
+  p {
+    color: var(--text-muted);
+  }
+
+  .icon,
+  .countdown {
+    background-color: transparent;
+    color: var(--primary);
+  }
+
+  .icon {
+    background-color: var(--success);
+  }
+
+  button {
+    @include primary-button;
+    padding: 12px 24px;
+  }
+}
+
+.notFound {
+  h1 {
+    color: var(--primary);
+    font-weight: 800;
+  }
+
+  p {
+    color: var(--text-muted);
+  }
+
+  a {
+    color: var(--primary);
+  }
+}

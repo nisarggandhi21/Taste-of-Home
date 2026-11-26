@@ -13,8 +13,6 @@ $phone: 640px;
 .navbar .menu,
 .slide .container,
 .footer .container,
-.featured .container,
-.home .features .container,
 .home .explore .container,
 .items .container,
 .item .container,
@@ -35,8 +33,6 @@ $phone: 640px;
   .navbar .menu,
   .slide .container,
   .footer .container,
-  .featured .container,
-  .home .features .container,
   .home .explore .container,
   .items .container,
   .item .container,
@@ -50,6 +46,31 @@ $phone: 640px;
   .login form {
     padding-left: 20px;
     padding-right: 20px;
+  }
+}
+
+// The hero and the home feature panel are cards with their own inner padding, so their
+// gutter goes on the wrapper.
+.featured .container,
+.home .features .container {
+  max-width: 100%;
+}
+
+@media (max-width: 1440px) {
+  .featured,
+  .home .features {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .slide .container .nav-button {
+    &.prev {
+      left: -10px;
+    }
+
+    &.next {
+      right: -10px;
+    }
   }
 }
 
@@ -70,13 +91,17 @@ $phone: 640px;
   }
 
   // Hero: text only.
-  .featured {
-    height: auto;
-    padding: 50px 0;
+  .featured .container {
+    min-height: 0;
+    padding: 44px 36px;
 
-    .container .right {
+    .right {
       display: none;
     }
+  }
+
+  .home .features .container {
+    padding: 40px 36px;
   }
 
   .slide {
@@ -117,10 +142,12 @@ $phone: 640px;
     flex-direction: column;
     gap: 30px;
 
-    // Let the form controls shrink with the screen.
+    // Let the panels and their form controls shrink with the screen.
     .info,
     .details {
       min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     input,
@@ -133,6 +160,16 @@ $phone: 640px;
     .images,
     .addedFeatures {
       flex-wrap: wrap;
+    }
+
+    // File pickers keep their natural width unless told otherwise.
+    .images .imagesInputs {
+      width: 100%;
+      min-width: 0;
+    }
+
+    input[type='file'] {
+      width: 100%;
     }
   }
 
@@ -169,15 +206,27 @@ $phone: 640px;
     padding-bottom: 14px;
 
     .logo {
-      font-size: 24px;
+      font-size: 21px;
     }
 
     .links {
-      gap: 14px;
+      gap: 10px;
+      font-size: 14px;
 
-      // The logo already says it.
-      > .link:first-child {
+      // The logo leads home and the hero leads to the food, so both text links go.
+      > .link:first-child,
+      > .link:nth-child(2) {
         display: none;
+      }
+
+      .user {
+        padding-right: 10px;
+
+        span {
+          max-width: 84px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
 
       button {
@@ -191,9 +240,19 @@ $phone: 640px;
     }
   }
 
+  .featured .container,
+  .home .features .container {
+    padding: 28px 22px;
+    border-radius: 24px;
+  }
+
   .featured .container .left {
     h1 {
       font-size: 30px;
+    }
+
+    .search button {
+      padding: 0 18px;
     }
 
     .popular {

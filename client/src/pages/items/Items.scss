@@ -13,7 +13,7 @@
 
     // Direct children only, so text inside the item cards keeps its own style.
     > p {
-      color: #999;
+      color: var(--text-faint);
       font-weight: 300;
     }
 
@@ -29,25 +29,25 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        color: #555;
+        color: var(--text-muted);
         font-weight: 300;
       }
 
       input,
       select {
         padding: 6px 8px;
-        border: 1px solid lightgrey;
+        border: 1px solid var(--border);
         border-radius: 5px;
         outline: none;
         font-size: 14px;
-        background: white;
+        background: var(--surface);
 
         &:focus {
-          border-color: #1dbf73;
+          border-color: var(--primary);
         }
 
         &::placeholder {
-          color: #999;
+          color: var(--text-faint);
         }
       }
 
@@ -57,8 +57,8 @@
 
       button {
         padding: 6px 12px;
-        background-color: #1dbf73;
-        color: white;
+        background-color: var(--primary);
+        color: var(--on-primary);
         border: none;
         font-weight: 500;
         border-radius: 5px;
@@ -71,14 +71,14 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
-      color: #555;
+      color: var(--text-muted);
       font-weight: 300;
 
       .chip {
         display: inline-flex;
         align-items: center;
         padding: 4px 12px;
-        border: 1px solid lightgrey;
+        border: 1px solid var(--border);
         border-radius: 999px;
         font-size: 13px;
         cursor: pointer;
@@ -93,13 +93,13 @@
         }
 
         &:focus-within {
-          outline: 2px solid #1dbf7366;
+          outline: 2px solid var(--primary-ring);
         }
 
         &.active {
-          background-color: #1dbf73;
-          border-color: #1dbf73;
-          color: white;
+          background-color: var(--primary);
+          border-color: var(--primary);
+          color: var(--on-primary);
           font-weight: 500;
         }
       }
@@ -109,7 +109,7 @@
         padding: 4px 8px;
         background: none;
         border: none;
-        color: #1dbf73;
+        color: var(--primary);
         font-size: 13px;
         text-decoration: underline;
         cursor: pointer;
@@ -118,12 +118,12 @@
 
     .hint {
       font-size: 13px;
-      color: #8a6d00;
+      color: var(--warning-text);
     }
 
     .count {
       margin-top: 5px;
-      color: #555;
+      color: var(--text-muted);
       font-size: 14px;
     }
 
@@ -146,20 +146,20 @@
       justify-content: center;
       gap: 20px;
       padding: 10px 0 30px;
-      color: #555;
+      color: var(--text-muted);
 
       button {
         padding: 8px 16px;
-        background: white;
-        border: 1px solid #1dbf73;
-        color: #1dbf73;
+        background: var(--surface);
+        border: 1px solid var(--primary);
+        color: var(--primary);
         border-radius: 5px;
         font-weight: 500;
         cursor: pointer;
 
         &:disabled {
-          border-color: lightgrey;
-          color: #aaa;
+          border-color: var(--border);
+          color: var(--text-faint);
           cursor: default;
         }
       }

@@ -1,7 +1,7 @@
 .myitems {
   display: flex;
   justify-content: center;
-  color: #555;
+  color: var(--text-muted);
 
   .container {
     width: 1400px;
@@ -12,8 +12,8 @@
       justify-content: space-between;
 
       button {
-        background-color: #1dbf73;
-        color: white;
+        background-color: var(--primary);
+        color: var(--on-primary);
         font-weight: 500;
         border: none;
         padding: 10px;
@@ -46,7 +46,7 @@
           }
         }
         &:nth-child(even) {
-          background-color: #1dbf730f;
+          background-color: var(--row-tint);
         }
       }
     }
@@ -67,19 +67,19 @@
       flex-direction: column;
       gap: 4px;
       padding: 16px 20px;
-      border: 1px solid #e4e5e7;
+      border: 1px solid var(--border);
       border-radius: 8px;
 
       .label {
         font-size: 13px;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: #74767e;
+        color: var(--text-muted);
       }
 
       strong {
         font-size: 24px;
-        color: #222;
+        color: var(--text);
       }
 
       .detail {
@@ -97,20 +97,9 @@
       color: inherit;
     }
 
+    // Colours are set in modern.scss, so they follow the theme.
     .state {
-      padding: 4px 10px;
-      border-radius: 5px;
-      font-size: 13px;
-      font-weight: 500;
-      color: white;
-
-      &.available {
-        background-color: #1dbf73;
-      }
-
-      &.paused {
-        background-color: #868e96;
-      }
+      white-space: nowrap;
     }
 
     .actions {
@@ -120,10 +109,10 @@
 
       .toggle {
         padding: 5px 10px;
-        background: white;
-        border: 1px solid #1dbf73;
+        background: var(--surface);
+        border: 1px solid var(--primary);
         border-radius: 5px;
-        color: #1dbf73;
+        color: var(--primary);
         font-size: 13px;
         cursor: pointer;
 
@@ -134,7 +123,7 @@
       }
 
       .edit {
-        color: #1dbf73;
+        color: var(--primary);
         font-size: 14px;
       }
     }

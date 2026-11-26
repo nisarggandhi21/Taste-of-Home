@@ -1,9 +1,10 @@
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import CheckoutForm from '../../components/checkoutForm/checkoutForm';
+import { ThemeContext } from '../../context/ThemeContext';
 import { itemService } from '../../services/itemService';
 import { orderService } from '../../services/orderService';
 import './Pay.scss';
@@ -30,6 +31,7 @@ const loadSavedAddress = () => {
 
 const Pay = () => {
   const { id } = useParams();
+  const { theme } = useContext(ThemeContext);
   const [clientSecret, setClientSecret] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -93,7 +95,7 @@ const Pay = () => {
             </button>
           </p>
           <Elements
-            options={{ clientSecret, appearance: { theme: 'stripe' } }}
+            options={{ clientSecret, appearance: { theme: theme === 'dark' ? 'night' : 'stripe' } }}
             stripe={stripePromise}
           >
             <CheckoutForm

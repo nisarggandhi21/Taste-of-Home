@@ -1,16 +1,16 @@
 .home {
   .features {
-    background-color: #8f9779;
+    background-color: var(--hero-solid);
     display: flex;
     justify-content: center;
     padding: 100px 0px;
-    color: white;
+    color: var(--text);
 
     &.dark {
-      background-color: #8f9779;
+      background-color: var(--hero-solid);
 
       h1 {
-        color: black !important;
+        color: var(--text) !important;
       }
 
       i {
@@ -19,19 +19,19 @@
 
       p {
         margin-bottom: 20px;
-        color: white !important;
+        color: var(--text-muted) !important;
       }
 
       .title {
-        color: white !important;
+        color: var(--text-muted) !important;
         font-weight: 300 !important;
         font-size: 14px !important;
       }
 
       button {
-        background-color: #d2b48c;
+        background-color: var(--primary);
         border: none;
-        color: white;
+        color: var(--on-primary);
         padding: 10px 20px;
         border-radius: 5px;
         width: max-content;
@@ -63,7 +63,7 @@
         h1 {
           font-weight: 900;
           margin-bottom: 10px;
-          color: #000;
+          color: var(--text);
         }
         .title {
           display: flex;
@@ -71,7 +71,7 @@
           gap: 10px;
           font-weight: 700;
           font-size: 18px;
-          color: #000;
+          color: var(--text);
           img {
             width: 24px;
             height: 24px;
@@ -80,7 +80,7 @@
         p {
           font-size: 18px;
           font-weight: 500;
-          color: white;
+          color: var(--text-muted);
           line-height: 28px;
           letter-spacing: 1px;
         }
@@ -109,7 +109,7 @@
       width: 1400px;
 
       h1 {
-        color: #555;
+        color: var(--text-muted);
       }
 
       .items {
@@ -137,7 +137,7 @@
           .line {
             width: 50px;
             height: 2px;
-            background-color: lightgray;
+            background-color: var(--border);
             transition: all 0.3s ease;
           }
 
@@ -148,7 +148,7 @@
           &:hover {
             .line {
               width: 80px;
-              background-color: #8f9779;
+              background-color: var(--hero-solid);
             }
           }
         }

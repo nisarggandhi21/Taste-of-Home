@@ -11,7 +11,7 @@
   .icon {
     width: 100px;
     height: 100px;
-    background-color: #1dbf73;
+    background-color: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -26,12 +26,12 @@
   }
 
   h1 {
-    color: #1dbf73;
+    color: var(--primary);
     font-size: 32px;
   }
 
   p {
-    color: #555;
+    color: var(--text-muted);
     font-size: 18px;
     max-width: 500px;
     line-height: 1.5;
@@ -39,13 +39,13 @@
 
   .countdown {
     font-weight: bold;
-    color: #1dbf73;
+    color: var(--primary);
   }
 
   button {
     margin-top: 20px;
-    background-color: #1dbf73;
-    color: white;
+    background-color: var(--primary);
+    color: var(--on-primary);
     padding: 12px 24px;
     border: none;
     border-radius: 5px;
@@ -55,7 +55,7 @@
     transition: background-color 0.2s;
 
     &:hover {
-      background-color: #19a463;
+      background-color: var(--primary-hover);
     }
   }
 }

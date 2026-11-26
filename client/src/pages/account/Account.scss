@@ -12,33 +12,33 @@
     gap: 16px;
 
     h1 {
-      color: gray;
+      color: var(--text-muted);
       margin-bottom: 8px;
     }
 
     p {
-      color: #555;
+      color: var(--text-muted);
       line-height: 1.5;
     }
 
     label {
-      color: gray;
+      color: var(--text-muted);
       font-size: 16px;
     }
 
     input {
       padding: 16px;
-      border: 1px solid rgb(216, 214, 214);
+      border: 1px solid var(--border);
       font-size: 16px;
     }
 
     button {
       border: none;
       padding: 16px;
-      color: white;
+      color: var(--on-primary);
       font-weight: 500;
       font-size: 16px;
-      background-color: #1dbf73;
+      background-color: var(--primary);
       cursor: pointer;
 
       &:disabled {
@@ -48,18 +48,18 @@
     }
 
     a {
-      color: #1dbf73;
+      color: var(--primary);
     }
 
     .notice {
       padding: 14px 16px;
-      background: #e9f9f1;
+      background: var(--success-soft);
       border-radius: 5px;
-      color: #116b41;
+      color: var(--success-text);
 
       &.problem {
-        background: #fdecea;
-        color: #8a1c14;
+        background: var(--danger-soft);
+        color: var(--danger-text);
       }
     }
   }

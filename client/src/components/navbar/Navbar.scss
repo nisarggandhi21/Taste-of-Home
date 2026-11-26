@@ -2,22 +2,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #8f9779;
-  color: white;
   position: sticky;
   top: 0;
   z-index: 999;
-  transition: 0.5s all ease;
+  color: var(--text);
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 
+  // Scrolled, or on any page other than home: a frosted bar.
   &.active {
-    background-color: white;
-    color: black;
-
-    button {
-      background-color: white !important;
-      color: #1dbf73 !important;
-      border: 1px solid #1dbf73 !important;
-    }
+    background-color: var(--nav-bg);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom-color: var(--border);
+    box-shadow: var(--shadow-sm);
   }
 
   .container {
@@ -25,29 +27,37 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 0px;
+    padding: 14px 0;
 
     .logo {
-      font-size: 34px;
-      font-weight: bold;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
 
-      .text {
-      }
-
-      .dot {
-        font-weight: bold;
-        color: #f39c12;
+      .text::after {
+        content: '.';
+        color: var(--primary);
       }
     }
+
     .links {
       display: flex;
       align-items: center;
-      gap: 24px;
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 500;
+      gap: 22px;
+      font-weight: 600;
+      font-size: 15px;
 
       span {
         white-space: nowrap;
+      }
+
+      > .link {
+        color: var(--text-muted);
+        transition: color 0.15s ease;
+
+        &:hover {
+          color: var(--text);
+        }
       }
 
       .user {
@@ -56,6 +66,10 @@
         gap: 10px;
         cursor: pointer;
         position: relative;
+        padding: 4px 12px 4px 4px;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border);
+        background: var(--surface);
 
         img {
           width: 32px;
@@ -66,52 +80,78 @@
 
         .options {
           position: absolute;
-          top: 50px;
+          top: 52px;
           right: 0;
-          padding: 20px;
-          background-color: white;
-          border-radius: 10px;
+          padding: 8px;
+          background-color: var(--surface);
+          backdrop-filter: var(--glass-blur);
+          -webkit-backdrop-filter: var(--glass-blur);
+          border-radius: var(--radius-sm);
           z-index: 999;
-          border: 1px solid lightgrey;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow-lg);
           display: flex;
           flex-direction: column;
-          gap: 10px;
-          width: 200px;
-          font-weight: 300;
-          color: gray;
+          gap: 2px;
+          width: 210px;
+          font-weight: 500;
+          color: var(--text-muted);
+
+          .link {
+            padding: 9px 12px;
+            border-radius: 8px;
+
+            &:hover {
+              background: var(--surface-2);
+              color: var(--text);
+            }
+          }
         }
       }
 
-      button {
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        border: 1px solid white;
-        background-color: transparent;
+      // The "Join" button (the theme switcher has buttons of its own).
+      > .link button {
+        color: var(--on-primary);
+        padding: 9px 20px;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--primary);
+        background-color: var(--primary);
+        font-weight: 700;
+        font-size: 14px;
         cursor: pointer;
 
         &:hover {
-          background-color: #1dbf73;
-          border-color: #1dbf73;
+          background-color: var(--primary-hover);
+          border-color: var(--primary-hover);
         }
       }
     }
   }
 
   hr {
-    width: calc(100% - 2px);
-    height: 0;
-    border-top: 0.5px solid #ebe9e9;
-    border-bottom: 0.5px solid #ebe9e9;
+    display: none;
   }
 
   .menu {
     width: 1400px;
-    padding: 10px 0px;
+    padding: 8px 0 10px;
     display: flex;
     justify-content: space-between;
-    color: gray;
-    font-weight: 300;
-    font-family: 'Montserrat', sans-serif;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 14px;
+
+    .menuLink {
+      padding: 4px 2px;
+      border-bottom: 2px solid transparent;
+      transition:
+        color 0.15s ease,
+        border-color 0.15s ease;
+
+      &:hover {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+    }
   }
 }

@@ -4,6 +4,7 @@ import './Navbar.scss';
 import newRequest from '../../utils/newRequest';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import ThemeSwitcher from '../themeSwitcher/ThemeSwitcher';
 
 function Navbar() {
   const [active, setActive] = useState(false);
@@ -50,7 +51,7 @@ function Navbar() {
           <Link className="link" to="/Items">
             Explore
           </Link>
-          {/* {!currentUser?.isSeller && <span>Become a Seller</span>} */}
+          <ThemeSwitcher />
           {currentUser ? (
             <div className="user" onClick={() => setOpen(!open)}>
               <img src={currentUser.img || '/img/noavatar.jpg'} alt="" />

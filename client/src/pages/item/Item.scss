@@ -18,7 +18,7 @@
         font-weight: 300;
         text-transform: uppercase;
         font-size: 13px;
-        color: #555;
+        color: var(--text-muted);
       }
 
       h1 {
@@ -54,7 +54,7 @@
           span {
             font-size: 14px;
             font-weight: bold;
-            color: #ffc108;
+            color: var(--star);
           }
         }
       }
@@ -64,12 +64,12 @@
         align-items: center;
         justify-content: center;
         gap: 20px;
-        background-color: #f5f5f5;
+        background-color: var(--surface-2);
         padding: 20px;
 
         .arrow {
           font-size: 30px;
-          color: gray;
+          color: var(--text-muted);
           cursor: pointer;
           user-select: none;
         }
@@ -88,7 +88,7 @@
       p {
         font-weight: 300;
         line-height: 25px;
-        color: #555;
+        color: var(--text-muted);
       }
 
       .seller {
@@ -127,21 +127,21 @@
               span {
                 font-size: 14px;
                 font-weight: bold;
-                color: #ffc108;
+                color: var(--star);
               }
             }
 
             button {
-              background-color: white;
+              background-color: var(--surface);
               border-radius: 5px;
-              border: 1px solid gray;
+              border: 1px solid var(--border);
               padding: 10px;
             }
           }
         }
 
         .box {
-          border: 1px solid lightgray;
+          border: 1px solid var(--border);
           border-radius: 5px;
           padding: 20px;
           margin-top: 20px;
@@ -166,7 +166,7 @@
 
           hr {
             height: 0;
-            border: 0.5px solid lightgray;
+            border: 0.5px solid var(--border);
             margin-bottom: 20px;
           }
         }
@@ -175,7 +175,7 @@
 
     .right {
       flex: 1;
-      border: 1px solid lightgray;
+      border: 1px solid var(--border);
       padding: 20px;
       border-radius: 5px;
       display: flex;
@@ -201,7 +201,7 @@
       }
 
       p {
-        color: gray;
+        color: var(--text-muted);
         margin: 10px 0px;
       }
 
@@ -234,7 +234,7 @@
           justify-content: flex-start;
           gap: 10px;
           font-weight: 300;
-          color: gray;
+          color: var(--text-muted);
 
           img {
             width: 14px;
@@ -243,9 +243,9 @@
       }
 
       button {
-        background-color: #1dbf73;
+        background-color: var(--primary);
         padding: 10px;
-        color: white;
+        color: var(--on-primary);
         font-weight: 500;
         border: none;
         font-size: 18px;
@@ -265,7 +265,7 @@
 
     .allergens {
       font-size: 14px;
-      color: #555;
+      color: var(--text-muted);
       margin: 0;
     }
   }
@@ -273,8 +273,8 @@
 
 .item .container .right .unavailable {
   padding: 10px;
-  background: #fff4e5;
+  background: var(--warning-soft);
   border-radius: 5px;
-  color: #8a5300;
+  color: var(--warning-text);
   text-align: center;
 }

@@ -21,7 +21,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    background: var(--surface);
 
     &::after {
       content: '';

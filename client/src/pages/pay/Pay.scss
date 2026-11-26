@@ -1,6 +1,3 @@
-// Variables
-$primary-color: #5469d4;
-
 // Styles
 .pay {
   display: flex;
@@ -11,9 +8,9 @@ $primary-color: #5469d4;
   box-sizing: border-box;
 
   button {
-    background: $primary-color;
+    background: var(--primary);
     font-family: Arial, sans-serif;
-    color: #ffffff;
+    color: var(--on-primary);
     border-radius: 4px;
     border: 0;
     padding: 12px 16px;
@@ -58,7 +55,7 @@ $primary-color: #5469d4;
     gap: 14px;
     padding: 14px;
     margin-bottom: 20px;
-    background: #f6f8fa;
+    background: var(--surface-2);
     border-radius: 7px;
 
     img {
@@ -74,7 +71,7 @@ $primary-color: #5469d4;
     }
 
     span {
-      color: #697386;
+      color: var(--text-muted);
       font-size: 14px;
     }
 
@@ -86,7 +83,7 @@ $primary-color: #5469d4;
   }
 
   .deliverTo {
-    color: #697386;
+    color: var(--text-muted);
     font-size: 14px;
     line-height: 1.5;
     margin-bottom: 20px;
@@ -98,7 +95,7 @@ $primary-color: #5469d4;
     padding: 0;
     background: none;
     box-shadow: none;
-    color: $primary-color;
+    color: var(--primary);
     font-size: 14px;
     text-decoration: underline;
   }
@@ -115,7 +112,7 @@ $primary-color: #5469d4;
     label {
       font-size: 14px;
       font-weight: 500;
-      color: #30313d;
+      color: var(--text);
       margin: 12px 0 6px;
     }
 
@@ -125,12 +122,12 @@ $primary-color: #5469d4;
       box-sizing: border-box;
       padding: 10px 12px;
       font-size: 16px;
-      border: 1px solid #d5d9e0;
+      border: 1px solid var(--border);
       border-radius: 5px;
 
       &:focus {
-        outline: 2px solid rgba($primary-color, 0.35);
-        border-color: $primary-color;
+        outline: 2px solid var(--primary-ring);
+        border-color: var(--primary);
       }
     }
 
@@ -193,7 +190,7 @@ $primary-color: #5469d4;
 }
 
 #payment-message {
-  color: rgb(105, 115, 134);
+  color: var(--text-muted);
   font-size: 16px;
   line-height: 20px;
   padding-top: 12px;
@@ -212,7 +209,7 @@ $primary-color: #5469d4;
 }
 
 .spinner {
-  color: #ffffff;
+  color: var(--on-primary);
   font-size: 22px;
   text-indent: -99999px;
   margin: 0px auto;
@@ -231,7 +228,7 @@ $primary-color: #5469d4;
   &:before {
     width: 10.4px;
     height: 20.4px;
-    background: $primary-color;
+    background: var(--primary);
     border-radius: 20.4px 0 0 20.4px;
     top: -0.2px;
     left: -0.2px;
@@ -242,7 +239,7 @@ $primary-color: #5469d4;
   &:after {
     width: 10.4px;
     height: 10.2px;
-    background: $primary-color;
+    background: var(--primary);
     border-radius: 0 10.2px 10.2px 0;
     top: -0.1px;
     left: 10.2px;

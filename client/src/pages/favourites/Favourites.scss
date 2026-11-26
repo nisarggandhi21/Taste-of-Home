@@ -12,11 +12,11 @@
     }
 
     .empty {
-      color: #555;
+      color: var(--text-muted);
       padding: 40px 0;
 
       a {
-        color: #1dbf73;
+        color: var(--primary);
       }
     }
 

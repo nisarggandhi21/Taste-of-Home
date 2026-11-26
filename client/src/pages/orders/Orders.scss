@@ -11,8 +11,8 @@
       justify-content: space-between;
 
       button {
-        background-color: #1dbf73;
-        color: white;
+        background-color: var(--primary);
+        color: var(--on-primary);
         font-weight: 500;
         border: none;
         padding: 10px;
@@ -22,7 +22,7 @@
 
     .empty {
       margin-top: 30px;
-      color: #6c757d;
+      color: var(--text-muted);
     }
 
     table {
@@ -66,65 +66,39 @@
             }
 
             .advance-btn {
-              background-color: #1dbf73;
-              color: white;
+              background-color: var(--primary);
+              color: var(--on-primary);
 
               &:hover:not(:disabled) {
-                background-color: #19a463;
+                background-color: var(--primary-hover);
               }
             }
 
             .cancel-btn {
               background-color: transparent;
-              color: #c0392b;
-              border: 1px solid #c0392b;
+              color: var(--danger);
+              border: 1px solid var(--danger);
 
               &:hover:not(:disabled) {
-                background-color: #c0392b;
-                color: white;
+                background-color: var(--danger);
+                color: var(--on-primary);
               }
             }
           }
 
+          // Colours for each status are set in modern.scss, so they follow the theme.
           .status {
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: 500;
-
             white-space: nowrap;
-            color: white;
-
-            &.placed {
-              background-color: #ffc108;
-            }
-
-            &.accepted,
-            &.preparing {
-              background-color: #3d8bfd;
-            }
-
-            &.out_for_delivery {
-              background-color: #6f42c1;
-            }
-
-            &.delivered {
-              background-color: #1dbf73;
-            }
-
-            &.cancelled {
-              background-color: #868e96;
-            }
           }
 
           .note {
             margin-top: 6px;
             font-size: 12px;
-            color: #6c757d;
+            color: var(--text-muted);
           }
 
           .quantity {
-            color: #6c757d;
+            color: var(--text-muted);
           }
 
           &.address {
@@ -136,7 +110,7 @@
         }
 
         &:nth-child(even) {
-          background-color: #1dbf730f;
+          background-color: var(--row-tint);
         }
       }
     }

@@ -1,0 +1,243 @@
+// Design tokens and base styles.
+//
+// Every colour in the app comes from one of these variables, so a theme is just another set
+// of values. The theme is chosen by the `data-theme` attribute on <html>, which is set before
+// first paint by a small script in index.html and afterwards by the theme switcher.
+//
+//   light  warm paper background, white cards
+//   dark   near-black background, raised dark cards
+//   glass  soft colour wash with frosted, see-through cards
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #fbf7f1;
+  --bg-image: none;
+  --surface: #ffffff;
+  --surface-2: #f4eee5;
+  --input-bg: #ffffff;
+  --nav-bg: rgba(251, 247, 241, 0.86);
+  --border: #e9e1d5;
+  --glass-blur: none;
+
+  --text: #211b17;
+  --text-muted: #6d635b;
+  --text-faint: #7d736a;
+
+  --primary: #c9410d;
+  --primary-hover: #b0380a;
+  --on-primary: #ffffff;
+  --primary-soft: #ffeede;
+  --primary-ring: rgba(201, 65, 13, 0.3);
+  --row-tint: rgba(201, 65, 13, 0.035);
+
+  --hero-solid: #fbf7f1;
+  --hero-bg:
+    radial-gradient(circle at 85% 20%, #ffe3c4 0, transparent 46%),
+    radial-gradient(circle at 10% 90%, #d8f5e7 0, transparent 42%), #fff6ea;
+
+  --star: #f08c00;
+  --heart: #e03131;
+  --success: #2b8a3e;
+  --success-soft: #e6f6ea;
+  --success-text: #1f6b30;
+  --warning: #f08c00;
+  --warning-soft: #fff3db;
+  --warning-text: #8a5300;
+  --danger: #c92a2a;
+  --danger-soft: #fdecea;
+  --danger-text: #8a1c14;
+  --danger-border: #f1c0bb;
+  --info: #1971c2;
+  --info-soft: #e3f0fc;
+  --info-text: #124f8a;
+  --purple: #6741d9;
+  --purple-soft: #ece6fd;
+  --purple-text: #4a2ba8;
+  --neutral: #7c746c;
+  --neutral-soft: #efeae3;
+  --neutral-text: #554d46;
+
+  --shadow-sm: 0 1px 2px rgba(33, 27, 23, 0.06);
+  --shadow: 0 1px 2px rgba(33, 27, 23, 0.05), 0 10px 28px rgba(33, 27, 23, 0.08);
+  --shadow-lg: 0 2px 4px rgba(33, 27, 23, 0.06), 0 22px 48px rgba(33, 27, 23, 0.14);
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #131110;
+  --surface: #1e1b19;
+  --surface-2: #292522;
+  --input-bg: #171514;
+  --nav-bg: rgba(19, 17, 16, 0.82);
+  --border: #37312c;
+
+  --text: #f4efe9;
+  --text-muted: #b0a79f;
+  --text-faint: #938a82;
+
+  --primary: #ff8f45;
+  --primary-hover: #ffa466;
+  --on-primary: #221203;
+  --primary-soft: rgba(255, 143, 69, 0.15);
+  --primary-ring: rgba(255, 143, 69, 0.35);
+  --row-tint: rgba(255, 255, 255, 0.025);
+
+  --hero-solid: #131110;
+  --hero-bg:
+    radial-gradient(circle at 85% 20%, #4a2410 0, transparent 46%),
+    radial-gradient(circle at 10% 90%, #10302a 0, transparent 42%), #191513;
+
+  --star: #fcc419;
+  --heart: #ff6b6b;
+  --success: #51cf66;
+  --success-soft: rgba(81, 207, 102, 0.15);
+  --success-text: #8ce99a;
+  --warning: #fcc419;
+  --warning-soft: rgba(252, 196, 25, 0.15);
+  --warning-text: #ffd43b;
+  --danger: #ff6b6b;
+  --danger-soft: rgba(255, 107, 107, 0.15);
+  --danger-text: #ffa8a8;
+  --danger-border: rgba(255, 107, 107, 0.4);
+  --info: #4dabf7;
+  --info-soft: rgba(77, 171, 247, 0.15);
+  --info-text: #a5d8ff;
+  --purple: #9775fa;
+  --purple-soft: rgba(151, 117, 250, 0.18);
+  --purple-text: #d0bfff;
+  --neutral: #8a8179;
+  --neutral-soft: rgba(255, 255, 255, 0.08);
+  --neutral-text: #c9c1b9;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 22px 48px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='glass'] {
+  color-scheme: light;
+
+  --bg: #f6ece4;
+  // A fixed wash of colour for the frosted surfaces to blur.
+  --bg-image:
+    radial-gradient(circle at 8% 12%, #ffd3a1 0, transparent 38%),
+    radial-gradient(circle at 92% 8%, #ffc2d9 0, transparent 36%),
+    radial-gradient(circle at 85% 88%, #a6f0d6 0, transparent 40%),
+    radial-gradient(circle at 12% 92%, #c0cbff 0, transparent 38%);
+  --surface: rgba(255, 255, 255, 0.58);
+  --surface-2: rgba(255, 255, 255, 0.36);
+  --input-bg: rgba(255, 255, 255, 0.7);
+  --nav-bg: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.75);
+  --glass-blur: blur(18px) saturate(160%);
+
+  --text: #241b16;
+  --text-muted: #5a4f47;
+  --text-faint: #7a6e65;
+
+  --primary-soft: rgba(201, 65, 13, 0.12);
+  --row-tint: rgba(255, 255, 255, 0.3);
+  --hero-solid: transparent;
+  --hero-bg: rgba(255, 255, 255, 0.3);
+
+  --success-soft: rgba(43, 138, 62, 0.14);
+  --warning-soft: rgba(240, 140, 0, 0.16);
+  --danger-soft: rgba(201, 42, 42, 0.12);
+  --info-soft: rgba(25, 113, 194, 0.13);
+  --purple-soft: rgba(103, 65, 217, 0.13);
+  --neutral-soft: rgba(60, 45, 35, 0.1);
+
+  --shadow-sm: 0 1px 2px rgba(110, 70, 50, 0.08);
+  --shadow: 0 8px 32px rgba(110, 70, 50, 0.14);
+  --shadow-lg: 0 16px 48px rgba(110, 70, 50, 0.22);
+}
+
+// ---------------------------------------------------------------------------- base
+
+html {
+  background-color: var(--bg);
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  background-image: var(--bg-image);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+* {
+  font-family: var(--font);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font);
+}
+
+input,
+select,
+textarea {
+  background-color: var(--input-bg);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+
+  &::placeholder {
+    color: var(--text-faint);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-ring);
+    outline-offset: 1px;
+    border-color: var(--primary);
+  }
+}
+
+button {
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-ring);
+    outline-offset: 2px;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+::selection {
+  background: var(--primary-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

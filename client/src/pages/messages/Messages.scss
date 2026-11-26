@@ -11,8 +11,8 @@
       justify-content: space-between;
 
       button {
-        background-color: #1dbf73;
-        color: white;
+        background-color: var(--primary);
+        color: var(--on-primary);
         font-weight: 500;
         border: none;
         padding: 10px;
@@ -37,7 +37,7 @@
 
           &:nth-child(2),
           &:nth-child(3) {
-            color: gray;
+            color: var(--text-muted);
           }
 
           .user-info {
@@ -55,19 +55,19 @@
         }
 
         button {
-          background-color: #1dbf73;
-          color: white;
+          background-color: var(--primary);
+          color: var(--on-primary);
           padding: 10px;
           border: none;
           cursor: pointer;
         }
 
         .view-btn {
-          background-color: #4a4a4a;
+          background-color: var(--neutral);
         }
 
         &.active {
-          background-color: #1dbf730f;
+          background-color: var(--row-tint);
         }
       }
     }

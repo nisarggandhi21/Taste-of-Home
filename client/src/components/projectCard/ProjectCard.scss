@@ -1,10 +1,22 @@
 .projectCard {
   width: 300px;
   height: 300px;
-  border-radius: 5px;
+  border-radius: var(--radius);
   overflow: hidden;
   cursor: pointer;
-  border: 1px solid rgb(225, 225, 225);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
 
   img {
     width: 100%;
@@ -15,8 +27,8 @@
   .info {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 15px;
+    gap: 14px;
+    padding: 14px 16px;
 
     img {
       width: 40px;
@@ -27,13 +39,14 @@
 
     .texts {
       h2 {
-        font-size: 14px;
-        font-weight: 500;
+        font-size: 15px;
+        font-weight: 700;
+        text-transform: capitalize;
       }
 
       span {
-        font-size: 14px;
-        font-weight: 300;
+        font-size: 13px;
+        color: var(--text-muted);
       }
     }
   }
