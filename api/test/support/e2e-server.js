@@ -2,7 +2,9 @@
 // seeded records, and a small control server the tests use to simulate a successful payment.
 //
 //   API:      http://localhost:8800
-//   Control:  http://localhost:8801   GET /ready, POST /payment-intents/:id/succeed
+//   Control:  http://localhost:8801   GET /ready
+//                                     POST /payment-intents/:id/succeed
+//                                     GET /emails?to=address   (emails the API "sent")
 import http from 'node:http';
 import { createClient, sampleCheckout, sampleItem } from './client.js';
 import { markSucceeded } from './fake-stripe.js';
@@ -82,12 +84,23 @@ await must('POST', '/api/messages', {
   body: { conversationId: conversation.data.id, desc: 'Is the thali spicy?' },
 });
 
+// Imported after the server has started, so it is the same module instance the API uses.
+const { outbox } = await import('../../utils/mailer.js');
+
 http
   .createServer((req, res) => {
-    const match = req.url.match(/^\/payment-intents\/([^/]+)\/succeed$/);
+    const url = new URL(req.url, 'http://localhost:8801');
+    const succeed = url.pathname.match(/^\/payment-intents\/([^/]+)\/succeed$/);
     try {
-      if (req.method === 'POST' && match) markSucceeded(match[1]);
-      else if (req.url !== '/ready') res.statusCode = 404;
+      if (req.method === 'POST' && succeed) {
+        markSucceeded(succeed[1]);
+      } else if (url.pathname === '/emails') {
+        const to = url.searchParams.get('to');
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify(outbox.filter((message) => !to || message.to === to)));
+      } else if (url.pathname !== '/ready') {
+        res.statusCode = 404;
+      }
     } catch {
       res.statusCode = 404;
     }

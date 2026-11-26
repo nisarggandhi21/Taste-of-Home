@@ -23,3 +23,17 @@ export const registerLimiter = limiter({
   limit: 10,
   message: 'Too many accounts created from this address. Please try again later.',
 });
+
+// Covers every request that makes the server send an email.
+export const emailLimiter = limiter({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  message: 'Too many email requests. Please try again in an hour.',
+});
+
+export const passwordLimiter = limiter({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  skipSuccessfulRequests: true,
+  message: 'Too many attempts. Please try again in 15 minutes.',
+});

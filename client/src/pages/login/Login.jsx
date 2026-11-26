@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
 import { Helmet } from 'react-helmet-async';
@@ -50,6 +50,9 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
+        <Link className="forgot" to="/forgot-password">
+          Forgot your password?
+        </Link>
       </form>
     </div>
   );

@@ -101,6 +101,13 @@ and registrations to 10 per hour, per IP address. If the API runs behind a rever
 Railway, nginx, ...), set `TRUST_PROXY=1` so the limit is applied per visitor instead of to the
 proxy; on Vercel this is done automatically.
 
+**Email.** Password reset and email confirmation send links by email over SMTP, which every
+email provider offers. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `MAIL_FROM` to
+turn it on, and `CLIENT_URL` if the client is not the first entry of `CORS_ALLOWED_ORIGINS`.
+Without these settings no email is sent: in development the message is printed in the API log
+so the link can still be followed, and everything else keeps working. Confirming an email is
+shown on the profile but is not required to use the site.
+
 **Payments.** An order is only marked as paid after the API has checked the payment with Stripe.
 To also cover buyers who close the tab before returning to the site, add a Stripe webhook for the
 `payment_intent.succeeded` event pointing at `/api/orders/webhook` and set `STRIPE_WEBHOOK_SECRET`.

@@ -10,6 +10,16 @@ export const userService = {
     const res = await newRequest.get(`/users/${userId}/stats`);
     return res.data;
   },
+  // The logged-in user's own account, including email and phone.
+  getMe: async () => {
+    const res = await newRequest.get('/users/me');
+    return res.data;
+  },
+  // changes: { img, location, phone, desc }
+  updateMe: async (changes) => {
+    const res = await newRequest.patch('/users/me', changes);
+    return res.data;
+  },
   getFavourites: async () => {
     const res = await newRequest.get('/users/me/favourites');
     return res.data;

@@ -9,6 +9,14 @@ const envSchema = z.object({
   CORS_ALLOWED_ORIGINS: z.string().min(1, 'CORS_ALLOWED_ORIGINS is required'),
   PORT: z.string().optional(),
   TRUST_PROXY: z.string().optional(),
+  // Public address of the client, used for links in emails. Defaults to the first allowed origin.
+  CLIENT_URL: z.string().optional(),
+  // Email is optional: without SMTP_HOST nothing is sent.
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.string().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  MAIL_FROM: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
 });
 

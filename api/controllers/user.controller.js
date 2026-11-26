@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Item from '../models/item.model.js';
 import Order from '../models/order.model.js';
-import User from '../models/user.model.js';
+import User, { ownProfile } from '../models/user.model.js';
 import createError from '../utils/createError.js';
 
 export const deleteUser = async (req, res, next) => {
@@ -29,6 +29,27 @@ export const getUser = async (req, res, next) => {
       return next(createError(404, 'User not found!'));
     }
     res.status(200).send(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return next(createError(404, 'User not found!'));
+    res.status(200).send(ownProfile(user));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateMe = async (req, res, next) => {
+  try {
+    // req.body has been reduced to the fields a user may change about themselves.
+    const user = await User.findByIdAndUpdate(req.userId, { $set: req.body }, { new: true });
+    if (!user) return next(createError(404, 'User not found!'));
+    res.status(200).send(ownProfile(user));
   } catch (error) {
     next(error);
   }

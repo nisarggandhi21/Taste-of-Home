@@ -7,6 +7,9 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthContextProvider } from './context/AuthContext';
 
 import Add from './pages/add/Add';
+import ForgotPassword from './pages/account/ForgotPassword';
+import ResetPassword from './pages/account/ResetPassword';
+import VerifyEmail from './pages/account/VerifyEmail';
 import Favourites from './pages/favourites/Favourites';
 import Home from './pages/home/Home';
 import Item from './pages/item/Item';
@@ -18,6 +21,7 @@ import MyItems from './pages/myItems/MyItems';
 import NotFound from './pages/notFound/NotFound';
 import Orders from './pages/orders/Orders';
 import Pay from './pages/pay/Pay';
+import Profile from './pages/profile/Profile';
 import Register from './pages/register/Register';
 import Success from './pages/success/Success';
 
@@ -49,12 +53,16 @@ const App = () => {
                 <Route path="/item/:id" element={<Item />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
 
                 {/* Need a login */}
                 <Route path="/orders" element={needsLogin(<Orders />)} />
                 <Route path="/messages" element={needsLogin(<Messages />)} />
                 <Route path="/message/:id" element={needsLogin(<Message />)} />
                 <Route path="/favourites" element={needsLogin(<Favourites />)} />
+                <Route path="/profile" element={needsLogin(<Profile />)} />
                 <Route path="/pay/:id" element={needsLogin(<Pay />)} />
                 <Route path="/success" element={needsLogin(<Success />)} />
 
