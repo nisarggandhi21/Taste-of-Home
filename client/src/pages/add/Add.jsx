@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ALLERGENS, DIETS } from '../../constants/food';
 import { INITIAL_STATE, itemReducer } from '../../reducers/itemReducer';
 import { itemService } from '../../services/itemService';
 import upload from '../../utils/upload';
@@ -143,6 +144,28 @@ const Add = () => {
             ></textarea>
             <label htmlFor="">Delivery Time (e.g. 3 hours)</label>
             <input type="number" name="deliveryTime" onChange={handleChange} />
+            <label htmlFor="diet">Diet</label>
+            <select name="diet" id="diet" value={state.diet} onChange={handleChange}>
+              <option value="">Select veg, egg or non-veg</option>
+              {DIETS.map((diet) => (
+                <option key={diet.value} value={diet.value}>
+                  {diet.label}
+                </option>
+              ))}
+            </select>
+            <label htmlFor="">Contains (tick every allergen in this item)</label>
+            <div className="allergens">
+              {ALLERGENS.map((allergen) => (
+                <label key={allergen.value}>
+                  <input
+                    type="checkbox"
+                    checked={state.allergens.includes(allergen.value)}
+                    onChange={() => dispatch({ type: 'TOGGLE_ALLERGEN', payload: allergen.value })}
+                  />
+                  {allergen.label}
+                </label>
+              ))}
+            </div>
             <label htmlFor="">Add Features</label>
             <form action="" className="add" onSubmit={handleFeature}>
               <input type="text" placeholder="features " />

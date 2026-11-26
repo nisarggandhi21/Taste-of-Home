@@ -9,6 +9,8 @@ export const INITIAL_STATE = {
   deliveryTime: 0,
   features: [],
   price: 0,
+  diet: '',
+  allergens: [],
 };
 
 export const itemReducer = (state, action) => {
@@ -28,6 +30,13 @@ export const itemReducer = (state, action) => {
       return {
         ...state,
         features: [...state.features, action.payload],
+      };
+    case 'TOGGLE_ALLERGEN':
+      return {
+        ...state,
+        allergens: state.allergens.includes(action.payload)
+          ? state.allergens.filter((allergen) => allergen !== action.payload)
+          : [...state.allergens, action.payload],
       };
     case 'REMOVE_FEATURE':
       return {

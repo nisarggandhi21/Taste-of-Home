@@ -32,7 +32,7 @@ test('the exported app serves requests', async () => {
   assert.equal((await call('GET', '/')).status, 200);
   const items = await call('GET', '/api/items');
   assert.equal(items.status, 200);
-  assert.deepEqual(items.data, []);
+  assert.deepEqual(items.data.items, []);
 });
 
 test('auth works behind the platform proxy', async () => {

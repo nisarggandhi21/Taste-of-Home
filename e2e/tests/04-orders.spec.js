@@ -11,7 +11,7 @@ test('checkout collects delivery details and the order appears once paid', async
   // The card form itself is Stripe's; these tests stop at the point where it would load.
   await context.route('https://js.stripe.com/**', (route) => route.abort());
   await login(page, BUYER);
-  const items = await apiFromPage(page, 'GET', '/items');
+  const { items } = await apiFromPage(page, 'GET', '/items?search=Veg Burger');
   const item = items.find((entry) => entry.title === 'Veg Burger');
 
   await page.goto(`/pay/${item._id}`);

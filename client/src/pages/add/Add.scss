@@ -88,3 +88,29 @@
     }
   }
 }
+
+.add .container .sections .details {
+  select {
+    padding: 20px;
+  }
+
+  .allergens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 16px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    input {
+      width: auto;
+      padding: 0;
+    }
+  }
+}

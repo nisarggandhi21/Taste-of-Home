@@ -22,14 +22,14 @@ export const createClient = (baseUrl) => {
     return { status: res.status, data, setCookie: res.headers.get('set-cookie') };
   };
 
-  const register = async (username, isSeller = false) => {
+  const register = async (username, isSeller = false, location = 'Mumbai') => {
     const res = await call('POST', '/api/auth/register', {
       body: {
         username,
         email: `${username}@example.com`,
         password: 'secret123',
         isSeller,
-        location: 'Mumbai',
+        location,
       },
     });
     if (res.status !== 201) throw new Error(`register failed: ${JSON.stringify(res)}`);
@@ -61,6 +61,8 @@ export const sampleItem = {
   deliveryTime: 2,
   features: ['fresh'],
   price: 250,
+  diet: 'veg',
+  allergens: ['dairy'],
 };
 
 export const sampleCheckout = {

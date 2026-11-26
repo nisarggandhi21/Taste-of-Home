@@ -5,106 +5,164 @@
 
   .container {
     width: 1400px;
+    max-width: 100%;
     padding: 30px 0px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 
-    .breadcrumbs {
-      font-weight: 300;
-      text-transform: uppercase;
-      font-size: 13px;
-      color: #555;
-    }
-
-    h1 {
-    }
-
-    p {
+    // Direct children only, so text inside the item cards keeps its own style.
+    > p {
       color: #999;
       font-weight: 300;
     }
 
-    .menu {
+    .filters {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px 30px;
 
-      .left {
+      .group {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 10px;
         color: #555;
         font-weight: 300;
+      }
 
-        input {
-          padding: 5px;
-          border: 1px solid lightgrey;
-          border-radius: 5px;
-          outline: none;
+      input,
+      select {
+        padding: 6px 8px;
+        border: 1px solid lightgrey;
+        border-radius: 5px;
+        outline: none;
+        font-size: 14px;
+        background: white;
 
-          &::placeholder {
-            color: #999;
-          }
+        &:focus {
+          border-color: #1dbf73;
         }
 
-        button {
-          padding: 5px 10px;
-          background-color: #1dbf73;
-          color: white;
-          border: none;
-          font-weight: 500;
-          border-radius: 5px;
-          cursor: pointer;
+        &::placeholder {
+          color: #999;
         }
       }
 
-      .right {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+      input[type='number'] {
+        width: 80px;
+      }
 
-        .sortBy {
-          color: #555;
-          font-weight: 300;
-        }
-
-        .sortType {
-          font-weight: 500;
-        }
-
-        img {
-          width: 15px;
-          cursor: pointer;
-        }
-
-        .rightMenu {
-          padding: 20px;
-          background-color: white;
-          border: 0.5px solid lightgrey;
-          border-radius: 5px;
-          position: absolute;
-          top: 30px;
-          right: 0;
-          z-index: 9;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          color: #555;
-
-          span {
-            cursor: pointer;
-          }
-        }
+      button {
+        padding: 6px 12px;
+        background-color: #1dbf73;
+        color: white;
+        border: none;
+        font-weight: 500;
+        border-radius: 5px;
+        cursor: pointer;
       }
     }
 
-    .cards {
+    .freeFrom {
       display: flex;
-      justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
+      gap: 8px;
+      color: #555;
+      font-weight: 300;
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border: 1px solid lightgrey;
+        border-radius: 999px;
+        font-size: 13px;
+        cursor: pointer;
+        user-select: none;
+
+        // The checkbox stays in the page for keyboard and screen-reader users.
+        input {
+          position: absolute;
+          opacity: 0;
+          width: 1px;
+          height: 1px;
+        }
+
+        &:focus-within {
+          outline: 2px solid #1dbf7366;
+        }
+
+        &.active {
+          background-color: #1dbf73;
+          border-color: #1dbf73;
+          color: white;
+          font-weight: 500;
+        }
+      }
+
+      .clear {
+        margin-left: 8px;
+        padding: 4px 8px;
+        background: none;
+        border: none;
+        color: #1dbf73;
+        font-size: 13px;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #8a6d00;
+    }
+
+    .count {
+      margin-top: 5px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 60px 0;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 0 24px;
+      justify-items: center;
+    }
+
+    .pager {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px 0 30px;
+      color: #555;
+
+      button {
+        padding: 8px 16px;
+        background: white;
+        border: 1px solid #1dbf73;
+        color: #1dbf73;
+        border-radius: 5px;
+        font-weight: 500;
+        cursor: pointer;
+
+        &:disabled {
+          border-color: lightgrey;
+          color: #aaa;
+          cursor: default;
+        }
+      }
     }
   }
 }

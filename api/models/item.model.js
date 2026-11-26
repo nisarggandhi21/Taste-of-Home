@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { ALLERGENS, DIETS } from '../utils/food.js';
 const { Schema } = mongoose;
 
 const itemSchema = new Schema(
@@ -26,6 +27,17 @@ const itemSchema = new Schema(
     cat: {
       type: String,
       required: true,
+    },
+    // Missing on items created before dietary information was collected.
+    diet: {
+      type: String,
+      enum: DIETS,
+    },
+    // No default on purpose: a missing list means "not declared", an empty list means the
+    // seller declared that the item contains none of the listed allergens.
+    allergens: {
+      type: [{ type: String, enum: ALLERGENS }],
+      default: undefined,
     },
     price: {
       type: Number,
@@ -67,5 +79,6 @@ const itemSchema = new Schema(
 
 itemSchema.index({ userId: 1 });
 itemSchema.index({ cat: 1 });
+itemSchema.index({ diet: 1 });
 
 export default mongoose.model('Item', itemSchema);

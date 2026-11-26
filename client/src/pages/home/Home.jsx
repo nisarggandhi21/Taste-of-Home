@@ -12,8 +12,8 @@ import { Helmet } from 'react-helmet-async';
 
 function Home() {
   const { isLoading, error, data } = useQuery({
-    queryKey: ['items'],
-    queryFn: () => itemService.getItems('?sort=sales'),
+    queryKey: ['items', 'best-selling'],
+    queryFn: () => itemService.getItems({ sort: 'sales', limit: 12 }),
   });
 
   return (
@@ -209,7 +209,7 @@ function Home() {
         'Something went wrong!'
       ) : (
         <Slide slidesToShow={4} arrowsScroll={4}>
-          {data.map((item) => (
+          {data.items.map((item) => (
             <ProjectCard key={item._id} item={item} />
           ))}
         </Slide>

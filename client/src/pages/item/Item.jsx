@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Reviews from '../../components/reviews/Reviews';
 import { itemService } from '../../services/itemService';
+import DietBadge from '../../components/dietBadge/DietBadge';
+import { allergenLabel } from '../../constants/food';
 import { userService } from '../../services/userService';
 import { Helmet } from 'react-helmet-async';
 import './Item.scss';
@@ -162,6 +164,18 @@ function Item() {
               <h2>&#8377; {data.price}</h2>
             </div>
             <p>{data.shortDesc}</p>
+            {data.diet && (
+              <div className="dietary">
+                <DietBadge diet={data.diet} showLabel />
+                <p className="allergens">
+                  {!data.allergens
+                    ? 'Allergens not declared.'
+                    : data.allergens.length === 0
+                      ? 'The cook declares none of the common allergens.'
+                      : `Contains: ${data.allergens.map(allergenLabel).join(', ')}.`}
+                </p>
+              </div>
+            )}
             <div className="details">
               <div className="item">
                 <img src="/img/clock.png" alt="" />

@@ -93,3 +93,17 @@
     }
   }
 }
+
+.itemCard .info {
+  p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+
+  .star .reviews {
+    color: #999;
+    font-weight: 400;
+  }
+}

@@ -23,8 +23,36 @@ const buyer = await register('stefan');
 const thali = await must('POST', '/api/items', { cookie: seller.cookie, body: sampleItem });
 await must('POST', '/api/items', {
   cookie: seller.cookie,
-  body: { ...sampleItem, title: 'Veg Burger', cat: 'burger', shortTitle: 'Burger', price: 120 },
+  body: {
+    ...sampleItem,
+    title: 'Veg Burger',
+    cat: 'burger',
+    shortTitle: 'Burger',
+    price: 120,
+    allergens: ['gluten'],
+  },
 });
+
+// A second cook in another city, with enough items to fill more than one page of results.
+const puneCook = await register('pune-cook', true, 'Pune');
+const puneItems = [
+  {
+    title: 'Chicken Biryani',
+    cat: 'north',
+    diet: 'nonveg',
+    allergens: ['nuts', 'dairy'],
+    price: 300,
+  },
+  ...Array.from({ length: 12 }, (_, i) => ({
+    title: `Laddu Box ${i + 1}`,
+    cat: 'chocolates',
+    allergens: ['dairy'],
+    price: 60 + i,
+  })),
+];
+for (const body of puneItems) {
+  await must('POST', '/api/items', { cookie: puneCook.cookie, body: { ...sampleItem, ...body } });
+}
 
 // Two paid orders; the first one has also been delivered by the seller.
 const paidOrder = async () => {

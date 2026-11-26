@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ALLERGENS, DIETS } from '../utils/food.js';
 
 export const createItemSchema = z.object({
   body: z.object({
@@ -21,6 +22,10 @@ export const createItemSchema = z.object({
       .int('Delivery time must be a whole number')
       .positive('Delivery time must be a positive integer'),
     features: z.array(z.string()).optional(),
+    diet: z.enum(DIETS, 'Please say whether this item is veg, egg or non-veg'),
+    allergens: z
+      .array(z.enum(ALLERGENS, 'Unknown allergen'), 'Please declare the allergens (or none)')
+      .max(ALLERGENS.length),
   }),
 });
 
@@ -28,13 +33,31 @@ export const createItemSchema = z.object({
 const optional = (schema) =>
   z.preprocess((value) => (value === '' ? undefined : value), schema.optional());
 
+export const PAGE_SIZE = 12;
+export const MAX_PAGE_SIZE = 100;
+
+// "nuts,dairy" -> ['nuts', 'dairy']
+const list = (schema) =>
+  z.preprocess(
+    (value) => (typeof value === 'string' ? value.split(',').filter(Boolean) : value),
+    schema
+  );
+
 export const itemsQuerySchema = z.object({
   userId: optional(z.string('userId must be text').max(100)),
   cat: optional(z.string('Category must be text').max(50)),
   search: optional(z.string('Search must be text').max(100, 'Search is too long')),
+  location: optional(z.string('Location must be text').max(80, 'Location is too long')),
   min: optional(z.coerce.number('Minimum price must be a number').nonnegative()),
   max: optional(z.coerce.number('Maximum price must be a number').nonnegative()),
-  sort: optional(z.enum(['sales', 'createdAt', 'price'], 'Unknown sort option')).default(
-    'createdAt'
-  ),
+  diet: optional(z.enum(DIETS, 'Unknown diet')),
+  // Only items whose seller declared that they contain none of these allergens.
+  freeFrom: optional(list(z.array(z.enum(ALLERGENS, 'Unknown allergen')).max(ALLERGENS.length))),
+  sort: optional(
+    z.enum(['sales', 'createdAt', 'rating', 'price', 'priceAsc'], 'Unknown sort option')
+  ).default('createdAt'),
+  page: optional(z.coerce.number('Page must be a number').int().min(1)).default(1),
+  limit: optional(
+    z.coerce.number('Limit must be a number').int().min(1).max(MAX_PAGE_SIZE)
+  ).default(PAGE_SIZE),
 });

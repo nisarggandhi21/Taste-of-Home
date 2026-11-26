@@ -17,6 +17,7 @@ let itemId, convId, firstOrderId, webhookOrderId;
 
 const placeOrder = (user, body = sampleCheckout) =>
   call('POST', `/api/orders/create-payment-intent/${itemId}`, { cookie: user.cookie, body });
+const search = (query, cookie) => call('GET', `/api/items${query}`, { cookie });
 const setStatus = (user, orderId, status) =>
   call('PATCH', `/api/orders/${orderId}/status`, { cookie: user.cookie, body: { status } });
 
@@ -471,42 +472,139 @@ test('reviews need a paid order and can be removed by their author', async () =>
 test('item search treats input as plain text', async () => {
   await call('POST', '/api/items', {
     cookie: seller.cookie,
-    body: { ...sampleItem, title: 'Veg Burger (large)', cat: 'burger', price: 120 },
+    body: {
+      ...sampleItem,
+      title: 'Veg Burger (large)',
+      cat: 'burger',
+      price: 120,
+      allergens: ['gluten'],
+    },
   });
-  const search = (query, cookie) => call('GET', `/api/items${query}`, { cookie });
+  const titles = (res) => res.data.items.map((item) => item.title);
 
   let res = await search('?min=&max=&sort=sales');
   assert.equal(res.status, 200);
-  assert.equal(res.data.length, 2, 'the query the items page sends by default');
+  assert.equal(res.data.items.length, 2, 'the query the items page sends by default');
 
   res = await search('?search=.*');
-  assert.equal(res.data.length, 0, 'a regex wildcard matches nothing');
+  assert.equal(res.data.items.length, 0, 'a regex wildcard matches nothing');
   res = await search('?search=(large');
   assert.equal(res.status, 200);
-  assert.equal(res.data[0].title, 'Veg Burger (large)');
+  assert.deepEqual(titles(res), ['Veg Burger (large)']);
   res = await search('?search=THALI');
-  assert.equal(res.data.length, 1, 'search stays case-insensitive');
+  assert.equal(res.data.items.length, 1, 'search stays case-insensitive');
 
   res = await search('?cat=burger');
-  assert.deepEqual(
-    res.data.map((item) => item.cat),
-    ['burger']
-  );
+  assert.deepEqual(titles(res), ['Veg Burger (large)']);
   res = await search('?min=150&max=300');
-  assert.deepEqual(
-    res.data.map((item) => item.price),
-    [250]
-  );
-  res = await search('?sort=price');
-  assert.equal(res.data[0].price, 250);
+  assert.deepEqual(titles(res), ['Paneer Thali']);
 
-  for (const query of ['?sort=password', '?userId[$ne]=x', '?search[$regex]=.*', '?min=abc']) {
+  const rejected = [
+    '?sort=password',
+    '?userId[$ne]=x',
+    '?search[$regex]=.*',
+    '?min=abc',
+    '?diet=carnivore',
+    '?freeFrom=kryptonite',
+    '?page=0',
+    '?limit=1000',
+  ];
+  for (const query of rejected) {
     res = await search(query);
     assert.equal(res.status, 400, query);
   }
 
   res = await search(`?userId=${seller.id}`, seller.cookie);
-  assert.equal(res.data.length, 2, 'a seller sees their own items when asking for them');
+  assert.equal(res.data.items.length, 2, 'a seller sees their own items when asking for them');
   res = await search('', seller.cookie);
-  assert.equal(res.data.length, 0, 'own items are hidden from general browsing');
+  assert.equal(res.data.items.length, 0, 'own items are hidden from general browsing');
+});
+
+test('items can be filtered by diet, allergens and city', async () => {
+  // A second seller in another city, with one non-veg item and one that declares no allergens.
+  const cook = await register('pune-cook', true, 'Pune');
+  const add = (body) =>
+    call('POST', '/api/items', { cookie: cook.cookie, body: { ...sampleItem, ...body } });
+  await add({ title: 'Chicken Biryani', diet: 'nonveg', allergens: ['nuts', 'dairy'], price: 300 });
+  await add({ title: 'Fruit Bowl', diet: 'veg', allergens: [], price: 90 });
+  // An item from before dietary information existed.
+  await db.collection('items').insertOne({
+    userId: cook.id,
+    title: 'Old Samosa',
+    desc: 'From before dietary information was collected',
+    cat: 'north',
+    price: 20,
+    cover: 'https://example.com/samosa.png',
+    shortTitle: 'Samosa',
+    shortDesc: 'Crispy',
+    deliveryTime: 1,
+    totalStars: 0,
+    starNumber: 0,
+    sales: 0,
+    createdAt: new Date(0),
+  });
+  const titles = async (query) => (await search(query)).data.items.map((item) => item.title).sort();
+
+  assert.deepEqual(await titles('?diet=nonveg'), ['Chicken Biryani']);
+  assert.deepEqual(await titles('?diet=veg'), ['Fruit Bowl', 'Paneer Thali', 'Veg Burger (large)']);
+
+  // "Free from" only trusts items whose seller declared their allergens.
+  assert.deepEqual(await titles('?freeFrom=dairy'), ['Fruit Bowl', 'Veg Burger (large)']);
+  assert.deepEqual(await titles('?freeFrom=dairy,gluten'), ['Fruit Bowl']);
+
+  assert.deepEqual(await titles('?location=pune'), ['Chicken Biryani', 'Fruit Bowl', 'Old Samosa']);
+  assert.deepEqual(await titles('?location=mumbai&diet=veg'), [
+    'Paneer Thali',
+    'Veg Burger (large)',
+  ]);
+  assert.deepEqual(await titles('?location=.*'), []);
+
+  const missing = await add({ title: 'No diet given', diet: undefined });
+  assert.equal(missing.status, 400);
+  assert.match(missing.data.message, /veg, egg or non-veg/);
+});
+
+test('items can be sorted by rating and price, and are paginated', async () => {
+  const order = async (query) => (await search(query)).data.items.map((item) => item.title);
+
+  // Two reviews straight in the database: thali 4.5 from two reviews, biryani 5 from one.
+  await db
+    .collection('items')
+    .updateOne({ title: 'Paneer Thali' }, { $set: { totalStars: 9, starNumber: 2 } });
+  await db
+    .collection('items')
+    .updateOne({ title: 'Chicken Biryani' }, { $set: { totalStars: 5, starNumber: 1 } });
+
+  const byRating = await search('?sort=rating');
+  assert.deepEqual(
+    byRating.data.items.slice(0, 2).map((item) => [item.title, item.rating]),
+    [
+      ['Chicken Biryani', 5],
+      ['Paneer Thali', 4.5],
+    ]
+  );
+  assert.equal(byRating.data.items[2].rating, 0, 'unrated items come last');
+
+  assert.deepEqual(await order('?sort=price'), [
+    'Chicken Biryani',
+    'Paneer Thali',
+    'Veg Burger (large)',
+    'Fruit Bowl',
+    'Old Samosa',
+  ]);
+  assert.equal((await order('?sort=priceAsc'))[0], 'Old Samosa');
+
+  const first = await search('?sort=priceAsc&limit=2');
+  assert.deepEqual(
+    [first.data.total, first.data.page, first.data.pages, first.data.items.length],
+    [5, 1, 3, 2]
+  );
+  const pages = [];
+  for (const page of [1, 2, 3]) pages.push(...(await order(`?sort=priceAsc&limit=2&page=${page}`)));
+  assert.deepEqual(pages, await order('?sort=priceAsc'), 'pages join up without gaps or repeats');
+  assert.deepEqual(await order('?sort=priceAsc&limit=2&page=4'), []);
+
+  const defaults = await search('');
+  assert.equal(defaults.data.page, 1);
+  assert.equal(defaults.data.pages, 1);
 });

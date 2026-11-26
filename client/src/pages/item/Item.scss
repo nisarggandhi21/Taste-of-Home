@@ -254,3 +254,19 @@
     }
   }
 }
+
+.item .container .right {
+  max-height: none;
+
+  .dietary {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .allergens {
+      font-size: 14px;
+      color: #555;
+      margin: 0;
+    }
+  }
+}

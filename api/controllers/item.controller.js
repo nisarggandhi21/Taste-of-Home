@@ -1,7 +1,17 @@
 import Item from '../models/item.model.js';
+import User from '../models/user.model.js';
 import { itemsQuerySchema } from '../schemas/item.schema.js';
 import createError from '../utils/createError.js';
 import { verifyAccessToken } from '../utils/token.js';
+
+// The id is a tie-breaker so that pages never overlap.
+const SORTS = {
+  sales: { sales: -1, _id: 1 },
+  createdAt: { createdAt: -1, _id: 1 },
+  rating: { rating: -1, starNumber: -1, _id: 1 },
+  price: { price: -1, _id: 1 },
+  priceAsc: { price: 1, _id: 1 },
+};
 
 // Search text is matched literally, never interpreted as a regular expression.
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -66,23 +76,60 @@ export const getItems = async (req, res, next) => {
     }
   }
 
-  const filters = {
-    ...(q.userId && { userId: q.userId }),
-    ...(q.cat && { cat: { $regex: escapeRegex(q.cat), $options: 'i' } }),
-    ...((q.min !== undefined || q.max !== undefined) && {
-      price: {
-        ...(q.min !== undefined && { $gt: q.min }),
-        ...(q.max !== undefined && { $lt: q.max }),
-      },
-    }),
-    ...(q.search && { title: { $regex: escapeRegex(q.search), $options: 'i' } }),
-    // Filter out the current user's items if they are searching and not specifically looking for their own items
-    ...(currentUserId && !q.userId && { userId: { $ne: currentUserId } }),
-  };
-
   try {
-    const items = await Item.find(filters).sort({ [q.sort]: -1 });
-    res.status(200).send(items);
+    const userId = {};
+    if (q.userId) userId.$eq = q.userId;
+    // Your own items are left out of general browsing.
+    else if (currentUserId) userId.$ne = currentUserId;
+
+    if (q.location) {
+      // Items carry no location of their own; they are where their seller is.
+      const sellers = await User.find({
+        location: { $regex: escapeRegex(q.location), $options: 'i' },
+      }).distinct('_id');
+      userId.$in = sellers.map(String);
+    }
+
+    const filters = {
+      ...(Object.keys(userId).length && { userId }),
+      ...(q.cat && { cat: { $regex: escapeRegex(q.cat), $options: 'i' } }),
+      ...((q.min !== undefined || q.max !== undefined) && {
+        price: {
+          ...(q.min !== undefined && { $gt: q.min }),
+          ...(q.max !== undefined && { $lt: q.max }),
+        },
+      }),
+      ...(q.search && { title: { $regex: escapeRegex(q.search), $options: 'i' } }),
+      ...(q.diet && { diet: q.diet }),
+      // Items without declared allergens never count as free from anything.
+      ...(q.freeFrom?.length && { allergens: { $exists: true, $nin: q.freeFrom } }),
+    };
+
+    const [result] = await Item.aggregate([
+      { $match: filters },
+      {
+        $addFields: {
+          rating: {
+            $cond: [{ $gt: ['$starNumber', 0] }, { $divide: ['$totalStars', '$starNumber'] }, 0],
+          },
+        },
+      },
+      { $sort: SORTS[q.sort] },
+      {
+        $facet: {
+          items: [{ $skip: (q.page - 1) * q.limit }, { $limit: q.limit }],
+          total: [{ $count: 'count' }],
+        },
+      },
+    ]);
+
+    const total = result.total[0]?.count || 0;
+    res.status(200).send({
+      items: result.items,
+      total,
+      page: q.page,
+      pages: Math.max(1, Math.ceil(total / q.limit)),
+    });
   } catch (error) {
     next(error);
   }

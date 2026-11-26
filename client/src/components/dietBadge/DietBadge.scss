@@ -1,0 +1,40 @@
+.dietBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  --diet-color: #1a8f3c;
+
+  &.egg {
+    --diet-color: #d99000;
+  }
+
+  &.nonveg {
+    --diet-color: #b3261e;
+  }
+
+  .mark {
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 2px solid var(--diet-color);
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+
+    &::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--diet-color);
+    }
+  }
+
+  .label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--diet-color);
+  }
+}

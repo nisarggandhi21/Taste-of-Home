@@ -1,13 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { averageRating } from '../../constants/food';
 import { userService } from '../../services/userService';
+import DietBadge from '../dietBadge/DietBadge';
 import './ItemCard.scss';
-
-const calculateRating = (totalStars, starNumber) => {
-  if (starNumber === 0) return 0;
-  const average = totalStars / starNumber;
-  return !isNaN(average) ? Math.round(average) : 0;
-};
 
 const ItemCard = ({ item }) => {
   const { isLoading, error, data } = useQuery({
@@ -30,11 +26,14 @@ const ItemCard = ({ item }) => {
               <span>{data.username}</span>
             </div>
           )}
-          <p>{item.desc}</p>
+          <p>
+            <DietBadge diet={item.diet} /> {item.title}
+          </p>
           {item.starNumber > 0 ? (
             <div className="star">
-              <img src="./img/star.png" alt="" />
-              <span>{calculateRating(item.totalStars, item.starNumber)}</span>
+              <img src="/img/star.png" alt="" />
+              <span>{averageRating(item)}</span>
+              <span className="reviews">({item.starNumber})</span>
             </div>
           ) : (
             <div className="star">
@@ -44,9 +43,9 @@ const ItemCard = ({ item }) => {
         </div>
         <hr />
         <div className="detail">
-          <img src="./img/heart.png" alt="" />
+          <img src="/img/heart.png" alt="" />
           <div className="price">
-            <span>STARTING AT</span>
+            <span>PRICE</span>
             <h2>&#8377; {item.price}</h2>
           </div>
         </div>

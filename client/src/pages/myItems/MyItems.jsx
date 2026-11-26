@@ -11,7 +11,7 @@ function MyItems() {
 
   const { isLoading, error, data } = useQuery({
     queryKey: ['myItems'],
-    queryFn: () => itemService.getItems(`?userId=${currentUser._id}`),
+    queryFn: () => itemService.getItems({ userId: currentUser._id, limit: 100 }),
   });
 
   const mutation = useMutation({
@@ -51,7 +51,7 @@ function MyItems() {
               <th>Sales</th>
               <th>Action</th>
             </tr>
-            {data.map((item) => (
+            {data.items.map((item) => (
               <tr key={item._id}>
                 <td>
                   <img className="image" src={item.cover} alt="" />

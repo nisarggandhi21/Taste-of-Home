@@ -1,8 +1,14 @@
 import newRequest from '../utils/newRequest';
 
 export const itemService = {
-  getItems: async (searchParams) => {
-    const res = await newRequest.get(`/items${searchParams}`);
+  // filters: { cat, search, min, max, diet, freeFrom, location, sort, page, limit, userId }
+  // Resolves to { items, total, page, pages }.
+  getItems: async (filters = {}) => {
+    // Unset filters are left out of the request.
+    const params = Object.fromEntries(
+      Object.entries(filters).filter(([, value]) => value !== '' && value != null)
+    );
+    const res = await newRequest.get('/items', { params });
     return res.data;
   },
   getSingleItem: async (id) => {

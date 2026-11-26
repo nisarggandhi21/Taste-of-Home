@@ -19,6 +19,8 @@ test('a seller adds an item through the form', async ({ page, context }) => {
   await page.fill('textarea[name=shortDesc]', 'Creamy and fresh');
   await page.fill('input[name=deliveryTime]', '2');
   await page.fill('input[name=price]', '180');
+  await page.selectOption('select[name=diet]', 'veg');
+  await page.getByLabel('Dairy').check();
   await page.click('.info > button');
 
   await expect(page).toHaveURL('/myitems');
@@ -26,10 +28,12 @@ test('a seller adds an item through the form', async ({ page, context }) => {
 
   // The image is stored with its https address.
   const sellerId = await page.evaluate(() => JSON.parse(localStorage.getItem('currentUser'))._id);
-  const items = await apiFromPage(page, 'GET', `/items?userId=${sellerId}`);
+  const { items } = await apiFromPage(page, 'GET', `/items?userId=${sellerId}`);
   const created = items.find((item) => item.title === 'Mango Ice Cream');
   expect(created.cover).toBe('https://example.com/uploaded.png');
   expect(created.price).toBe(180);
+  expect(created.diet).toBe('veg');
+  expect(created.allergens).toEqual(['dairy']);
 
   // Buyers find it under its category.
   await context.clearCookies();
