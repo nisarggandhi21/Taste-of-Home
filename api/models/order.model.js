@@ -17,8 +17,28 @@ const AddressSchema = new Schema(
   { _id: false }
 );
 
+// One dish on an order.
+const LineSchema = new Schema(
+  {
+    itemId: { type: String, required: true },
+    title: { type: String, required: true },
+    img: { type: String },
+    unitPrice: { type: Number, required: true },
+    quantity: { type: Number, required: true, min: 1 },
+  },
+  { _id: false }
+);
+
 const OrderSchema = new Schema(
   {
+    // The dishes ordered. Orders created before carts existed have no lines; use
+    // orderLines() to read either kind.
+    lines: {
+      type: [LineSchema],
+      default: undefined,
+    },
+    // The fields below describe the order as a whole. On a one-dish order they describe
+    // that dish, which is how orders were stored before carts existed.
     itemId: {
       type: String,
       required: true,
@@ -98,6 +118,7 @@ const OrderSchema = new Schema(
 OrderSchema.index({ sellerId: 1 });
 OrderSchema.index({ buyerId: 1 });
 OrderSchema.index({ itemId: 1 });
+OrderSchema.index({ 'lines.itemId': 1 });
 OrderSchema.index({ payment_intent: 1 });
 
 // Orders created before `isPaid` existed used `isCompleted` to mean "paid".
@@ -111,6 +132,31 @@ export const effectiveStatus = (order) => {
   if (order.isCompleted) return 'delivered';
   return order.isPaid ? 'placed' : 'pending_payment';
 };
+
+// The dishes on any order, including ones created before carts existed.
+export const orderLines = (order) =>
+  order.lines?.length
+    ? order.lines.map((line) => ({
+        itemId: line.itemId,
+        title: line.title,
+        img: line.img,
+        unitPrice: line.unitPrice,
+        quantity: line.quantity,
+      }))
+    : [
+        {
+          itemId: order.itemId,
+          title: order.title,
+          img: order.img,
+          unitPrice: order.unitPrice ?? order.price / (order.quantity || 1),
+          quantity: order.quantity || 1,
+        },
+      ];
+
+// Matches orders that include the given item, old or new.
+export const includesItem = (itemId) => ({
+  $or: [{ itemId: String(itemId) }, { 'lines.itemId': String(itemId) }],
+});
 
 export const nextStage = (status) => {
   const index = ORDER_STAGES.indexOf(status);

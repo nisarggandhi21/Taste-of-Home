@@ -1,6 +1,11 @@
 import Stripe from 'stripe';
 import Item from '../models/item.model.js';
-import Order, { PAID_ORDER_FILTER, effectiveStatus, nextStage } from '../models/order.model.js';
+import Order, {
+  PAID_ORDER_FILTER,
+  effectiveStatus,
+  nextStage,
+  orderLines,
+} from '../models/order.model.js';
 import createError from '../utils/createError.js';
 
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -22,7 +27,19 @@ const CANCELLABLE = {
 };
 
 // What the API returns for an order: the stored document plus its worked-out status.
-const serialize = (order) => ({ ...order.toObject(), status: effectiveStatus(order) });
+const serialize = (order) => ({
+  ...order.toObject(),
+  status: effectiveStatus(order),
+  lines: orderLines(order),
+});
+
+// Adds (or with a negative sign, takes back) the sales of every dish on an order.
+const countSales = (order, sign = 1) =>
+  Promise.all(
+    orderLines(order).map((line) =>
+      Item.findByIdAndUpdate(line.itemId, { $inc: { sales: sign * line.quantity } })
+    )
+  );
 
 const historyEntry = (status) => ({ status, at: new Date() });
 
@@ -35,53 +52,101 @@ const markOrderPaid = async (paymentIntentId) => {
     { new: true }
   );
   if (order) {
-    await Item.findByIdAndUpdate(order.itemId, { $inc: { sales: order.quantity || 1 } });
+    await countSales(order);
   }
   return order;
 };
 
+// Creates the Stripe payment and the (still unpaid) order for the given dishes.
+// `wanted` is [{ itemId, quantity }]; everything else is read from the database, so the
+// price a buyer pays never comes from the browser.
+const createOrder = async ({ buyerId, wanted, deliveryAddress }) => {
+  const items = await Item.find({ _id: { $in: wanted.map((line) => line.itemId) } });
+  const byId = new Map(items.map((item) => [String(item._id), item]));
+
+  const lines = wanted.map(({ itemId, quantity }) => {
+    const item = byId.get(String(itemId));
+    if (!item) throw createError(404, 'Item not found!');
+    if (item.userId === buyerId) throw createError(400, 'You cannot order your own item');
+    if (item.isAvailable === false) {
+      throw createError(400, `${item.title} is not available right now`);
+    }
+    return {
+      itemId: String(item._id),
+      title: item.title,
+      img: item.cover,
+      unitPrice: item.price,
+      quantity,
+      sellerId: item.userId,
+    };
+  });
+
+  const sellerId = lines[0].sellerId;
+  if (lines.some((line) => line.sellerId !== sellerId)) {
+    throw createError(400, 'A cart can only hold dishes from one cook at a time');
+  }
+
+  const total = lines.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
+  const portions = lines.reduce((sum, line) => sum + line.quantity, 0);
+  const describe = (line) => (line.quantity > 1 ? `${line.title} x ${line.quantity}` : line.title);
+
+  const paymentIntent = await getStripe().paymentIntents.create({
+    // Stripe expects the smallest currency unit (paise), prices are stored in rupees.
+    amount: Math.round(total * 100),
+    currency: 'inr',
+    description: lines.map(describe).join(', ').slice(0, 500),
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+
+  const [first] = lines;
+  await new Order({
+    lines: lines.map(({ itemId, title, img, unitPrice, quantity }) => ({
+      itemId,
+      title,
+      img,
+      unitPrice,
+      quantity,
+    })),
+    // Summary of the whole order (see the model).
+    itemId: first.itemId,
+    img: first.img,
+    title: lines.length === 1 ? first.title : `${first.title} + ${lines.length - 1} more`,
+    unitPrice: lines.length === 1 ? first.unitPrice : undefined,
+    quantity: portions,
+    price: total,
+    buyerId,
+    sellerId,
+    deliveryAddress,
+    status: 'pending_payment',
+    payment_intent: paymentIntent.id,
+  }).save();
+
+  return { clientSecret: paymentIntent.client_secret, total };
+};
+
+// Order one dish (named in the URL).
 export const intent = async (req, res, next) => {
   try {
     const { quantity, deliveryAddress } = req.body;
-
-    const item = await Item.findById(req.params.id);
-    if (!item) return next(createError(404, 'Item not found!'));
-    if (item.userId === req.userId) {
-      return next(createError(400, 'You cannot order your own item'));
-    }
-    if (item.isAvailable === false) {
-      return next(createError(400, 'This item is not available right now'));
-    }
-
-    const total = item.price * quantity;
-    const paymentIntent = await getStripe().paymentIntents.create({
-      // Stripe expects the smallest currency unit (paise), prices are stored in rupees.
-      amount: Math.round(total * 100),
-      currency: 'inr',
-      description: quantity > 1 ? `${item.title} x ${quantity}` : item.title,
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
-
-    await new Order({
-      itemId: item._id,
-      img: item.cover,
-      title: item.title,
+    const result = await createOrder({
       buyerId: req.userId,
-      sellerId: item.userId,
-      unitPrice: item.price,
-      quantity,
-      price: total,
+      wanted: [{ itemId: req.params.id, quantity }],
       deliveryAddress,
-      status: 'pending_payment',
-      payment_intent: paymentIntent.id,
-    }).save();
-
-    res.status(200).send({
-      clientSecret: paymentIntent.client_secret,
-      total,
     });
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Order a cart: several dishes from one cook.
+export const checkout = async (req, res, next) => {
+  try {
+    const { items, deliveryAddress } = req.body;
+    const result = await createOrder({ buyerId: req.userId, wanted: items, deliveryAddress });
+    res.status(200).send(result);
   } catch (error) {
     next(error);
   }
@@ -121,15 +186,17 @@ export const getSummary = async (req, res, next) => {
         summary.inProgress += order.price;
         summary.active += 1;
       }
-      const entry = byItem.get(order.itemId) || {
-        itemId: order.itemId,
-        title: order.title,
-        portions: 0,
-        total: 0,
-      };
-      entry.portions += order.quantity || 1;
-      entry.total += order.price;
-      byItem.set(order.itemId, entry);
+      for (const line of orderLines(order)) {
+        const entry = byItem.get(line.itemId) || {
+          itemId: line.itemId,
+          title: line.title,
+          portions: 0,
+          total: 0,
+        };
+        entry.portions += line.quantity;
+        entry.total += line.unitPrice * line.quantity;
+        byItem.set(line.itemId, entry);
+      }
     }
 
     res.status(200).send({
@@ -265,7 +332,7 @@ export const cancelOrder = async (req, res, next) => {
     );
     // Only the request that actually cancelled the order takes the sale back.
     if (updated) {
-      await Item.findByIdAndUpdate(order.itemId, { $inc: { sales: -(order.quantity || 1) } });
+      await countSales(order, -1);
     }
 
     res.status(200).send(serialize(updated || (await Order.findById(order._id))));

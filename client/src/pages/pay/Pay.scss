@@ -256,3 +256,25 @@
     transform: rotate(360deg);
   }
 }
+
+.pay .summary {
+  align-items: flex-start;
+
+  .summaryLines {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .summaryLine {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .total {
+    align-self: center;
+  }
+}

@@ -147,6 +147,10 @@ h3 {
   -webkit-backdrop-filter: var(--glass-blur);
 
   .container {
+    .top {
+      align-items: flex-start;
+    }
+
     .top .item {
       gap: 12px;
 
@@ -310,6 +314,29 @@ h3 {
       width: 100%;
       padding: 14px;
       font-size: 16px;
+    }
+
+    .buy .quantity button {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 20px;
+      line-height: 1;
+
+      &:hover:not(:disabled) {
+        background: var(--surface-2);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
     }
 
     .unavailable {

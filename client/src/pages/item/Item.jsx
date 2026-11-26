@@ -2,7 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
 import { useContext, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { AuthContext } from '../../context/AuthContext';
+import { CartContext, MAX_QUANTITY } from '../../context/CartContext';
 import { conversationService } from '../../services/conversationService';
 import Reviews from '../../components/reviews/Reviews';
 import { itemService } from '../../services/itemService';
@@ -16,7 +18,9 @@ function Item() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
+  const cart = useContext(CartContext);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   const { isLoading, error, data } = useQuery({
     queryKey: ['item', id],
@@ -43,6 +47,23 @@ function Item() {
 
   const isOwner = !!currentUser && currentUser._id === userId;
   const isAvailable = data?.isAvailable !== false;
+
+  const inCart = cart.items.find((line) => line.itemId === id)?.quantity || 0;
+
+  const handleAddToCart = () => {
+    // A cart holds dishes from one cook; adding from another starts a new cart.
+    if (
+      cart.isOtherSeller(data) &&
+      !window.confirm(
+        'Your cart has dishes from another cook. Start a new cart with this dish instead?'
+      )
+    ) {
+      return;
+    }
+    cart.add(data, quantity, { replace: cart.isOtherSeller(data) });
+    toast.success(`Added ${quantity} × ${data.title} to your cart`);
+    setQuantity(1);
+  };
 
   const handleContact = async () => {
     if (!currentUser) return navigate('/login');
@@ -238,9 +259,38 @@ function Item() {
                 <button>Edit this item</button>
               </Link>
             ) : isAvailable ? (
-              <Link to={`/pay/${id}`}>
-                <button>Continue</button>
-              </Link>
+              <div className="buy">
+                <div className="quantity">
+                  <button
+                    type="button"
+                    aria-label="Decrease quantity"
+                    disabled={quantity <= 1}
+                    onClick={() => setQuantity(quantity - 1)}
+                  >
+                    &minus;
+                  </button>
+                  <span>{quantity}</span>
+                  <button
+                    type="button"
+                    aria-label="Increase quantity"
+                    disabled={quantity >= MAX_QUANTITY}
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    +
+                  </button>
+                </div>
+                <button type="button" className="addToCart" onClick={handleAddToCart}>
+                  Add to cart
+                </button>
+                {inCart > 0 && (
+                  <Link className="viewCart" to="/cart">
+                    {inCart} in your cart · View cart
+                  </Link>
+                )}
+                <Link className="orderNow" to={`/pay/${id}`}>
+                  Or order just this dish now
+                </Link>
+              </div>
             ) : (
               <p className="unavailable">This item is not available right now.</p>
             )}

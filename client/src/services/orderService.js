@@ -14,6 +14,11 @@ export const orderService = {
     const res = await newRequest.put('/orders', { payment_intent });
     return res.data;
   },
+  // A whole cart: { items: [{ itemId, quantity }], deliveryAddress }
+  checkout: async (order) => {
+    const res = await newRequest.post('/orders/checkout', order);
+    return res.data;
+  },
   // Seller totals: { earned, inProgress, delivered, active, cancelled, topItems }
   getSummary: async () => {
     const res = await newRequest.get('/orders/summary');

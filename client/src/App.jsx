@@ -6,9 +6,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { HelmetProvider } from 'react-helmet-async';
 
 import { AuthContextProvider } from './context/AuthContext';
+import { CartContextProvider } from './context/CartContext';
 import { ThemeContext, ThemeContextProvider } from './context/ThemeContext';
 
 import Add from './pages/add/Add';
+import Cart from './pages/cart/Cart';
 import ForgotPassword from './pages/account/ForgotPassword';
 import ResetPassword from './pages/account/ResetPassword';
 import VerifyEmail from './pages/account/VerifyEmail';
@@ -56,44 +58,48 @@ const App = () => {
       <HelmetProvider>
         <ThemeContextProvider>
           <AuthContextProvider>
-            <BrowserRouter>
-              <div className="app">
-                <ScrollToTop />
-                <ThemedToasts />
-                <Navbar />
-                <Routes>
-                  {/* Open to everyone */}
-                  <Route path="/" element={<Home />} />
-                  <Route path="/items" element={<Items />} />
-                  <Route path="/item/:id" element={<Item />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/verify-email" element={<VerifyEmail />} />
-                  {Object.keys(PAGES).map((slug) => (
-                    <Route key={slug} path={`/${slug}`} element={<InfoPage slug={slug} />} />
-                  ))}
+            <CartContextProvider>
+              <BrowserRouter>
+                <div className="app">
+                  <ScrollToTop />
+                  <ThemedToasts />
+                  <Navbar />
+                  <Routes>
+                    {/* Open to everyone */}
+                    <Route path="/" element={<Home />} />
+                    <Route path="/items" element={<Items />} />
+                    <Route path="/item/:id" element={<Item />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
+                    {Object.keys(PAGES).map((slug) => (
+                      <Route key={slug} path={`/${slug}`} element={<InfoPage slug={slug} />} />
+                    ))}
 
-                  {/* Need a login */}
-                  <Route path="/orders" element={needsLogin(<Orders />)} />
-                  <Route path="/messages" element={needsLogin(<Messages />)} />
-                  <Route path="/message/:id" element={needsLogin(<Message />)} />
-                  <Route path="/favourites" element={needsLogin(<Favourites />)} />
-                  <Route path="/profile" element={needsLogin(<Profile />)} />
-                  <Route path="/pay/:id" element={needsLogin(<Pay />)} />
-                  <Route path="/success" element={needsLogin(<Success />)} />
+                    {/* Need a login */}
+                    <Route path="/orders" element={needsLogin(<Orders />)} />
+                    <Route path="/messages" element={needsLogin(<Messages />)} />
+                    <Route path="/message/:id" element={needsLogin(<Message />)} />
+                    <Route path="/favourites" element={needsLogin(<Favourites />)} />
+                    <Route path="/profile" element={needsLogin(<Profile />)} />
+                    <Route path="/pay/:id" element={needsLogin(<Pay />)} />
+                    <Route path="/checkout" element={needsLogin(<Pay />)} />
+                    <Route path="/success" element={needsLogin(<Success />)} />
 
-                  {/* Sellers only */}
-                  <Route path="/myitems" element={needsSeller(<MyItems />)} />
-                  <Route path="/add" element={needsSeller(<Add />)} />
-                  <Route path="/edit/:id" element={needsSeller(<Add />)} />
+                    {/* Sellers only */}
+                    <Route path="/myitems" element={needsSeller(<MyItems />)} />
+                    <Route path="/add" element={needsSeller(<Add />)} />
+                    <Route path="/edit/:id" element={needsSeller(<Add />)} />
 
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Footer />
-              </div>
-            </BrowserRouter>
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Footer />
+                </div>
+              </BrowserRouter>
+            </CartContextProvider>
           </AuthContextProvider>
         </ThemeContextProvider>
       </HelmetProvider>

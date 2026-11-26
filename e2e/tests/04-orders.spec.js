@@ -25,7 +25,7 @@ test('checkout collects delivery details and the order appears once paid', async
   await page.fill('#notes', 'Ring the bell twice');
 
   const [response] = await Promise.all([
-    page.waitForResponse((res) => res.url().includes('/orders/create-payment-intent/')),
+    page.waitForResponse((res) => res.url().endsWith('/orders/checkout')),
     page.click('button.primary'),
   ]);
   const { clientSecret, total } = await response.json();

@@ -51,8 +51,12 @@ const OrderRow = ({ order, currentUser, onContact, onAdvance, onCancel, busy }) 
         <img className="image" src={order.img || '/img/noavatar.jpg'} alt="" />
       </td>
       <td>
-        {order.title}
-        {order.quantity > 1 && <span className="quantity"> &times; {order.quantity}</span>}
+        {order.lines.map((line) => (
+          <div className="dish" key={line.itemId}>
+            {line.title}
+            {line.quantity > 1 && <span className="quantity"> &times; {line.quantity}</span>}
+          </div>
+        ))}
       </td>
       <td>&#8377; {order.price}</td>
       <td>{isLoading ? 'loading...' : error ? 'error' : data?.username}</td>

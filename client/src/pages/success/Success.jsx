@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { CartContext } from '../../context/CartContext';
 import { orderService } from '../../services/orderService';
+import { CART_CHECKOUT_KEY } from '../pay/Pay';
 import './Success.scss';
 
 const Success = () => {
@@ -8,6 +10,7 @@ const Success = () => {
   const navigate = useNavigate();
   const params = new URLSearchParams(search);
   const payment_intent = params.get('payment_intent');
+  const { clear: clearCart } = useContext(CartContext);
   const [countdown, setCountdown] = useState(5);
   // 'confirming' until the API has verified the payment with Stripe.
   const [status, setStatus] = useState(payment_intent ? 'confirming' : 'failed');
@@ -18,13 +21,20 @@ const Success = () => {
 
     orderService
       .confirmOrder(payment_intent)
-      .then(() => !cancelled && setStatus('paid'))
+      .then(() => {
+        // The cart this payment was for has been ordered; a later, different cart is kept.
+        if (sessionStorage.getItem(CART_CHECKOUT_KEY) === payment_intent) {
+          sessionStorage.removeItem(CART_CHECKOUT_KEY);
+          clearCart();
+        }
+        if (!cancelled) setStatus('paid');
+      })
       .catch(() => !cancelled && setStatus('failed'));
 
     return () => {
       cancelled = true;
     };
-  }, [payment_intent]);
+  }, [payment_intent, clearCart]);
 
   useEffect(() => {
     if (status !== 'paid') return;

@@ -109,6 +109,41 @@
         }
       }
 
+      .cartLink {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+
+        &:hover {
+          color: var(--primary);
+          border-color: var(--primary);
+        }
+
+        .badge {
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          min-width: 18px;
+          height: 18px;
+          padding: 0 5px;
+          box-sizing: border-box;
+          border-radius: var(--radius-pill);
+          background: var(--primary);
+          color: var(--on-primary);
+          font-size: 11px;
+          font-weight: 700;
+          line-height: 18px;
+          text-align: center;
+        }
+      }
+
       // The "Join" button (the theme switcher has buttons of its own).
       > .link button {
         color: var(--on-primary);

@@ -219,11 +219,16 @@ $phone: 640px;
         display: none;
       }
 
+      .cartLink {
+        width: 36px;
+        height: 36px;
+      }
+
       .user {
         padding-right: 10px;
 
         span {
-          max-width: 84px;
+          max-width: 64px;
           overflow: hidden;
           text-overflow: ellipsis;
         }

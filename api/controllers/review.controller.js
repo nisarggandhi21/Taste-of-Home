@@ -1,5 +1,5 @@
 import Item from '../models/item.model.js';
-import Order, { PAID_ORDER_FILTER } from '../models/order.model.js';
+import Order, { PAID_ORDER_FILTER, includesItem } from '../models/order.model.js';
 import Review from '../models/review.model.js';
 import { readUser } from '../middleware/jwt.js';
 import createError from '../utils/createError.js';
@@ -14,7 +14,11 @@ export const createReview = async (req, res, next) => {
 
     // Only buyers with a paid order for this item that was not cancelled can review it.
     const hasOrdered = await Order.exists({
-      $and: [{ itemId, buyerId: req.userId, status: { $ne: 'cancelled' } }, PAID_ORDER_FILTER],
+      $and: [
+        { buyerId: req.userId, status: { $ne: 'cancelled' } },
+        includesItem(itemId),
+        PAID_ORDER_FILTER,
+      ],
     });
     if (!hasOrdered) {
       return next(createError(403, 'You can only review items you have ordered'));

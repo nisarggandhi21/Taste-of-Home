@@ -1,0 +1,239 @@
+.cart {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+
+  .container {
+    width: 1100px;
+    max-width: 100%;
+
+    h1 {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 24px;
+    }
+
+    .empty {
+      color: var(--text-muted);
+      padding: 40px 0;
+
+      a {
+        color: var(--primary);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .lines,
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+
+  .lines {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 24px 20px;
+
+    .from {
+      padding: 16px 0 4px;
+      color: var(--text-muted);
+      font-size: 14px;
+
+      strong {
+        color: var(--text);
+      }
+    }
+
+    .line {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+
+      img {
+        width: 72px;
+        height: 72px;
+        border-radius: var(--radius-sm);
+        object-fit: cover;
+        background: var(--surface-2);
+        display: block;
+      }
+
+      .details {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .title {
+          font-weight: 700;
+          text-decoration: none;
+          color: var(--text);
+        }
+
+        .each {
+          color: var(--text-muted);
+          font-size: 14px;
+        }
+      }
+
+      .quantity {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        button {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 1px solid var(--border);
+          background: var(--surface);
+          color: var(--text);
+          font-size: 18px;
+          line-height: 1;
+          cursor: pointer;
+
+          &:disabled {
+            opacity: 0.4;
+            cursor: default;
+          }
+
+          &:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+          }
+        }
+
+        span {
+          min-width: 20px;
+          text-align: center;
+          font-weight: 700;
+        }
+      }
+
+      .lineTotal {
+        min-width: 72px;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .remove {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text-faint);
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--danger-soft);
+          color: var(--danger);
+        }
+      }
+    }
+
+    .clear {
+      margin-top: 16px;
+      padding: 0;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  .summary {
+    flex: 0 0 300px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: 120px;
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+
+      &.total {
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        color: var(--text);
+        font-size: 18px;
+      }
+    }
+
+    .checkout {
+      display: block;
+      padding: 14px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--on-primary);
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+
+      &:hover {
+        background: var(--primary-hover);
+      }
+    }
+
+    .note {
+      color: var(--text-faint);
+      font-size: 13px;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .layout {
+      flex-direction: column;
+    }
+
+    .summary {
+      position: static;
+      flex: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .lines {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 4px 16px 16px;
+
+      .line {
+        flex-wrap: wrap;
+        gap: 12px;
+
+        .details {
+          flex: 1 1 140px;
+        }
+      }
+    }
+  }
+}

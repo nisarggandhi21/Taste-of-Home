@@ -278,3 +278,36 @@
   color: var(--warning-text);
   text-align: center;
 }
+
+.item .container .right .buy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+
+    span {
+      min-width: 24px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+
+  .viewCart,
+  .orderNow {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .orderNow {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+}

@@ -4,6 +4,7 @@ import './Navbar.scss';
 import newRequest from '../../utils/newRequest';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { CartContext } from '../../context/CartContext';
 import ThemeSwitcher from '../themeSwitcher/ThemeSwitcher';
 
 function Navbar() {
@@ -25,6 +26,7 @@ function Navbar() {
 
   const navigate = useNavigate();
   const { currentUser, logout } = useContext(AuthContext);
+  const cart = useContext(CartContext);
 
   const handleLogout = async () => {
     try {
@@ -52,6 +54,26 @@ function Navbar() {
             Explore
           </Link>
           <ThemeSwitcher />
+          <Link
+            className="cartLink"
+            to="/cart"
+            aria-label={`Cart, ${cart.count} ${cart.count === 1 ? 'portion' : 'portions'}`}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+              <g
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6.2" />
+                <circle cx="9.5" cy="19.5" r="1.3" />
+                <circle cx="17" cy="19.5" r="1.3" />
+              </g>
+            </svg>
+            {cart.count > 0 && <span className="badge">{cart.count}</span>}
+          </Link>
           {currentUser ? (
             <div className="user" onClick={() => setOpen(!open)}>
               <img src={currentUser.img || '/img/noavatar.jpg'} alt="" />

@@ -2,8 +2,9 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useQuery } from '@tanstack/react-query';
 import { useContext, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import CheckoutForm from '../../components/checkoutForm/checkoutForm';
+import { CartContext } from '../../context/CartContext';
 import { ThemeContext } from '../../context/ThemeContext';
 import { itemService } from '../../services/itemService';
 import { orderService } from '../../services/orderService';
@@ -29,10 +30,18 @@ const loadSavedAddress = () => {
   }
 };
 
+// Set while a cart is being paid for, so the success page knows to empty it afterwards.
+export const CART_CHECKOUT_KEY = 'cartCheckoutIntent';
+
+// Checkout for one dish (/pay/:id) or for the whole cart (/checkout).
 const Pay = () => {
   const { id } = useParams();
+  const isCart = !id;
+  const cart = useContext(CartContext);
   const { theme } = useContext(ThemeContext);
   const [clientSecret, setClientSecret] = useState('');
+  // The total the API charged, once the order has been created.
+  const [charged, setCharged] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [address, setAddress] = useState(loadSavedAddress);
@@ -44,6 +53,7 @@ const Pay = () => {
   } = useQuery({
     queryKey: ['item', id],
     queryFn: () => itemService.getSingleItem(id),
+    enabled: !isCart,
   });
 
   const handleChange = (e) => {
@@ -56,8 +66,13 @@ const Pay = () => {
     try {
       const { notes, ...required } = address;
       const deliveryAddress = { ...required, ...(notes.trim() && { notes }) };
-      const res = await orderService.createPaymentIntent(id, { quantity, deliveryAddress });
+      const res = await orderService.checkout({
+        items: lines.map((line) => ({ itemId: line.itemId, quantity: line.quantity })),
+        deliveryAddress,
+      });
       localStorage.setItem(SAVED_ADDRESS_KEY, JSON.stringify(address));
+      if (isCart) sessionStorage.setItem(CART_CHECKOUT_KEY, res.clientSecret.split('_secret')[0]);
+      setCharged(res.total);
       setClientSecret(res.clientSecret);
     } catch {
       // The request interceptor already shows the error.
@@ -66,18 +81,29 @@ const Pay = () => {
     }
   };
 
-  if (isLoading) return <div className="pay">loading</div>;
-  if (error) return <div className="pay">Something went wrong!</div>;
+  if (!isCart && isLoading) return <div className="pay">loading</div>;
+  if (!isCart && error) return <div className="pay">Something went wrong!</div>;
+  // Nothing to check out: back to the (empty) cart page.
+  if (isCart && cart.items.length === 0 && !clientSecret) return <Navigate to="/cart" replace />;
 
-  const total = item.price * quantity;
+  const lines = isCart
+    ? cart.items
+    : [{ itemId: id, title: item.title, img: item.cover, price: item.price, quantity }];
+  const total = charged ?? lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
   const summary = (
     <div className="summary">
-      <img src={item.cover} alt="" />
-      <div>
-        <h2>{item.title}</h2>
-        <span>
-          &#8377; {item.price} &times; {quantity}
-        </span>
+      <div className="summaryLines">
+        {lines.map((line) => (
+          <div className="summaryLine" key={line.itemId}>
+            <img src={line.img} alt="" />
+            <div>
+              <h2>{line.title}</h2>
+              <span>
+                &#8377; {line.price} &times; {line.quantity}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
       <strong className="total">&#8377; {total}</strong>
     </div>
@@ -90,7 +116,14 @@ const Pay = () => {
           {summary}
           <p className="deliverTo">
             Delivering to {address.name}, {address.line1}, {address.city} {address.pincode}.{' '}
-            <button type="button" className="linkButton" onClick={() => setClientSecret('')}>
+            <button
+              type="button"
+              className="linkButton"
+              onClick={() => {
+                setClientSecret('');
+                setCharged(null);
+              }}
+            >
               Change
             </button>
           </p>
@@ -122,26 +155,30 @@ const Pay = () => {
         <h1>Delivery details</h1>
         {summary}
 
-        <label htmlFor="quantity">Quantity</label>
-        <div className="quantity">
-          <button
-            type="button"
-            aria-label="Decrease quantity"
-            disabled={quantity <= 1}
-            onClick={() => setQuantity(quantity - 1)}
-          >
-            &minus;
-          </button>
-          <span id="quantity">{quantity}</span>
-          <button
-            type="button"
-            aria-label="Increase quantity"
-            disabled={quantity >= MAX_QUANTITY}
-            onClick={() => setQuantity(quantity + 1)}
-          >
-            +
-          </button>
-        </div>
+        {!isCart && (
+          <>
+            <label htmlFor="quantity">Quantity</label>
+            <div className="quantity">
+              <button
+                type="button"
+                aria-label="Decrease quantity"
+                disabled={quantity <= 1}
+                onClick={() => setQuantity(quantity - 1)}
+              >
+                &minus;
+              </button>
+              <span id="quantity">{quantity}</span>
+              <button
+                type="button"
+                aria-label="Increase quantity"
+                disabled={quantity >= MAX_QUANTITY}
+                onClick={() => setQuantity(quantity + 1)}
+              >
+                +
+              </button>
+            </div>
+          </>
+        )}
 
         <label htmlFor="name">Full name</label>
         <input id="name" name="name" value={address.name} onChange={handleChange} required />
