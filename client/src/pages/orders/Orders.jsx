@@ -65,7 +65,7 @@ const Orders = () => {
       return orderService.completeOrder(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['orders']);
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 
@@ -133,4 +133,3 @@ const Orders = () => {
 };
 
 export default Orders;
-

@@ -5,7 +5,7 @@ import './Review.scss';
 
 const Review = ({ review }) => {
   const { isLoading, error, data } = useQuery({
-    queryKey: [review.userId],
+    queryKey: ['user', review.userId],
     queryFn: () => userService.getUser(review.userId),
   });
 

@@ -19,7 +19,7 @@ function MyItems() {
       return itemService.deleteItem(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['myItems']);
+      queryClient.invalidateQueries({ queryKey: ['myItems'] });
     },
   });
 

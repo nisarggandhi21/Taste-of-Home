@@ -12,7 +12,7 @@ function Item() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['item'],
+    queryKey: ['item', id],
     queryFn: () => itemService.getSingleItem(id),
   });
 
@@ -23,7 +23,7 @@ function Item() {
     error: errorUser,
     data: dataUser,
   } = useQuery({
-    queryKey: ['user'],
+    queryKey: ['user', userId],
     queryFn: () => userService.getUser(userId),
     enabled: !!userId, //enable usequery function whenever userId is not null
   });
@@ -77,7 +77,9 @@ function Item() {
                   <div
                     className="arrow"
                     onClick={() =>
-                      setCurrentSlide(currentSlide === 0 ? data.images.length - 1 : currentSlide - 1)
+                      setCurrentSlide(
+                        currentSlide === 0 ? data.images.length - 1 : currentSlide - 1
+                      )
                     }
                   >
                     &#10094;
@@ -88,7 +90,9 @@ function Item() {
                   <div
                     className="arrow"
                     onClick={() =>
-                      setCurrentSlide(currentSlide === data.images.length - 1 ? 0 : currentSlide + 1)
+                      setCurrentSlide(
+                        currentSlide === data.images.length - 1 ? 0 : currentSlide + 1
+                      )
                     }
                   >
                     &#10095;

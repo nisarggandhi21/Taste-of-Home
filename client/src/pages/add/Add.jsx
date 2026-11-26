@@ -1,22 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useContext, useReducer, useState } from 'react';
+import { useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
 import { INITIAL_STATE, itemReducer } from '../../reducers/itemReducer';
 import { itemService } from '../../services/itemService';
 import upload from '../../utils/upload';
 import './Add.scss';
 
 const Add = () => {
-  const { currentUser } = useContext(AuthContext);
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
-  const [state, dispatch] = useReducer(itemReducer, {
-    ...INITIAL_STATE,
-    userId: currentUser._id,
-  });
+  const [state, dispatch] = useReducer(itemReducer, INITIAL_STATE);
 
   const handleChange = (e) => {
     dispatch({
@@ -61,14 +56,19 @@ const Add = () => {
       return itemService.createItem(item);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['myItems']);
+      queryClient.invalidateQueries({ queryKey: ['myItems'] });
       navigate('/myitems');
     },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mutation.mutate(state);
+    // Inputs hold strings; the API expects numbers for these two fields.
+    mutation.mutate({
+      ...state,
+      price: Number(state.price),
+      deliveryTime: Number(state.deliveryTime),
+    });
   };
 
   return (

@@ -8,7 +8,7 @@ const Reviews = ({ itemId }) => {
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['reviews'],
+    queryKey: ['reviews', itemId],
     queryFn: () => reviewService.getReviews(itemId),
   });
 
@@ -17,7 +17,8 @@ const Reviews = ({ itemId }) => {
       return reviewService.createReview(review);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['reviews']);
+      queryClient.invalidateQueries({ queryKey: ['reviews', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['item', itemId] });
     },
   });
 
