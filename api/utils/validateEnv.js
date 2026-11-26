@@ -8,6 +8,7 @@ const envSchema = z.object({
   CORS_URL: z.string().optional(),
   CORS_ALLOWED_ORIGINS: z.string().min(1, 'CORS_ALLOWED_ORIGINS is required'),
   PORT: z.string().optional(),
+  TRUST_PROXY: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
 });
 

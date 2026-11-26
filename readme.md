@@ -74,7 +74,15 @@ A **full-stack web application** connecting **home cooks** with **food enthusias
 ```bash
 VITE_BASEURL = http://localhost:8800/api/
 VITE_SUCCESS_URL = http://localhost:5173/success
+# Optional, default to the project's test accounts
+VITE_STRIPE_PUBLISHABLE_KEY = [your-stripe-publishable-key]
+VITE_CLOUDINARY_CLOUD_NAME = [your-cloudinary-cloud-name]
+VITE_CLOUDINARY_UPLOAD_PRESET = [your-unsigned-upload-preset]
 ```
+
+**Image uploads.** Images go straight from the browser to Cloudinary through an unsigned upload
+preset. The client only accepts JPG, PNG and WebP up to 5 MB, but that check can be bypassed, so
+set the same limits (allowed formats, max file size) on the preset in the Cloudinary console.
 
 ### **Server** Environment Variables
 
@@ -85,7 +93,13 @@ STRIPE_SECRET_KEY = [your-stripe-secret]
 STRIPE_WEBHOOK_SECRET = [your-stripe-webhook-secret]  # optional
 CORS_URL=frontend.url
 CORS_ALLOWED_ORIGINS=[url-path]
+TRUST_PROXY=1  # optional, see below
 ```
+
+**Sessions and rate limits.** Logins last 7 days. Failed logins are limited to 10 per 15 minutes
+and registrations to 10 per hour, per IP address. If the API runs behind a reverse proxy (Render,
+Railway, nginx, ...), set `TRUST_PROXY=1` so the limit is applied per visitor instead of to the
+proxy; on Vercel this is done automatically.
 
 **Payments.** An order is only marked as paid after the API has checked the payment with Stripe.
 To also cover buyers who close the tab before returning to the site, add a Stripe webhook for the

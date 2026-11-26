@@ -1,6 +1,10 @@
 import Item from '../models/item.model.js';
+import { itemsQuerySchema } from '../schemas/item.schema.js';
 import createError from '../utils/createError.js';
-import jwt from 'jsonwebtoken';
+import { verifyAccessToken } from '../utils/token.js';
+
+// Search text is matched literally, never interpreted as a regular expression.
+const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const createItem = async (req, res, next) => {
   if (!req.isSeller) return next(createError(403, 'You are not a seller'));
@@ -45,30 +49,33 @@ export const getItem = async (req, res, next) => {
 };
 
 export const getItems = async (req, res, next) => {
-  const q = req.query;
+  const parsed = itemsQuerySchema.safeParse(req.query);
+  if (!parsed.success) {
+    return next(createError(400, parsed.error.issues.map((issue) => issue.message).join(', ')));
+  }
+  const q = parsed.data;
 
   const token = req.cookies.accessToken;
   let currentUserId = null;
 
   if (token) {
     try {
-      const payload = jwt.verify(token, process.env.JWT_KEY);
-      currentUserId = payload.id;
-    } catch (err) {
+      currentUserId = verifyAccessToken(token).id;
+    } catch {
       // Ignore invalid token for getItems
     }
   }
 
   const filters = {
     ...(q.userId && { userId: q.userId }),
-    ...(q.cat && { cat: { $regex: q.cat, $options: 'i' } }),
-    ...((q.min || q.max) && {
+    ...(q.cat && { cat: { $regex: escapeRegex(q.cat), $options: 'i' } }),
+    ...((q.min !== undefined || q.max !== undefined) && {
       price: {
-        ...(q.min && { $gt: q.min }),
-        ...(q.max && { $lt: q.max }),
+        ...(q.min !== undefined && { $gt: q.min }),
+        ...(q.max !== undefined && { $lt: q.max }),
       },
     }),
-    ...(q.search && { title: { $regex: q.search, $options: 'i' } }),
+    ...(q.search && { title: { $regex: escapeRegex(q.search), $options: 'i' } }),
     // Filter out the current user's items if they are searching and not specifically looking for their own items
     ...(currentUserId && !q.userId && { userId: { $ne: currentUserId } }),
   };

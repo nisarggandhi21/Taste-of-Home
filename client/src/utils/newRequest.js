@@ -15,6 +15,8 @@ newRequest.interceptors.response.use(
     toast.error(errorMessage);
 
     if (error.response?.status === 401) {
+      // The session is gone on the server, so drop the remembered user as well.
+      localStorage.removeItem('currentUser');
       setTimeout(() => {
         window.location.href = '/login';
       }, 2000);

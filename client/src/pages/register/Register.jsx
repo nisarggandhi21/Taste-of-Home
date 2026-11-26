@@ -36,11 +36,12 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const url = await upload(file);
     try {
+      // The profile picture is optional.
+      const img = file ? await upload(file) : undefined;
       const res = await authService.register({
         ...user,
-        img: url,
+        img,
       });
       login(res);
       navigate('/');

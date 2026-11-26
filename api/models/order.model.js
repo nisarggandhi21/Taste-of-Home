@@ -52,4 +52,9 @@ OrderSchema.index({ buyerId: 1 });
 OrderSchema.index({ itemId: 1 });
 OrderSchema.index({ payment_intent: 1 });
 
+// Orders created before `isPaid` existed used `isCompleted` to mean "paid".
+export const PAID_ORDER_FILTER = {
+  $or: [{ isPaid: true }, { isPaid: { $exists: false }, isCompleted: true }],
+};
+
 export default mongoose.model('Order', OrderSchema);

@@ -1,14 +1,9 @@
 import Stripe from 'stripe';
 import Item from '../models/item.model.js';
-import Order from '../models/order.model.js';
+import Order, { PAID_ORDER_FILTER } from '../models/order.model.js';
 import createError from '../utils/createError.js';
 
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// Orders created before `isPaid` existed used `isCompleted` to mean "paid".
-const PAID_FILTER = {
-  $or: [{ isPaid: true }, { isPaid: { $exists: false }, isCompleted: true }],
-};
 
 // Idempotent: only the first call for a payment intent changes anything.
 const markOrderPaid = async (paymentIntentId) => {
@@ -60,7 +55,7 @@ export const getOrders = async (req, res, next) => {
   try {
     // Unpaid orders are abandoned checkouts and are not shown to either side.
     const orders = await Order.find({
-      $and: [{ $or: [{ buyerId: req.userId }, { sellerId: req.userId }] }, PAID_FILTER],
+      $and: [{ $or: [{ buyerId: req.userId }, { sellerId: req.userId }] }, PAID_ORDER_FILTER],
     }).sort({ createdAt: -1 });
 
     res.status(200).send(orders);

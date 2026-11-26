@@ -25,7 +25,7 @@ const Reviews = ({ itemId }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const desc = e.target[0].value;
-    const star = e.target[1].value;
+    const star = Number(e.target[1].value);
     mutation.mutate({ itemId, desc, star }); //Mutiations are used to perform POST, PUT, DELETE requests to perform server side changes
   };
 

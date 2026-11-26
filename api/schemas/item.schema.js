@@ -23,3 +23,18 @@ export const createItemSchema = z.object({
     features: z.array(z.string()).optional(),
   }),
 });
+
+// Query-string values arrive as strings; an empty value means "not set".
+const optional = (schema) =>
+  z.preprocess((value) => (value === '' ? undefined : value), schema.optional());
+
+export const itemsQuerySchema = z.object({
+  userId: optional(z.string('userId must be text').max(100)),
+  cat: optional(z.string('Category must be text').max(50)),
+  search: optional(z.string('Search must be text').max(100, 'Search is too long')),
+  min: optional(z.coerce.number('Minimum price must be a number').nonnegative()),
+  max: optional(z.coerce.number('Maximum price must be a number').nonnegative()),
+  sort: optional(z.enum(['sales', 'createdAt', 'price'], 'Unknown sort option')).default(
+    'createdAt'
+  ),
+});

@@ -1,29 +1,32 @@
-import Review from '../models/review.model.js';
 import Item from '../models/item.model.js';
+import Order, { PAID_ORDER_FILTER } from '../models/order.model.js';
+import Review from '../models/review.model.js';
 import createError from '../utils/createError.js';
 
 export const createReview = async (req, res, next) => {
   if (req.isSeller) return next(createError(403, 'You are not allowed to create reviews'));
 
-  const newReview = new Review({
-    userId: req.userId,
-    itemId: req.body.itemId,
-    desc: req.body.desc,
-    star: req.body.star,
-  });
+  const { itemId, desc, star } = req.body;
 
   try {
-    const review = await Review.findOne({
-      itemId: req.body.itemId,
-      userId: req.userId,
-    });
+    if (!(await Item.exists({ _id: itemId }))) return next(createError(404, 'Item not found!'));
 
-    if (review) return next(createError(403, 'You already reviewed this item'));
-    await Item.findByIdAndUpdate(req.body.itemId, {
-      $inc: { totalStars: req.body.star, starNumber: 1 },
+    // Only buyers with a paid order for this item can review it.
+    const hasOrdered = await Order.exists({
+      $and: [{ itemId, buyerId: req.userId }, PAID_ORDER_FILTER],
     });
-    const savedReview = await newReview.save();
-    await res.status(201).send(savedReview);
+    if (!hasOrdered) {
+      return next(createError(403, 'You can only review items you have ordered'));
+    }
+
+    const review = await Review.findOne({ itemId, userId: req.userId });
+    if (review) return next(createError(403, 'You already reviewed this item'));
+
+    await Item.findByIdAndUpdate(itemId, {
+      $inc: { totalStars: star, starNumber: 1 },
+    });
+    const savedReview = await new Review({ userId: req.userId, itemId, desc, star }).save();
+    res.status(201).send(savedReview);
   } catch (err) {
     next(err);
   }

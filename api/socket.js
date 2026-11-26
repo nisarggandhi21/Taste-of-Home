@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
 import { Server } from 'socket.io';
+import { verifyAccessToken } from './utils/token.js';
 
 export const userRoom = (userId) => `user:${userId}`;
 
@@ -20,6 +20,12 @@ export const initializeSocket = (httpServer) => {
       origin: allowedOrigins,
       credentials: true,
     },
+    // CORS does not apply to WebSockets, so other sites are turned away here. Requests
+    // without an Origin header do not come from a browser page.
+    allowRequest: (req, callback) => {
+      const origin = req.headers.origin;
+      callback(null, !origin || allowedOrigins.includes(origin));
+    },
   });
 
   // A socket is identified by the same login cookie as the REST API, never by what it claims.
@@ -27,11 +33,12 @@ export const initializeSocket = (httpServer) => {
     const token = getCookie(socket.handshake.headers.cookie, 'accessToken');
     if (!token) return next(new Error('You are not authenticated!'));
 
-    jwt.verify(token, process.env.JWT_KEY, (err, payload) => {
-      if (err) return next(new Error('Token is not valid!'));
-      socket.data.userId = payload.id;
+    try {
+      socket.data.userId = verifyAccessToken(token).id;
       next();
-    });
+    } catch {
+      next(new Error('Token is not valid!'));
+    }
   });
 
   // Messages are emitted by the REST API to the receiver's room (see message.controller.js).
