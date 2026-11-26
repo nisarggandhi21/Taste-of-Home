@@ -1,4 +1,14 @@
+import jwt from 'jsonwebtoken';
 import { Server } from 'socket.io';
+
+export const userRoom = (userId) => `user:${userId}`;
+
+const getCookie = (header = '', name) =>
+  header
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name}=`))
+    ?.slice(name.length + 1);
 
 export const initializeSocket = (httpServer) => {
   const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
@@ -8,46 +18,25 @@ export const initializeSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
       origin: allowedOrigins,
+      credentials: true,
     },
   });
 
-  let users = [];
+  // A socket is identified by the same login cookie as the REST API, never by what it claims.
+  io.use((socket, next) => {
+    const token = getCookie(socket.handshake.headers.cookie, 'accessToken');
+    if (!token) return next(new Error('You are not authenticated!'));
 
-  const addUser = (userId, socketId) => {
-    !users.some((user) => user.userId === userId) && users.push({ userId, socketId });
-  };
+    jwt.verify(token, process.env.JWT_KEY, (err, payload) => {
+      if (err) return next(new Error('Token is not valid!'));
+      socket.data.userId = payload.id;
+      next();
+    });
+  });
 
-  const removeUser = (socketId) => {
-    users = users.filter((user) => user.socketId !== socketId);
-  };
-
-  const getUser = (userId) => {
-    return users.find((user) => user.userId === userId);
-  };
-
+  // Messages are emitted by the REST API to the receiver's room (see message.controller.js).
   io.on('connection', (socket) => {
-    console.log('a user connected.');
-
-    socket.on('addUser', (userId) => {
-      addUser(userId, socket.id);
-      io.emit('getUsers', users);
-    });
-
-    socket.on('sendMessage', ({ senderId, receiverId, text }) => {
-      const user = getUser(receiverId);
-      if (user) {
-        io.to(user.socketId).emit('getMessage', {
-          senderId,
-          text,
-        });
-      }
-    });
-
-    socket.on('disconnect', () => {
-      console.log('a user disconnected!');
-      removeUser(socket.id);
-      io.emit('getUsers', users);
-    });
+    socket.join(userRoom(socket.data.userId));
   });
 
   return io;

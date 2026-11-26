@@ -3,11 +3,12 @@ import createError from '../utils/createError.js';
 import jwt from 'jsonwebtoken';
 
 export const createItem = async (req, res, next) => {
-  if (!req.isSeller) return next(createError('You are not a seller', 403));
+  if (!req.isSeller) return next(createError(403, 'You are not a seller'));
 
+  // req.body has been reduced to the validated fields; the owner always comes from the token.
   const newItem = new Item({
-    userId: req.userId,
     ...req.body,
+    userId: req.userId,
   });
 
   try {
@@ -21,8 +22,9 @@ export const createItem = async (req, res, next) => {
 export const deleteItem = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
+    if (!item) return next(createError(404, 'Item not found!'));
     if (item.userId !== req.userId) {
-      return next(createError('You can delete only your item', 403));
+      return next(createError(403, 'You can delete only your item'));
     }
 
     await Item.findByIdAndDelete(req.params.id);
@@ -35,7 +37,7 @@ export const deleteItem = async (req, res, next) => {
 export const getItem = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
-    if (!item) next(createError(404, 'Item not found!'));
+    if (!item) return next(createError(404, 'Item not found!'));
     res.status(200).send(item);
   } catch (error) {
     next(error);
