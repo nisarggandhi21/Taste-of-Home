@@ -1,0 +1,147 @@
+.infoPage {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px 20px;
+
+  .container {
+    width: 1100px;
+    max-width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+  }
+
+  .sideNav {
+    flex: 0 0 220px;
+    position: sticky;
+    top: 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    h2 {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-faint);
+      margin-bottom: 6px;
+    }
+
+    a {
+      padding: 7px 12px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+
+      &:hover {
+        color: var(--text);
+        background: var(--surface-2);
+      }
+
+      &.current {
+        color: var(--primary);
+        background: var(--primary-soft);
+        font-weight: 700;
+      }
+    }
+  }
+
+  article {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 44px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+
+    h1 {
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .intro {
+      font-size: 18px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    section {
+      margin-top: 32px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    p,
+    li {
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    p + p {
+      margin-top: 10px;
+    }
+
+    ul {
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .container {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    // On small screens the page list becomes a row of chips above the text.
+    .sideNav {
+      position: static;
+      flex: none;
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+
+      div {
+        display: contents;
+      }
+
+      h2 {
+        display: none;
+      }
+
+      a {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-pill);
+        background: var(--surface);
+      }
+    }
+
+    article {
+      padding: 26px 22px;
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  }
+}

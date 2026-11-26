@@ -78,6 +78,7 @@ VITE_SUCCESS_URL = http://localhost:5173/success
 VITE_STRIPE_PUBLISHABLE_KEY = [your-stripe-publishable-key]
 VITE_CLOUDINARY_CLOUD_NAME = [your-cloudinary-cloud-name]
 VITE_CLOUDINARY_UPLOAD_PRESET = [your-unsigned-upload-preset]
+VITE_CONTACT_EMAIL = [your-contact-email]  # shown on the Contact, About and Privacy pages
 ```
 
 **Image uploads.** Images go straight from the browser to Cloudinary. Set `CLOUDINARY_CLOUD_NAME`,

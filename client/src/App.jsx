@@ -14,6 +14,8 @@ import ResetPassword from './pages/account/ResetPassword';
 import VerifyEmail from './pages/account/VerifyEmail';
 import Favourites from './pages/favourites/Favourites';
 import Home from './pages/home/Home';
+import InfoPage from './pages/info/InfoPage';
+import { PAGES } from './pages/info/pages';
 import Item from './pages/item/Item';
 import Items from './pages/items/Items';
 import Login from './pages/login/Login';
@@ -29,6 +31,7 @@ import Success from './pages/success/Success';
 
 import Footer from './components/footer/Footer';
 import RequireAuth from './components/requireAuth/RequireAuth';
+import ScrollToTop from './components/scrollToTop/ScrollToTop';
 import Navbar from './components/navbar/Navbar';
 
 import './theme.scss';
@@ -55,6 +58,7 @@ const App = () => {
           <AuthContextProvider>
             <BrowserRouter>
               <div className="app">
+                <ScrollToTop />
                 <ThemedToasts />
                 <Navbar />
                 <Routes>
@@ -67,6 +71,9 @@ const App = () => {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/verify-email" element={<VerifyEmail />} />
+                  {Object.keys(PAGES).map((slug) => (
+                    <Route key={slug} path={`/${slug}`} element={<InfoPage slug={slug} />} />
+                  ))}
 
                   {/* Need a login */}
                   <Route path="/orders" element={needsLogin(<Orders />)} />

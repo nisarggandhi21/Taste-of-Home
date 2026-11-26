@@ -1,6 +1,7 @@
 import React from 'react';
 import './Footer.scss';
 import { Link } from 'react-router-dom';
+import { FOOTER_GROUPS, PAGES } from '../../pages/info/pages';
 
 function Footer() {
   return (
@@ -37,34 +38,21 @@ function Footer() {
               <span>Chocolates</span>
             </Link>
           </div>
-          <div className="item">
-            <h2>About</h2>
-            <span>Partnerships</span>
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
-            <span>Investor Relations</span>
-            <span>Contact Sales</span>
-          </div>
-          <div className="item">
-            <h2>Support</h2>
-            <span>Help & Support</span>
-            <span>Trust & Safety</span>
-            <span>Selling on Taste of Home</span>
-            <span>Buying on Taste of Home</span>
-          </div>
-          <div className="item">
-            <h2>Community</h2>
-            <span>Customer Success Stories</span>
-            <span>Community hub</span>
-            <span>Forum</span>
-            <span>Events</span>
-            <span>Blog</span>
-            <span>Influencers</span>
-            <span>Affiliates</span>
-            <span>Invite a Friend</span>
-            <span>Become a Seller</span>
-            <span>Community Standards</span>
-          </div>
+          {FOOTER_GROUPS.map((group) => (
+            <div className="item" key={group.heading}>
+              <h2>{group.heading}</h2>
+              {group.slugs.map((slug) => (
+                <Link className="link" to={`/${slug}`} key={slug}>
+                  <span>{PAGES[slug].title}</span>
+                </Link>
+              ))}
+              {group.heading === 'Company' && (
+                <Link className="link" to="/register">
+                  <span>Become a Seller</span>
+                </Link>
+              )}
+            </div>
+          ))}
         </div>
         <hr />
         <div className="bottom">
@@ -73,17 +61,7 @@ function Footer() {
             <span>© Taste of Home Ltd. {new Date().getFullYear()}</span>
           </div>
           <div className="right">
-            <div className="social">
-              <img src="/img/twitter.png" alt="" />
-              <img src="/img/facebook.png" alt="" />
-              <img src="/img/linkedin.png" alt="" />
-              <img src="/img/pinterest.png" alt="" />
-              <img src="/img/instagram.png" alt="" />
-            </div>
-            <div className="link">
-              <img src="/img/language.png" alt="" />
-              <span>English</span>
-            </div>
+            <span>Homemade food from cooks near you.</span>
           </div>
         </div>
       </div>
