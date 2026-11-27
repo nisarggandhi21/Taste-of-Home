@@ -17,19 +17,20 @@ export const searchTextOf = (item) =>
     .filter(Boolean)
     .join(' ');
 
-// Stores a dish's search vector. Never throws: a dish must save even when AI is down.
+// Stores a dish's search vector and resolves to it, or to null when that was not possible.
+// Never throws: a dish must save even when AI is down.
 export const embedItem = async (item) => {
-  if (!isAiEnabled()) return false;
+  if (!isAiEnabled()) return null;
   const { embeddingModel } = aiConfig();
   try {
     const vector = await tracked({ feature: 'embed-item', model: embeddingModel }, async () => ({
       vector: await embed(searchTextOf(item), 'document', item.title),
     }));
     await Item.updateOne({ _id: item._id }, { $set: { embedding: vector.vector, embeddingModel } });
-    return true;
+    return vector.vector;
   } catch (err) {
     console.error('Could not embed item:', err.message);
-    return false;
+    return null;
   }
 };
 

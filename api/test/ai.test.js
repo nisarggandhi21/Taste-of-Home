@@ -145,6 +145,25 @@ test('search finds dishes by what they are, not only by their title', async () =
   assert.deepEqual(await titles('?search=zzzz qqqq&sort=relevance'), []);
 });
 
+test('dishes saved before AI was on get indexed as people search', async () => {
+  const pickle = () => db.collection('items').findOne({ title: 'Old Family Pickle' });
+  // The search above scored the pickle as a candidate, which gave it a search vector.
+  const indexed = await pickle();
+  assert.ok(indexed.embedding.length > 0);
+  assert.equal(indexed.embeddingModel, 'gemini-embedding-2');
+
+  // So it is now found by meaning: these words are in its description, in another order.
+  const found = await titles('?search=mango tangy&sort=relevance');
+  assert.equal(found[0], 'Old Family Pickle');
+
+  // A vector made by a different embedding model is replaced, never compared.
+  await db
+    .collection('items')
+    .updateOne({ title: 'Old Family Pickle' }, { $set: { embeddingModel: 'some-older-model' } });
+  await titles('?search=anything at all&sort=relevance');
+  assert.equal((await pickle()).embeddingModel, 'gemini-embedding-2');
+});
+
 test('search keeps the other filters and the buyer’s chosen order', async () => {
   // "spicy" describes both the biryani and the paused curry; paused dishes stay hidden.
   assert.deepEqual(await titles('?search=spicy&sort=relevance'), ['Chicken Biryani']);

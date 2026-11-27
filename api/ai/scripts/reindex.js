@@ -1,6 +1,9 @@
 // Gives every dish a search vector, so dishes created before the AI features were turned on
 // (or with another embedding model) can be found by meaning.
 //
+// Optional: searches index a few such dishes each time anyway (see services/itemSearch.js).
+// This does the whole menu in one go.
+//
 //   npm run ai:reindex
 //
 // Needs MONGO and GEMINI_API_KEY in the environment (or in .env). Safe to run again: dishes

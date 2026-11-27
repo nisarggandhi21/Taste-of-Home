@@ -75,6 +75,8 @@ How it is built (see `api/ai/`):
   tokens for the last week).
 - Everything degrades quietly: without a key, or when the model is down, search falls back to
   keywords, saving a dish still works, and the AI parts of the page are hidden.
+- No setup step for an existing menu: dishes saved before the key was added get their search
+  vector as people search, a few per search, so there is nothing to run after turning it on.
 
 Commands (run in `api/`):
 
@@ -83,7 +85,7 @@ npm run ai:eval      # scores search, the assistant and summaries against the re
 ```
 
 ```bash
-npm run ai:reindex   # gives dishes created before AI was turned on a search vector
+npm run ai:reindex   # optional: indexes the whole menu at once instead of as people search
 ```
 
 ```bash

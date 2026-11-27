@@ -1,7 +1,7 @@
 // Finding dishes. Used by the items endpoint and by the AI assistant's search tool, so both
 // apply exactly the same filters and visibility rules.
-import { isAiEnabled } from '../ai/config.js';
-import { embedQuery, similarity } from '../ai/embeddings.js';
+import { aiConfig, isAiEnabled } from '../ai/config.js';
+import { embedItem, embedQuery, similarity } from '../ai/embeddings.js';
 import Item from '../models/item.model.js';
 import User from '../models/user.model.js';
 
@@ -23,6 +23,9 @@ const MIN_SIMILARITY = Number(process.env.AI_SEARCH_MIN_SCORE) || 0.5;
 const BEST_MATCH_MARGIN = 0.12;
 // Upper bound on the dishes scored in memory for one search.
 const MAX_CANDIDATES = 3000;
+// Dishes saved before the AI features were on have no search vector. Each search gives a few
+// of them one, so an existing menu becomes searchable by meaning without any manual step.
+const BACKFILL_PER_SEARCH = 6;
 
 // Search text is matched literally, never interpreted as a regular expression.
 export const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -102,15 +105,25 @@ const rankByMeaning = async (filters, text) => {
 
   const words = new RegExp(escapeRegex(text), 'i');
   const candidates = await Item.find(filters)
-    .select('title shortDesc desc +embedding')
+    .select('title shortDesc desc cat diet features +embedding +embeddingModel')
     .limit(MAX_CANDIDATES)
     .lean();
+
+  // A vector from another embedding model cannot be compared with this query.
+  const { embeddingModel } = aiConfig();
+  const usable = (item) => item.embedding?.length > 0 && item.embeddingModel === embeddingModel;
+  const unindexed = candidates.filter((item) => !usable(item)).slice(0, BACKFILL_PER_SEARCH);
+  const vectors = await Promise.all(unindexed.map((item) => embedItem(item)));
+  unindexed.forEach((item, i) => {
+    item.embedding = vectors[i] || undefined;
+    item.embeddingModel = vectors[i] ? embeddingModel : item.embeddingModel;
+  });
 
   const scored = candidates.map((item) => ({
     id: item._id,
     inTitle: words.test(item.title),
     inText: words.test(`${item.shortDesc} ${item.desc}`),
-    similarity: item.embedding?.length ? similarity(queryVector, item.embedding) : 0,
+    similarity: usable(item) ? similarity(queryVector, item.embedding) : 0,
   }));
   const best = Math.max(0, ...scored.map((entry) => entry.similarity));
   const cutoff = Math.max(MIN_SIMILARITY, best - BEST_MATCH_MARGIN);
