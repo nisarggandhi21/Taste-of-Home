@@ -11,6 +11,7 @@ import { itemService } from '../../services/itemService';
 import DietBadge from '../../components/dietBadge/DietBadge';
 import { allergenLabel } from '../../constants/food';
 import { userService } from '../../services/userService';
+import LoadError from '../../components/offlineBanner/LoadError';
 import Seo from '../../components/seo/Seo';
 import { dishData } from '../../utils/structuredData';
 import './Item.scss';
@@ -87,7 +88,7 @@ function Item() {
         <>
           {/* Nothing here to list: usually a dish that was deleted. */}
           <Seo title="Dish not found | Taste of Home" noindex />
-          Something went wrong!
+          <LoadError />
         </>
       ) : (
         <div className="container">

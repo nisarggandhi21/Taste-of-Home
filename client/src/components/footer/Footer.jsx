@@ -1,9 +1,13 @@
 import React from 'react';
 import './Footer.scss';
 import { Link } from 'react-router-dom';
+import { useInstallPrompt } from '../../hooks/useInstallPrompt';
 import { FOOTER_GROUPS, PAGES } from '../../pages/info/pages';
 
 function Footer() {
+  // Offered only where the browser can install the site as an app.
+  const install = useInstallPrompt();
+
   return (
     <div className="footer">
       <div className="container">
@@ -61,6 +65,11 @@ function Footer() {
             <span>© Taste of Home Ltd. {new Date().getFullYear()}</span>
           </div>
           <div className="right">
+            {install && (
+              <button type="button" className="installApp" onClick={install}>
+                Install the app
+              </button>
+            )}
             <span>Homemade food from cooks near you.</span>
           </div>
         </div>

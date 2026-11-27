@@ -37,6 +37,7 @@ import Footer from './components/footer/Footer';
 import RequireAuth from './components/requireAuth/RequireAuth';
 import ScrollToTop from './components/scrollToTop/ScrollToTop';
 import Navbar from './components/navbar/Navbar';
+import OfflineBanner from './components/offlineBanner/OfflineBanner';
 import Seo, { siteUrl } from './components/seo/Seo';
 
 import './theme.scss';
@@ -44,7 +45,15 @@ import './app.scss';
 import './modern.scss';
 import './responsive.scss';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    // Without a connection a read is still attempted, because the service worker may have
+    // the answer saved (see vite.config.js). A change is never queued for later: an order or
+    // a message that silently goes out an hour afterwards would be worse than an error now.
+    queries: { networkMode: 'offlineFirst' },
+    mutations: { networkMode: 'always' },
+  },
+});
 
 const needsLogin = (page) => <RequireAuth>{page}</RequireAuth>;
 const needsSeller = (page) => <RequireAuth seller>{page}</RequireAuth>;
@@ -75,6 +84,7 @@ const App = () => {
                   />
                   <ScrollToTop />
                   <ThemedToasts />
+                  <OfflineBanner />
                   <Navbar />
                   <Routes>
                     {/* Open to everyone */}

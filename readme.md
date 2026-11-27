@@ -197,6 +197,16 @@ The role cannot be granted from inside the site.
 To also cover buyers who close the tab before returning to the site, add a Stripe webhook for the
 `payment_intent.succeeded` event pointing at `/api/orders/webhook` and set `STRIPE_WEBHOOK_SECRET`.
 
+**Installable app.** The site can be installed on a phone or computer (an "Install the app"
+button appears in the footer where the browser supports it) and then opens like an app, without
+the browser's address bar. A service worker keeps the app itself on the device, together with
+the public things a visitor has looked at: lists of dishes, dish pages, reviews, cooks and dish
+photos. Those can be opened again without a connection, and a banner says when the device is
+offline. Orders, messages and account details are never stored and always need a connection.
+When a new version of the site has been deployed, visitors are offered a "Reload" button
+instead of being reloaded in the middle of something. None of this is active while developing
+(`npm run dev`); `npm run build && npm run preview` shows it.
+
 **Search engines.** Every dish page describes itself in the vocabulary search engines use
 (schema.org `Product`: name, picture, price, availability, cook and rating), which is what lets
 a result show the price and stars. Pages give their canonical address, search-result pages and
@@ -301,6 +311,12 @@ and use a local stand-in for Stripe. They also run on every push through GitHub 
 
   ```bash
   cd e2e && npm test
+  ```
+
+- **Installed-app tests** (build the client and check installing and offline use):
+
+  ```bash
+  cd e2e && npm run test:pwa
   ```
 
 ---

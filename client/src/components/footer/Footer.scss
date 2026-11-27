@@ -69,3 +69,22 @@
     }
   }
 }
+
+.footer .bottom .right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.footer .installApp {
+  padding: 8px 14px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -76,6 +76,9 @@ jobs:
         working-directory: e2e
       - run: npm test
         working-directory: e2e
+      # Installing and offline use, against the built site (a service worker only exists there).
+      - run: npm run test:pwa
+        working-directory: e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

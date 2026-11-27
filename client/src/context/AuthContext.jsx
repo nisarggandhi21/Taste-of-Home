@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createContext, useEffect, useState } from 'react';
+import { clearSavedData } from '../pwa';
 
 export const AuthContext = createContext();
 
@@ -9,10 +10,12 @@ export const AuthContextProvider = ({ children }) => {
   );
 
   const login = (userInfo) => {
+    clearSavedData();
     setCurrentUser(userInfo);
   };
 
   const logout = () => {
+    clearSavedData();
     setCurrentUser(null);
   };
 

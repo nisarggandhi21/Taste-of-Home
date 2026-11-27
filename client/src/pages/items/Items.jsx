@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import LoadError from '../../components/offlineBanner/LoadError';
 import Seo from '../../components/seo/Seo';
 import { useLocation } from 'react-router-dom';
 import ItemCard from '../../components/itemCard/ItemCard';
@@ -200,7 +201,7 @@ function Items() {
         {isLoading ? (
           'loading'
         ) : error ? (
-          'Something went wrong!'
+          <LoadError />
         ) : (
           <>
             <p className="count">

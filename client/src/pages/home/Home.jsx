@@ -8,6 +8,7 @@ import { cards } from '../../data';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { itemService } from '../../services/itemService';
+import LoadError from '../../components/offlineBanner/LoadError';
 import Seo from '../../components/seo/Seo';
 import { siteData } from '../../utils/structuredData';
 
@@ -206,7 +207,7 @@ function Home() {
       {isLoading ? (
         'loading'
       ) : error ? (
-        'Something went wrong!'
+        <LoadError />
       ) : (
         <Slide slidesToShow={4} arrowsScroll={4}>
           {data.items.map((item) => (
