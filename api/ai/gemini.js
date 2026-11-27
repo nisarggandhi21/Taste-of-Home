@@ -7,6 +7,10 @@ import { EMBEDDING_DIMENSIONS, aiConfig } from './config.js';
 // request itself would time out.
 const TIMEOUT_MS = 25_000;
 const REQUEST_OPTIONS = { timeout_ms: TIMEOUT_MS };
+// An answer that uses tools is several requests. Together they must finish before the host
+// cuts the web request off (60 seconds on Vercel, see index.js), so the visitor gets our
+// own "try again" message instead of a dropped connection.
+const TOOL_RUN_BUDGET_MS = 45_000;
 
 let client;
 const getClient = () => {
@@ -60,6 +64,12 @@ export const runWithTools = async ({ system, prompt, tools, handlers, maxRounds 
   const declarations = tools.map((tool) => ({ type: 'function', ...tool }));
   const calls = [];
   const usage = { inputTokens: 0, outputTokens: 0 };
+  const deadline = Date.now() + TOOL_RUN_BUDGET_MS;
+  const requestOptions = () => {
+    const left = deadline - Date.now();
+    if (left < 1000) throw new Error('The model took too long to answer');
+    return { timeout_ms: Math.min(TIMEOUT_MS, left) };
+  };
   const add = (interaction) => {
     const used = usageOf(interaction);
     usage.inputTokens += used.inputTokens;
@@ -73,7 +83,7 @@ export const runWithTools = async ({ system, prompt, tools, handlers, maxRounds 
       input: prompt,
       tools: declarations,
     },
-    REQUEST_OPTIONS
+    requestOptions()
   );
   add(interaction);
 
@@ -110,7 +120,7 @@ export const runWithTools = async ({ system, prompt, tools, handlers, maxRounds 
         previous_interaction_id: interaction.id,
         ...(lastRound && { generation_config: { tool_choice: 'none' } }),
       },
-      REQUEST_OPTIONS
+      requestOptions()
     );
     add(interaction);
   }
@@ -126,7 +136,7 @@ export const runWithTools = async ({ system, prompt, tools, handlers, maxRounds 
         previous_interaction_id: interaction.id,
         generation_config: { tool_choice: 'none' },
       },
-      REQUEST_OPTIONS
+      requestOptions()
     );
     add(interaction);
   }

@@ -99,6 +99,11 @@ if (!process.env.VERCEL) {
   });
 }
 
+// Vercel stops a request after 10 seconds unless told otherwise, and reads the limit from
+// this export (a limit under "builds" in vercel.json is ignored). An assistant answer that
+// looks dishes up takes several model round trips, so it needs more.
+export const config = { maxDuration: 60 };
+
 // The named export is for the tests; Vercel uses the default export.
 export { httpServer };
 export default app;

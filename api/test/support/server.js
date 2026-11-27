@@ -25,7 +25,7 @@ export const startTestServer = async ({ port = 0, env = {} } = {}) => {
   // Must happen before the API (and therefore `stripe`) is imported.
   register('./stripe-hooks.js', import.meta.url);
 
-  const { default: app, httpServer } = await import('../../index.js');
+  const { default: app, httpServer, config } = await import('../../index.js');
   const { default: mongoose } = await import('mongoose');
   await mongoose.connection.asPromise();
 
@@ -36,6 +36,8 @@ export const startTestServer = async ({ port = 0, env = {} } = {}) => {
   return {
     app,
     httpServer,
+    // What the module tells Vercel about itself.
+    config,
     baseUrl: listens ? `http://localhost:${httpServer.address().port}` : null,
     db: mongoose.connection.db,
     stop: async () => {

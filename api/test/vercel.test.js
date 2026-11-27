@@ -28,6 +28,12 @@ test('the module exports an app and does not listen by itself', () => {
   assert.equal(server.httpServer.listening, false);
 });
 
+test('the module asks the platform for enough time to answer an assistant question', () => {
+  // Without this export Vercel stops every request at 10 seconds, and an assistant answer
+  // that looks dishes up takes about that long.
+  assert.ok(server.config.maxDuration >= 30 && server.config.maxDuration <= 60);
+});
+
 test('the exported app serves requests', async () => {
   assert.equal((await call('GET', '/')).status, 200);
   const items = await call('GET', '/api/items');
