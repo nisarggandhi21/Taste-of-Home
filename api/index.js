@@ -18,7 +18,6 @@ import orderRoutes from './routes/order.route.js';
 import reviewRoutes from './routes/review.route.js';
 import uploadRoutes from './routes/upload.route.js';
 import userRoute from './routes/user.route.js';
-import { initializeSocket } from './socket.js';
 import createError from './utils/createError.js';
 import { validateEnv } from './utils/validateEnv.js';
 
@@ -30,8 +29,6 @@ if (process.env.TRUST_PROXY || process.env.VERCEL) {
   app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
 }
 const httpServer = createServer(app);
-const io = initializeSocket(httpServer);
-app.set('io', io);
 
 mongoose.set('strictQuery', true);
 

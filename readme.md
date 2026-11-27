@@ -197,9 +197,16 @@ The role cannot be granted from inside the site.
 To also cover buyers who close the tab before returning to the site, add a Stripe webhook for the
 `payment_intent.succeeded` event pointing at `/api/orders/webhook` and set `STRIPE_WEBHOOK_SECRET`.
 
-**Real-time chat.** Live message delivery uses Socket.IO and needs the API to run as a long-lived
-server (Docker, Render, Railway, a VM, ...). On serverless hosting such as Vercel the chat still
-works, but falls back to checking for new messages every few seconds.
+**Real-time chat.** Each open chat page holds one long-lived request to the API (server-sent
+events) and receives messages on it as they are sent; the conversations list updates the same
+way. This is plain HTTP, so it works on serverless hosting such as Vercel as well as on a
+long-lived server. There the request that saves a message and the request that delivers it can
+run in different instances, so an instance with open connections also looks in the database for
+new messages about once a second; on a single server delivery is immediate. Connections are
+ended after 50 seconds on Vercel (5 minutes elsewhere, `LIVE_STREAM_SECONDS` to change it) and
+the browser reconnects by itself. A tab in the background holds no connection, and if the
+connection cannot be made at all the page falls back to checking for new messages every few
+seconds.
 
 ---
 

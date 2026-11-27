@@ -27,6 +27,10 @@ const envSchema = z.object({
   AI_EMBEDDING_MODEL: z.string().optional(),
   AI_DAILY_LIMIT: z.string().optional(),
   AI_HOURLY_LIMIT: z.string().optional(),
+  // Live chat (see realtime/hub.js): seconds before a connection is renewed, and how often
+  // the database is checked for messages saved by other instances.
+  LIVE_STREAM_SECONDS: z.string().optional(),
+  LIVE_POLL_MS: z.string().optional(),
   // Account email addresses that may use the admin pages, comma separated.
   ADMIN_EMAILS: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).optional(),

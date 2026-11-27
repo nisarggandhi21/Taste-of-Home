@@ -19,6 +19,9 @@ const server = await startTestServer({
     AI_HOURLY_LIMIT: '1000',
     AI_DAILY_LIMIT: '5000',
     ADMIN_EMAILS: 'root@example.com',
+    // Live message streams end after 8 seconds here (50 on Vercel), so a test can watch the
+    // browser reconnect without waiting a minute.
+    LIVE_STREAM_SECONDS: '8',
   },
 });
 installFakeImageHost();

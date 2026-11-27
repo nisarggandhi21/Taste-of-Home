@@ -41,7 +41,8 @@ export const startTestServer = async ({ port = 0, env = {} } = {}) => {
     baseUrl: listens ? `http://localhost:${httpServer.address().port}` : null,
     db: mongoose.connection.db,
     stop: async () => {
-      app.get('io')?.close();
+      // Live message streams stay open on purpose; they must not keep the server from closing.
+      httpServer.closeAllConnections();
       if (httpServer.listening) await new Promise((resolve) => httpServer.close(resolve));
       await mongoose.disconnect();
       await mongod.stop();

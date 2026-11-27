@@ -1,5 +1,4 @@
 // Small HTTP helpers for the API tests.
-import { io } from 'socket.io-client';
 
 export const createClient = (baseUrl) => {
   const call = async (method, path, { cookie, body, raw, headers } = {}) => {
@@ -36,18 +35,53 @@ export const createClient = (baseUrl) => {
     return { id: res.data._id, cookie: res.setCookie.split(';')[0], res };
   };
 
-  // Resolves with { ok, error, socket } once the connection is accepted or refused.
-  const connectSocket = ({ cookie, origin } = {}) =>
-    new Promise((resolve) => {
-      const socket = io(baseUrl, {
-        extraHeaders: { ...(cookie ? { cookie } : {}), ...(origin ? { origin } : {}) },
-        reconnection: false,
-      });
-      socket.on('connect', () => resolve({ ok: true, socket }));
-      socket.on('connect_error', (error) => resolve({ ok: false, error: error.message, socket }));
+  // Opens the live message stream as the given user. Resolves once the server has answered:
+  //   { status, events: [{ event, data }], messages(), ended(), close() }
+  // `events` keeps filling for as long as the stream is open.
+  const openStream = async ({ cookie, origin } = {}) => {
+    const controller = new AbortController();
+    const res = await fetch(`${baseUrl}/api/messages/stream`, {
+      headers: { ...(cookie ? { cookie } : {}), ...(origin ? { origin } : {}) },
+      signal: controller.signal,
     });
+    const events = [];
+    let ended = false;
 
-  return { call, register, connectSocket };
+    const read = async () => {
+      const decoder = new TextDecoder();
+      let buffer = '';
+      try {
+        for await (const chunk of res.body) {
+          buffer += decoder.decode(chunk, { stream: true });
+          let end;
+          while ((end = buffer.indexOf('\n\n')) !== -1) {
+            const block = buffer.slice(0, end);
+            buffer = buffer.slice(end + 2);
+            const event = /^event: (.*)$/m.exec(block)?.[1];
+            const data = /^data: (.*)$/m.exec(block)?.[1];
+            if (event) events.push({ event, data: JSON.parse(data) });
+          }
+        }
+      } catch {
+        // Closed by the test.
+      }
+      ended = true;
+    };
+    if (res.status === 200) read();
+    else await res.body?.cancel();
+
+    return {
+      status: res.status,
+      contentType: res.headers.get('content-type'),
+      events,
+      messages: () =>
+        events.filter((entry) => entry.event === 'message').map((entry) => entry.data),
+      ended: () => ended,
+      close: () => controller.abort(),
+    };
+  };
+
+  return { call, register, openStream };
 };
 
 export const sampleItem = {

@@ -11,7 +11,7 @@ import { CLIENT_ORIGIN, JWT_KEY, WEBHOOK_SECRET, startTestServer } from './suppo
 const newId = () => String(new mongoose.Types.ObjectId());
 const intentIdOf = (res) => res.data.clientSecret.split('_secret')[0];
 
-let server, db, call, register, connectSocket;
+let server, db, call, register, openStream;
 let seller, buyer, outsider;
 let itemId, convId, firstOrderId, webhookOrderId;
 
@@ -24,7 +24,7 @@ const setStatus = (user, orderId, status) =>
 before(async () => {
   server = await startTestServer();
   db = server.db;
-  ({ call, register, connectSocket } = createClient(server.baseUrl));
+  ({ call, register, openStream } = createClient(server.baseUrl));
   seller = await register('albert', true);
   buyer = await register('stefan');
   outsider = await register('eve');
@@ -67,9 +67,8 @@ test('sessions expire and old tokens are rejected', async () => {
     assert.equal(res.status, 401, `token ${name}`);
   }
 
-  const socket = await connectSocket({ cookie: `accessToken=${tokens['without expiry']}` });
-  assert.equal(socket.ok, false);
-  socket.socket.close();
+  const stream = await openStream({ cookie: `accessToken=${tokens['without expiry']}` });
+  assert.equal(stream.status, 401);
 });
 
 test('login does not reveal which part was wrong', async () => {
@@ -345,12 +344,12 @@ test('requests from other websites are refused', async () => {
   });
   assert.equal(res.status, 200);
 
-  const evil = await connectSocket({ cookie: seller.cookie, origin: 'https://evil.example' });
-  assert.equal(evil.ok, false);
-  evil.socket.close();
-  const good = await connectSocket({ cookie: seller.cookie, origin: CLIENT_ORIGIN });
-  assert.equal(good.ok, true);
-  good.socket.close();
+  // The live message stream is covered by the same rule.
+  const evil = await openStream({ cookie: seller.cookie, origin: 'https://evil.example' });
+  assert.equal(evil.status, 403);
+  const good = await openStream({ cookie: seller.cookie, origin: CLIENT_ORIGIN });
+  assert.equal(good.status, 200);
+  good.close();
 });
 
 test('conversations are private to their two participants', async () => {
@@ -391,20 +390,16 @@ test('conversations are private to their two participants', async () => {
 });
 
 test('messages are pushed only to the receiver', async () => {
-  const anonymous = await connectSocket();
-  assert.equal(anonymous.ok, false);
-  const forged = await connectSocket({ cookie: 'accessToken=not.a.jwt' });
-  assert.equal(forged.ok, false);
+  assert.equal((await openStream()).status, 401);
+  assert.equal((await openStream({ cookie: 'accessToken=not.a.jwt' })).status, 401);
 
-  const sellerSocket = await connectSocket({ cookie: seller.cookie });
-  const outsiderSocket = await connectSocket({ cookie: outsider.cookie });
-  assert.equal(sellerSocket.ok && outsiderSocket.ok, true);
-
-  const received = { seller: [], outsider: [] };
-  sellerSocket.socket.on('getMessage', (message) => received.seller.push(message));
-  outsiderSocket.socket.on('getMessage', (message) => received.outsider.push(message));
-  // Claiming to be someone else has no effect.
-  outsiderSocket.socket.emit('addUser', seller.id);
+  const sellerStream = await openStream({ cookie: seller.cookie });
+  const outsiderStream = await openStream({ cookie: outsider.cookie });
+  // The sender has the site open too, and must not get their own message back.
+  const buyerStream = await openStream({ cookie: buyer.cookie });
+  assert.equal(sellerStream.status, 200);
+  assert.match(sellerStream.contentType, /^text\/event-stream/);
+  assert.equal(outsiderStream.status, 200);
 
   let res = await call('POST', '/api/messages', {
     cookie: buyer.cookie,
@@ -413,11 +408,15 @@ test('messages are pushed only to the receiver', async () => {
   assert.equal(res.status, 201);
   await new Promise((resolve) => setTimeout(resolve, 300));
 
-  assert.equal(received.seller.length, 1);
-  assert.equal(received.seller[0].desc, 'Is the thali spicy?');
-  assert.equal(received.seller[0].conversationId, convId);
-  assert.equal(received.seller[0].userId, buyer.id);
-  assert.equal(received.outsider.length, 0);
+  const received = sellerStream.messages();
+  assert.equal(received.length, 1);
+  assert.equal(received[0].desc, 'Is the thali spicy?');
+  assert.equal(received[0].conversationId, convId);
+  assert.equal(received[0].userId, buyer.id);
+  assert.equal(received[0]._id, res.data._id);
+  assert.equal(sellerStream.events[0].event, 'ready');
+  assert.equal(outsiderStream.messages().length, 0);
+  assert.equal(buyerStream.messages().length, 0);
 
   res = await call('GET', `/api/messages/${convId}`, { cookie: seller.cookie });
   assert.equal(res.data.length, 1);
@@ -430,7 +429,7 @@ test('messages are pushed only to the receiver', async () => {
   res = await call('PUT', `/api/conversations/${convId}`, { cookie: seller.cookie });
   assert.equal(res.data.readBySeller, true);
 
-  for (const s of [anonymous, forged, sellerSocket, outsiderSocket]) s.socket.close();
+  for (const stream of [sellerStream, outsiderStream, buyerStream]) stream.close();
 });
 
 test('reviews need a paid order and can be removed by their author', async () => {

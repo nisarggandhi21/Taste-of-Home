@@ -4,6 +4,7 @@ import './Messages.scss';
 import moment from 'moment';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthContext';
+import { useLiveMessages } from '../../hooks/useLiveMessages';
 import { conversationService } from '../../services/conversationService';
 import { userService } from '../../services/userService';
 
@@ -53,9 +54,14 @@ const MessageRow = ({ c, currentUser, handleRead }) => {
 const Messages = () => {
   const { currentUser } = useContext(AuthContext);
 
+  // A new message refreshes this list as it arrives; without a live connection the list is
+  // checked on a timer instead.
+  const live = useLiveMessages();
+
   const { isLoading, error, data } = useQuery({
     queryKey: ['conversations'],
     queryFn: () => conversationService.getConversations(),
+    refetchInterval: live ? false : 15000,
   });
 
   const queryClient = useQueryClient();

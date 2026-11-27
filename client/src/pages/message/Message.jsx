@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { AuthContext } from '../../context/AuthContext';
+import { useLiveMessages } from '../../hooks/useLiveMessages';
 import { conversationService } from '../../services/conversationService';
 import { messageService } from '../../services/messageService';
 import { userService } from '../../services/userService';
@@ -11,16 +11,16 @@ import './Message.scss';
 const Message = () => {
   const { id } = useParams();
   const { currentUser } = useContext(AuthContext);
-  const [socketConnected, setSocketConnected] = useState(false);
-  const SOCKET_URL = import.meta.env.VITE_BASEURL.replace('/api/', '');
+  // New messages arrive over a live connection; see the hook.
+  const live = useLiveMessages();
 
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
     queryKey: ['messages', id],
     queryFn: () => messageService.getMessages(id),
-    // Without a live socket (e.g. on serverless hosting) fall back to polling.
-    refetchInterval: socketConnected ? false : 5000,
+    // While the live connection is down, ask for new messages every few seconds instead.
+    refetchInterval: live ? false : 5000,
   });
 
   const { data: conversation } = useQuery({
@@ -38,26 +38,6 @@ const Message = () => {
     queryFn: () => userService.getUser(receiverId),
     enabled: !!receiverId,
   });
-
-  // The server authenticates the socket with the login cookie and pushes new messages to it.
-  useEffect(() => {
-    if (!currentUser) return;
-    const socket = io(SOCKET_URL, { withCredentials: true, reconnectionAttempts: 5 });
-
-    socket.on('connect', () => setSocketConnected(true));
-    socket.on('disconnect', () => setSocketConnected(false));
-    socket.on('getMessage', (message) => {
-      if (message.conversationId !== id) return;
-      queryClient.setQueryData(['messages', id], (old = []) =>
-        old.some((m) => m._id === message._id) ? old : [...old, message]
-      );
-    });
-
-    return () => {
-      socket.disconnect();
-      setSocketConnected(false);
-    };
-  }, [currentUser, SOCKET_URL, id, queryClient]);
 
   const mutation = useMutation({
     mutationFn: (message) => {

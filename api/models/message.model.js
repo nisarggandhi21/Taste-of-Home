@@ -22,5 +22,7 @@ const MessageSchema = new Schema(
 );
 
 MessageSchema.index({ conversationId: 1 });
+// Live delivery looks for the newest messages (see realtime/hub.js).
+MessageSchema.index({ createdAt: 1 });
 
 export default mongoose.model('Message', MessageSchema);
