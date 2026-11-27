@@ -57,6 +57,11 @@ Optional, and off unless the API has a `GEMINI_API_KEY` (a free key from Google 
   itself.
 - **Smart search**: finds dishes by what they are ("comfort food for a cold") as well as by the
   words in their title, and still respects every filter.
+- **Hindi, Hinglish and voice**: search and the assistant understand "kuch meetha chahiye" and
+  "कुछ मीठा चाहिए" although the menu is in English, and the assistant answers in the language
+  and script it was asked in. A microphone button in the assistant and the home search box
+  takes the question by voice, in English or Hindi, where the browser offers speech
+  recognition (Chrome, Edge, Safari).
 - **Listing from a photo**: a seller uploads a photo and gets a draft title, description,
   category, diet and allergens to review and edit.
 - **What buyers say**: a short summary of a dish's reviews, written once there are three and
@@ -101,13 +106,14 @@ Evaluation results (27 November 2026, `gemini-3.5-flash-lite` with `gemini-embed
 | Feature | Checks passed | Average time |
 | --- | --- | --- |
 | Smart search: a fitting dish in the top 3 for queries that share no words with its title | 10 / 10 | 0.3 s |
-| Assistant: right filters, real prices, allergy handling, refusing off-topic and hidden instructions | 8 / 8 | 4.4 s |
-| Assistant and the cart: offers exactly what was asked, never claims it is already added or paid, asks when unsure, ignores a listing that tells it to fill the cart | 5 / 5 | 7.9 s |
+| Smart search in Hinglish and Hindi: the same kind of query, typed as people in India type it | 12 / 12 | 0.3 s |
+| Assistant: right filters, real prices, allergy handling, refusing off-topic and hidden instructions; and the cart: offers exactly what was asked, never claims it is already added or paid, asks when unsure, ignores a listing that tells it to fill the cart | 13 / 13 | 5.3 s |
+| Assistant in Hinglish and Hindi: understands the request (budget, diet, allergy, "do masala dosa" as two), answers in the same language, keeps dish titles as listed | 5 / 5 | 6.6 s |
 | Review summary: reports praise and complaints, ignores an instruction hidden in a review | 4 / 4 | 1.0 s |
 
-Model answers vary from run to run: across three runs, two scored 21 of 22 before the fixes
-they pointed to (an assistant reply that came back empty, and one over-strict check) and the
-last scored 22 of 22. Listing drafts were tried by hand on real food photos, and a photo of a
+Model answers vary from run to run. The latest full run scored 44 of 44. Earlier runs found
+real problems, each fixed in the assistant's code or instructions: a reply that came back
+empty, and "do masala dosa" read as one dosa because "do" (two) is also an English word. Listing drafts were tried by hand on real food photos, and a photo of a
 flower was correctly refused.
 
 `gemini-3.5-flash-lite` is the default because it was the free model that answered reliably

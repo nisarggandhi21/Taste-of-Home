@@ -4,9 +4,11 @@ import { CartContext } from '../../context/CartContext';
 import { useAiEnabled } from '../../hooks/useAiEnabled';
 import { aiService } from '../../services/aiService';
 import DietBadge from '../dietBadge/DietBadge';
+import MicButton from '../micButton/MicButton';
 import './Assistant.scss';
 
-const SUGGESTIONS = ['Something light for dinner', 'Veg under ₹150', 'A sweet treat'];
+// The last one is Hinglish for "I want something sweet".
+const SUGGESTIONS = ['Something light for dinner', 'Veg under ₹150', 'Kuch meetha chahiye'];
 // Pages where the bottom corner is needed for something else (chat box, payment).
 const HIDDEN_ON = ['/message/', '/pay/', '/checkout', '/success'];
 // The API accepts 12 messages; older turns are dropped from what is sent.
@@ -150,7 +152,7 @@ const Assistant = () => {
               <div className="welcome">
                 <p>
                   Tell me what you feel like eating and I will find it. I can also put dishes in
-                  your cart for you to confirm.
+                  your cart for you to confirm. Ask in English, Hindi or Hinglish.
                 </p>
                 <div className="suggestions">
                   {SUGGESTIONS.map((suggestion) => (
@@ -220,6 +222,8 @@ const Assistant = () => {
               aria-label="Ask the food assistant"
               onChange={(e) => setText(e.target.value)}
             />
+            {/* Speaking fills the box as it is heard and sends the question when done. */}
+            <MicButton onText={setText} onFinal={send} />
             <button type="submit" disabled={busy || !text.trim()}>
               Send
             </button>

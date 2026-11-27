@@ -164,6 +164,25 @@ test('dishes saved before AI was on get indexed as people search', async () => {
   assert.equal((await pickle()).embeddingModel, 'gemini-embedding-2');
 });
 
+test('a question in Hindi is accepted by search and by the assistant', async () => {
+  // Whether the right dishes come back is for the real model (npm run ai:eval); here it is
+  // enough that Devanagari is not refused or mangled on its way there.
+  const found = await search(`?search=${encodeURIComponent('कुछ मीठा चाहिए')}&sort=relevance`);
+  assert.equal(found.smart, true);
+  assert.ok(
+    requests.some(
+      (request) => request.kind === 'embedding' && request.contents.includes('कुछ मीठा चाहिए')
+    )
+  );
+
+  const res = await ask('कुछ मीठा चाहिए');
+  assert.equal(res.status, 200);
+  const [first] = modelRequests();
+  assert.equal(first.input, 'कुछ मीठा चाहिए');
+  assert.match(first.system_instruction, /Reply in the language and script the visitor writes in/);
+  assert.match(first.system_instruction, /write each dish title exactly as it is listed/);
+});
+
 test('search keeps the other filters and the buyer’s chosen order', async () => {
   // "spicy" describes both the biryani and the paused curry; paused dishes stay hidden.
   assert.deepEqual(await titles('?search=spicy&sort=relevance'), ['Chicken Biryani']);

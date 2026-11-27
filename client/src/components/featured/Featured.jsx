@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import './Featured.scss';
 import { useNavigate } from 'react-router-dom';
 import { useAiEnabled } from '../../hooks/useAiEnabled';
+import MicButton from '../micButton/MicButton';
 
 function Featured() {
   const [input, setInput] = useState('');
 
   const navigate = useNavigate();
   const smartSearch = useAiEnabled();
-  const handleSubmit = () => {
-    navigate(`/items?search=${encodeURIComponent(input)}`);
-  };
+  const search = (text) => navigate(`/items?search=${encodeURIComponent(text)}`);
+  const handleSubmit = () => search(input);
 
   const handleCategoryClick = (cat) => {
     navigate(`/items?cat=${cat.toLowerCase()}`);
@@ -30,8 +30,13 @@ function Featured() {
               <input
                 type="text"
                 placeholder={smartSearch ? 'Try "something light for dinner"' : 'Try "cake"'}
+                value={input}
+                aria-label="Search for food"
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
               />
+              {/* Speaking fills the box as it is heard and searches when done. */}
+              <MicButton onText={setInput} onFinal={search} />
             </div>
             <button onClick={handleSubmit}>Search</button>
           </div>

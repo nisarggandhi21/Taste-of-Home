@@ -31,7 +31,8 @@
     width: 380px;
     max-width: calc(100vw - 32px);
     height: 540px;
-    max-height: calc(100vh - 110px);
+    // Leaves room for the navbar above and the round button below on short windows.
+    max-height: calc(100vh - 180px);
     display: flex;
     flex-direction: column;
     background: var(--surface);
@@ -206,7 +207,8 @@
       font-size: 14px;
     }
 
-    button {
+    // The Send button only; the microphone next to it has its own style.
+    > button {
       padding: 10px 16px;
       border: none;
       border-radius: var(--radius-sm);

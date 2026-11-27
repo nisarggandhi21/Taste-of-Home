@@ -258,8 +258,19 @@ $phone: 640px;
       font-size: 30px;
     }
 
-    .search button {
+    .search > button {
       padding: 0 18px;
+    }
+
+    // The magnifying glass makes way for the text and the microphone.
+    .search .searchInput {
+      img {
+        display: none;
+      }
+
+      input {
+        padding-left: 14px;
+      }
     }
 
     .popular {

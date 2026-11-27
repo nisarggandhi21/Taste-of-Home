@@ -78,8 +78,8 @@ for (const dish of DISHES) {
   await pause();
 }
 
-// EVAL_ONLY=search,assistant,summary runs just those parts.
-const only = (process.env.EVAL_ONLY || 'search,assistant,summary').split(',');
+// EVAL_ONLY=search,hindi,assistant,summary runs just those parts.
+const only = (process.env.EVAL_ONLY || 'search,hindi,assistant,summary').split(',');
 const wanted = (group) => only.includes(group);
 
 // ------------------------------------------------------------------------ search
@@ -96,15 +96,36 @@ const SEARCHES = [
   ['creamy rich curry to eat with naan', ['Paneer Butter Masala']],
   ['quick handheld meal', ['Smoky Veg Burger', 'Grilled Paneer Sandwich']],
 ];
+// The same kind of question as people in India type it: Hindi in Latin letters (Hinglish)
+// and in Devanagari. The listings are in English.
+const HINDI_SEARCHES = [
+  ['kuch meetha chahiye', ['Chocolate Truffle Cake', 'Mango Kulfi']],
+  ['bimar hoon, kuch halka khana chahiye', ['Dal Khichdi', 'Curd Rice']],
+  ['garmi me kuch thanda peene ko', ['Fresh Lime Soda', 'Mango Kulfi']],
+  ['teekha chicken chawal ke saath', ['Hyderabadi Chicken Biryani']],
+  ['bachchon ke liye cheese wala kuch', ['Margherita Pizza', 'Grilled Paneer Sandwich']],
+  ['nashte me kuch kurkura south indian', ['Masala Dosa']],
+  ['baarish me kuch garam peene ko', ['Masala Chai Flask']],
+  ['कुछ मीठा चाहिए', ['Chocolate Truffle Cake', 'Mango Kulfi']],
+  ['बीमार हूँ, कुछ हल्का खाना चाहिए', ['Dal Khichdi', 'Curd Rice']],
+  ['तीखा चिकन और चावल', ['Hyderabadi Chicken Biryani']],
+  ['गर्मी में कुछ ठंडा पीने को', ['Fresh Lime Soda', 'Mango Kulfi']],
+  ['नाश्ते के लिए कुछ कुरकुरा', ['Masala Dosa']],
+];
+const searchRuns = [
+  ...(wanted('search') ? SEARCHES.map((entry) => ['search', ...entry]) : []),
+  ...(wanted('hindi') ? HINDI_SEARCHES.map((entry) => ['search in Hindi', ...entry]) : []),
+];
+
 console.log('\nSearch: is a fitting dish in the top 3?');
-for (const [query, expected] of wanted('search') ? SEARCHES : []) {
+for (const [group, query, expected] of searchRuns) {
   const started = Date.now();
   const found = await withRetry(() =>
     searchItems({ search: query, sort: 'relevance', page: 1, limit: 3 })
   );
   const top = found.items.map((item) => item.title);
   record(
-    'search',
+    group,
     query,
     top.some((title) => expected.includes(title)),
     Date.now() - started,
@@ -241,8 +262,67 @@ ASSISTANT.push(
   }
 );
 
+// Hindi and Hinglish: it should understand the request and answer the way it was asked.
+const DEVANAGARI = /[\u0900-\u097F]/;
+const HINGLISH_WORDS = /\b(hai|hain|aap|aapke|liye|mein|yeh|aur|kar|sakte|chahiye|ke|ka|ki)\b/i;
+ASSISTANT.push(
+  {
+    name: 'Hinglish: "kuch meetha chahiye" finds a sweet and is answered in Hinglish',
+    group: 'hindi',
+    ask: 'kuch meetha chahiye, 700 rupaye se kam me',
+    check: (answer) => {
+      const cards = cardsOf(answer);
+      if (!cards.some((dish) => ['Chocolate Truffle Cake', 'Mango Kulfi'].includes(dish.title))) {
+        return 'did not suggest a sweet';
+      }
+      if (cards.some((dish) => dish.price > 700)) return 'went over the budget';
+      if (DEVANAGARI.test(answer.reply)) return 'answered in Devanagari, not in Latin letters';
+      return HINGLISH_WORDS.test(answer.reply) ? true : 'did not answer in Hinglish';
+    },
+  },
+  {
+    name: 'Hindi: a vegetarian meal under ₹150, answered in Hindi',
+    group: 'hindi',
+    ask: 'मुझे 150 रुपये से कम में शाकाहारी खाना चाहिए',
+    check: (answer) => {
+      const cards = cardsOf(answer);
+      if (cards.length === 0) return 'recommended nothing (or changed the dish titles)';
+      const wrong = cards.find((dish) => dish.diet !== 'veg' || dish.price > 150);
+      if (wrong) return `recommended ${wrong.title} (${wrong.diet}, ₹${wrong.price})`;
+      return DEVANAGARI.test(answer.reply) ? true : 'did not answer in Hindi';
+    },
+  },
+  {
+    name: 'Hindi: a nut allergy is still taken seriously',
+    group: 'hindi',
+    ask: 'मुझे मेवों (नट्स) से एलर्जी है। मैं क्या ऑर्डर कर सकता हूँ?',
+    check: (answer) => {
+      const cards = cardsOf(answer);
+      if (cards.length === 0) return 'recommended nothing (or changed the dish titles)';
+      const risky = cards.find((dish) => dish.allergens.includes('nuts'));
+      if (risky) return `recommended ${risky.title}, which contains nuts`;
+      return DEVANAGARI.test(answer.reply) ? true : 'did not answer in Hindi';
+    },
+  },
+  {
+    name: 'Hinglish: "do masala dosa cart me daal do" offers two dosas',
+    group: 'hindi',
+    ask: 'do masala dosa cart me daal do',
+    check: (answer) => sameOffer(answer, ['2 x Masala Dosa']),
+  },
+  {
+    name: 'an English question is still answered in English',
+    group: 'hindi',
+    ask: 'What do you have for a hot afternoon?',
+    check: (answer) =>
+      DEVANAGARI.test(answer.reply) || /\b(hai|hain|aapke|chahiye)\b/i.test(answer.reply)
+        ? 'did not answer in English'
+        : true,
+  }
+);
+
 console.log('\nAssistant:');
-for (const test of wanted('assistant') ? ASSISTANT : []) {
+for (const test of ASSISTANT.filter((entry) => wanted(entry.group || 'assistant'))) {
   const started = Date.now();
   let answer;
   try {
@@ -251,7 +331,7 @@ for (const test of wanted('assistant') ? ASSISTANT : []) {
     );
   } catch (err) {
     record(
-      'assistant',
+      test.group ? 'assistant in Hindi' : 'assistant',
       test.name || test.ask,
       false,
       Date.now() - started,
@@ -261,7 +341,7 @@ for (const test of wanted('assistant') ? ASSISTANT : []) {
   }
   const verdict = test.check(answer);
   record(
-    'assistant',
+    test.group ? 'assistant in Hindi' : 'assistant',
     test.name || test.ask,
     verdict === true,
     Date.now() - started,
