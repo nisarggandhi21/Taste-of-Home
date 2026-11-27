@@ -7,6 +7,11 @@ import Order, {
   orderLines,
 } from '../models/order.model.js';
 import createError from '../utils/createError.js';
+import {
+  notifyOrderCancelled,
+  notifyOrderPlaced,
+  notifyOrderStatus,
+} from '../utils/orderEmails.js';
 
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -53,6 +58,7 @@ const markOrderPaid = async (paymentIntentId) => {
   );
   if (order) {
     await countSales(order);
+    await notifyOrderPlaced(order);
   }
   return order;
 };
@@ -288,6 +294,7 @@ export const updateStatus = async (req, res, next) => {
       },
       { new: true }
     );
+    await notifyOrderStatus(updated);
     res.status(200).send(serialize(updated));
   } catch (err) {
     next(err);
@@ -333,6 +340,7 @@ export const cancelOrder = async (req, res, next) => {
     // Only the request that actually cancelled the order takes the sale back.
     if (updated) {
       await countSales(order, -1);
+      await notifyOrderCancelled(updated);
     }
 
     res.status(200).send(serialize(updated || (await Order.findById(order._id))));

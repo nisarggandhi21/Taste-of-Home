@@ -173,8 +173,10 @@ and registrations to 10 per hour, per IP address. If the API runs behind a rever
 Railway, nginx, ...), set `TRUST_PROXY=1` so the limit is applied per visitor instead of to the
 proxy; on Vercel this is done automatically.
 
-**Email.** Password reset and email confirmation send links by email over SMTP, which every
-email provider offers. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `MAIL_FROM` to
+**Email.** Password reset and email confirmation send links by email, and orders send emails
+too: a receipt to the buyer and the order to the cook when it is paid, a note to the buyer each
+time the cook moves it forward, and a note to both when it is cancelled and refunded. All of it
+goes over SMTP, which every email provider offers. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `MAIL_FROM` to
 turn it on, and `CLIENT_URL` if the client is not the first entry of `CORS_ALLOWED_ORIGINS`.
 Without these settings no email is sent: in development the message is printed in the API log
 so the link can still be followed, and everything else keeps working. Confirming an email is

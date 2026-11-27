@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import User, { ownProfile } from '../models/user.model.js';
 import createError from '../utils/createError.js';
-import { clientUrl, sendMail } from '../utils/mailer.js';
+import { clientUrl, trySendMail } from '../utils/mailer.js';
 import { createToken, hashToken } from '../utils/oneTimeToken.js';
 import { TOKEN_MAX_AGE_MS, cookieOptions, signAccessToken } from '../utils/token.js';
 
@@ -17,16 +17,6 @@ const sendSession = (res, user, status) => {
     .cookie('accessToken', signAccessToken(user), { ...cookieOptions, maxAge: TOKEN_MAX_AGE_MS })
     .status(status)
     .send(ownProfile(user));
-};
-
-// A mail problem must never break the request that triggered it.
-const trySendMail = async (message) => {
-  try {
-    return await sendMail(message);
-  } catch (err) {
-    console.error('Could not send email:', err.message);
-    return false;
-  }
 };
 
 const sendVerificationEmail = async (user) => {

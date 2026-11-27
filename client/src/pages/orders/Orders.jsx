@@ -57,6 +57,8 @@ const OrderRow = ({ order, currentUser, onContact, onAdvance, onCancel, busy }) 
             {line.quantity > 1 && <span className="quantity"> &times; {line.quantity}</span>}
           </div>
         ))}
+        {/* The same reference is used in the emails about this order. */}
+        <div className="orderRef">Order #{order._id.slice(-6).toUpperCase()}</div>
       </td>
       <td>&#8377; {order.price}</td>
       <td>{isLoading ? 'loading...' : error ? 'error' : data?.username}</td>

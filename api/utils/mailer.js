@@ -20,6 +20,10 @@ const getTransport = () => {
       host: process.env.SMTP_HOST,
       port,
       secure: port === 465,
+      // A mail server that does not answer must not hold up the request that sends the email.
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 10000,
       auth: process.env.SMTP_USER
         ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
         : undefined,
@@ -33,7 +37,8 @@ const getTransport = () => {
 export const isMailConfigured = () => !!getTransport();
 
 // Resolves to true when the message was handed to the mail server.
-export const sendMail = async ({ to, subject, text }) => {
+// `html` is optional; mail programs that cannot show it fall back to `text`.
+export const sendMail = async ({ to, subject, text, html }) => {
   const mailer = getTransport();
   if (!mailer) {
     // In development the message is printed so links can still be followed. In production
@@ -51,9 +56,21 @@ export const sendMail = async ({ to, subject, text }) => {
     to,
     subject,
     text,
+    html,
   });
-  if (process.env.NODE_ENV === 'test') outbox.push({ to, subject, text });
+  if (process.env.NODE_ENV === 'test') outbox.push({ to, subject, text, html });
   return true;
+};
+
+// For emails that accompany something else (an order, a new account): a mail problem must
+// never break the request that triggered it.
+export const trySendMail = async (message) => {
+  try {
+    return await sendMail(message);
+  } catch (err) {
+    console.error('Could not send email:', err.message);
+    return false;
+  }
 };
 
 // Where links in emails point: the public address of the client.
