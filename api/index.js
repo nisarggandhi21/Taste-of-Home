@@ -20,6 +20,7 @@ import reviewRoutes from './routes/review.route.js';
 import uploadRoutes from './routes/upload.route.js';
 import userRoute from './routes/user.route.js';
 import createError from './utils/createError.js';
+import { connectDb, requireDb } from './utils/db.js';
 import { validateEnv } from './utils/validateEnv.js';
 
 const app = express();
@@ -32,15 +33,6 @@ if (process.env.TRUST_PROXY || process.env.VERCEL) {
 const httpServer = createServer(app);
 
 mongoose.set('strictQuery', true);
-
-const connect = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO);
-    console.log('Connected to database');
-  } catch (error) {
-    console.log('Error connecting to database: ', error);
-  }
-};
 
 const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
   ? process.env.CORS_ALLOWED_ORIGINS.split(',')
@@ -66,6 +58,9 @@ app.use(
 );
 
 if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
+// Everything below reads or writes the database, so wait until it is ready.
+app.use(['/api', '/sitemap.xml'], requireDb);
+
 // Stripe signs the raw request body, so this route must be registered before express.json().
 app.post('/api/orders/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 app.use(express.json());
@@ -91,7 +86,10 @@ app.use('/api/admin', adminRoutes);
 
 app.use(errorHandler);
 
-connect();
+// Start connecting straight away. If this attempt fails, the first request tries again.
+connectDb()
+  .then(() => console.log('Connected to database'))
+  .catch((error) => console.log('Error connecting to database: ', error.message));
 
 const port = process.env.PORT || 8800;
 

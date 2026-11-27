@@ -31,6 +31,8 @@ const envSchema = z.object({
   // the database is checked for messages saved by other instances.
   LIVE_STREAM_SECONDS: z.string().optional(),
   LIVE_POLL_MS: z.string().optional(),
+  // How long a request waits for the database, in milliseconds (default 8000).
+  DB_WAIT_MS: z.string().optional(),
   // Account email addresses that may use the admin pages, comma separated.
   ADMIN_EMAILS: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).optional(),

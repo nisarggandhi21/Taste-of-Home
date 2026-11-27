@@ -169,6 +169,13 @@ GEMINI_API_KEY=[your-gemini-api-key]  # optional, turns on the AI features
 ADMIN_EMAILS=[you@example.com]        # optional, accounts that may use the admin pages
 ```
 
+**Database.** Requests wait until the database connection is ready, a failed connection is
+tried again by the next request, and if the database cannot be reached within 8 seconds
+(`DB_WAIT_MS`) the visitor gets a plain "please try again" instead of an internal error. With
+MongoDB Atlas and serverless hosting such as Vercel, allow access from anywhere (`0.0.0.0/0`)
+under Atlas → Network Access: the host's addresses change all the time, and a list of fixed
+addresses makes connections fail at random.
+
 **Sessions and rate limits.** Logins last 7 days. Failed logins are limited to 10 per 15 minutes
 and registrations to 10 per hour, per IP address. If the API runs behind a reverse proxy (Render,
 Railway, nginx, ...), set `TRUST_PROXY=1` so the limit is applied per visitor instead of to the

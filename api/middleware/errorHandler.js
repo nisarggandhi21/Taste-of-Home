@@ -1,4 +1,15 @@
+import { DB_UNAVAILABLE, isDbConnectionError } from '../utils/db.js';
+
 const errorHandler = (err, req, res, next) => {
+  // The database dropped out in the middle of a request. Say so in plain words, with the
+  // status that tells the browser it is worth trying again.
+  if (isDbConnectionError(err)) {
+    console.error('Database error:', err.message);
+    return res
+      .status(503)
+      .json({ success: false, status: 503, message: DB_UNAVAILABLE, stack: {} });
+  }
+
   const errorStatus = err.status || 500;
   const errorMessage = err.message || 'Something went wrong!';
 
