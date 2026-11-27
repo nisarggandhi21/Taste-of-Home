@@ -117,9 +117,14 @@ test('nothing personal is kept on the device', async ({ page }) => {
     saved.filter((url) => /orders|messages|conversations|users\/me|auth|admin|userId=/.test(url))
   ).toEqual([]);
 
-  // Logging out forgets even that, since lists differ slightly from person to person.
+  // Logging out forgets even that, since lists differ slightly from person to person. (The
+  // home page then saves its own, anonymous, lists again, so only this one is looked for.)
+  const listSeenLoggedIn = saved.find(
+    (url) => url.includes('/api/items?') && url.includes('page=1')
+  );
+  expect(listSeenLoggedIn).toBeTruthy();
   await page.click('.navbar .user');
   await page.locator('.navbar .options').getByText('Logout').click();
   await expect(page.locator('.navbar .user')).toHaveCount(0);
-  await expect.poll(() => savedFromApi(page).then((urls) => urls.length)).toBeLessThanOrEqual(2);
+  await expect.poll(() => savedFromApi(page)).not.toContain(listSeenLoggedIn);
 });
