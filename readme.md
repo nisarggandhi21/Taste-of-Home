@@ -51,8 +51,10 @@ A **full-stack web application** connecting **home cooks** with **food enthusias
 Optional, and off unless the API has a `GEMINI_API_KEY` (a free key from Google AI Studio works):
 
 - **Ordering assistant**: a chat helper that turns "something light and vegetarian under ₹150"
-  into a search of the real menu. It can only read listings; it cannot order or change anything,
-  and it only ever shows dishes that exist.
+  into a search of the real menu, and only ever shows dishes that exist. Asked to "add two of
+  those to my cart", it offers exactly that as a card with an **Add to cart** button: nothing
+  is added until the visitor presses it. It cannot place an order, pay or change anything by
+  itself.
 - **Smart search**: finds dishes by what they are ("comfort food for a cold") as well as by the
   words in their title, and still respects every filter.
 - **Listing from a photo**: a seller uploads a photo and gets a draft title, description,
@@ -68,8 +70,10 @@ How it is built (see `api/ai/`):
   tool arguments go through the same validation as a visitor's request, and its dish cards are
   built from database records, never from what the model wrote.
 - Listing and review text is written by the public, so the model is given it as data and told
-  not to follow instructions inside it; the assistant has read-only tools, so the worst a
-  hostile listing can do is earn a bad recommendation.
+  not to follow instructions inside it. The assistant's tools read; the one that acts only
+  makes an offer, which the server checks against the database (the dish exists and is on
+  sale, sensible quantities, one cook per cart) and the visitor has to confirm. So the worst a
+  hostile listing can do is earn a bad recommendation or an offer nobody accepts.
 - Usage is controlled and recorded: a per-visitor hourly limit, a site-wide daily allowance,
   and one database row per model call (`npm run ai:usage` prints calls, failures, speed and
   tokens for the last week).
@@ -98,6 +102,7 @@ Evaluation results (27 November 2026, `gemini-3.5-flash-lite` with `gemini-embed
 | --- | --- | --- |
 | Smart search: a fitting dish in the top 3 for queries that share no words with its title | 10 / 10 | 0.3 s |
 | Assistant: right filters, real prices, allergy handling, refusing off-topic and hidden instructions | 8 / 8 | 4.4 s |
+| Assistant and the cart: offers exactly what was asked, never claims it is already added or paid, asks when unsure, ignores a listing that tells it to fill the cart | 5 / 5 | 7.9 s |
 | Review summary: reports praise and complaints, ignores an instruction hidden in a review | 4 / 4 | 1.0 s |
 
 Model answers vary from run to run: across three runs, two scored 21 of 22 before the fixes

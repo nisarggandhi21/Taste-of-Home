@@ -17,6 +17,11 @@ export const assistantSchema = z.object({
             .trim()
             .min(1, 'Message cannot be empty')
             .max(500, 'Message is too long'),
+          // Ids of the dishes shown with an earlier reply, so a follow-up can refer to them.
+          items: z
+            .array(z.string().regex(/^[0-9a-fA-F]{24}$/, 'That dish id is not valid'))
+            .max(6, 'Too many dishes')
+            .optional(),
         }),
         'Messages are required'
       )

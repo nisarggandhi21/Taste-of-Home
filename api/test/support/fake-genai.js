@@ -74,20 +74,49 @@ const DEFAULT_SUMMARY = {
 const defaultJson = (request) =>
   request.response_format.schema?.properties?.summary ? DEFAULT_SUMMARY : DEFAULT_DRAFT;
 
-// Searches for whatever the visitor last said, then lists what came back.
+const NUMBERS = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5 };
+const READY = 'That is ready for you. Press "Add to cart" to confirm.';
+
+// "Add two of those to my cart": offers the first dish shown earlier in the conversation.
+// "Add 2 paneer thali to my cart": searches for the dish, then offers the first result.
+// Anything else: searches for whatever the visitor last said, then lists what came back.
 const defaultTools = (request, round) => {
+  // The first request holds the conversation; later ones hold tool results.
+  const prompt = typeof request.input === 'string' ? request.input : '';
   if (round === 0) {
-    const lastLine = String(request.input)
+    const lastLine = prompt
       .split('\n')
       .at(-1)
       .replace(/^Visitor:\s*/, '');
+    const add = /^add (\w+) (?:of )?(.+?) to my cart/i.exec(lastLine);
+    if (add) {
+      const quantity = NUMBERS[add[1].toLowerCase()] ?? Number(add[1]);
+      const shown = /\[Dishes shown: [^\]]*?id ([0-9a-f]{24})/.exec(prompt);
+      if (/^(those|that|it|them)$/i.test(add[2]) && shown) {
+        return { calls: [{ name: 'propose_cart', args: { items: [{ id: shown[1], quantity }] } }] };
+      }
+      pendingPortions = quantity;
+      return { calls: [{ name: 'search_dishes', args: { query: add[2] } }] };
+    }
+    pendingPortions = null;
     return { calls: [{ name: 'search_dishes', args: { query: lastLine } }] };
   }
-  const { dishes = [] } = JSON.parse(request.input[0].result[0].text);
+  const result = JSON.parse(request.input[0].result[0].text);
+  if (result.offered) return { text: READY };
+  if (result.error) return { text: `Sorry, I could not do that: ${result.error}` };
+  const { dishes = [] } = result;
+  if (pendingPortions && dishes.length > 0) {
+    const quantity = pendingPortions;
+    pendingPortions = null;
+    return { calls: [{ name: 'propose_cart', args: { items: [{ id: dishes[0].id, quantity }] } }] };
+  }
   if (dishes.length === 0) return { text: 'I could not find anything like that right now.' };
   const names = dishes.slice(0, 3).map((dish) => `${dish.title} (₹ ${dish.priceRupees})`);
   return { text: `Here is what I found: ${names.join(', ')}.` };
 };
+
+// Portions asked for in an "add ... to my cart" request that is still being worked on.
+let pendingPortions = null;
 
 let interactionCount = 0;
 const rounds = new Map(); // interaction id -> how many tool rounds came before it

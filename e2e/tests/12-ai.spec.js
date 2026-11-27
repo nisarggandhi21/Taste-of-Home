@@ -27,6 +27,71 @@ test('the assistant suggests real dishes and links to them', async ({ page }) =>
   await expect(assistant(page)).toBeHidden();
 });
 
+const askAssistant = async (page, text) => {
+  await assistant(page).getByLabel('Ask the food assistant').fill(text);
+  await assistant(page).getByRole('button', { name: 'Send' }).click();
+};
+const cartBadge = (page) => page.locator('.navbar .cartLink .badge');
+
+test('the assistant offers a cart, and nothing is added until the visitor confirms', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open food assistant' }).click();
+  await askAssistant(page, 'Add two paneer thali to my cart');
+
+  const offer = assistant(page).locator('.cartOffer').last();
+  await expect(offer.locator('li').first()).toContainText('2 × Paneer Thali');
+  await expect(offer.locator('li.total')).toContainText('₹ 500');
+  await expect(assistant(page).locator('.chatMessage.from-assistant p').last()).toContainText(
+    'Press "Add to cart" to confirm'
+  );
+  // Only an offer so far.
+  await expect(cartBadge(page)).toHaveCount(0);
+
+  // Declining leaves the cart alone.
+  await offer.getByRole('button', { name: 'Not now' }).click();
+  await expect(offer).toContainText('Not added.');
+  await expect(cartBadge(page)).toHaveCount(0);
+
+  // "Those" refers to the dishes the assistant showed before.
+  await askAssistant(page, 'Paneer');
+  await expect(assistant(page).locator('.dish', { hasText: 'Paneer Thali' })).toBeVisible();
+  await askAssistant(page, 'Add three of those to my cart');
+  const second = assistant(page).locator('.cartOffer').last();
+  await expect(second.locator('li').first()).toContainText('3 × Paneer Thali');
+  await expect(second.locator('li.total')).toContainText('₹ 750');
+
+  await second.getByRole('button', { name: 'Add to cart' }).click();
+  await expect(second).toContainText('Added to your cart.');
+  await expect(cartBadge(page)).toHaveText('3');
+  await expect(second.getByRole('button', { name: 'Add to cart' })).toHaveCount(0);
+
+  await second.getByRole('link', { name: 'View cart' }).click();
+  await expect(page).toHaveURL('/cart');
+  await expect(page.locator('.cart .line')).toContainText('Paneer Thali');
+  await expect(assistant(page)).toBeHidden();
+});
+
+test('an offer from another cook warns that it starts a new cart', async ({ page }) => {
+  // A dish from the cook in Pune is already in the cart.
+  await page.goto('/items?search=Chicken%20Biryani');
+  await page.locator('.itemCard', { hasText: 'Chicken Biryani' }).first().click();
+  await page.click('.addToCart');
+  await expect(cartBadge(page)).toHaveText('1');
+
+  await page.getByRole('button', { name: 'Open food assistant' }).click();
+  await askAssistant(page, 'Add one veg burger to my cart');
+  const offer = assistant(page).locator('.cartOffer').last();
+  await expect(offer).toContainText('1 × Veg Burger');
+  await expect(offer.locator('.warning')).toContainText('starts a new cart');
+
+  await offer.getByRole('button', { name: 'Add to cart' }).click();
+  await page.goto('/cart');
+  await expect(page.locator('.cart .line')).toHaveCount(1);
+  await expect(page.locator('.cart .line')).toContainText('Veg Burger');
+});
+
 test('the assistant says so when nothing matches', async ({ page }) => {
   await page.goto('/items');
   await page.getByRole('button', { name: 'Open food assistant' }).click();

@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { CartContext } from '../../context/CartContext';
 import { useAiEnabled } from '../../hooks/useAiEnabled';
 import { aiService } from '../../services/aiService';
 import DietBadge from '../dietBadge/DietBadge';
@@ -19,6 +20,66 @@ const Sparkle = () => (
     />
   </svg>
 );
+
+// What the assistant offers to put in the cart. Nothing is added until the visitor presses
+// the button: the assistant can only propose, and the offer itself was checked by the server.
+const CartOffer = ({ proposal, state, onAnswer, onViewCart }) => {
+  const cart = useContext(CartContext);
+  const replaces = cart.isOtherSeller(proposal.lines[0].item);
+
+  const accept = () => {
+    proposal.lines.forEach((line, i) =>
+      // A cart holds one cook's dishes; the first line starts a new cart if needed.
+      cart.add(line.item, line.quantity, { replace: i === 0 && replaces })
+    );
+    onAnswer('added');
+  };
+
+  return (
+    <div className="cartOffer">
+      <ul>
+        {proposal.lines.map((line) => (
+          <li key={line.item._id}>
+            <span>
+              {line.quantity} &times; {line.item.title}
+            </span>
+            <strong>&#8377; {line.item.price * line.quantity}</strong>
+          </li>
+        ))}
+        <li className="total">
+          <span>Total</span>
+          <strong>&#8377; {proposal.total}</strong>
+        </li>
+      </ul>
+      {state === 'added' ? (
+        <p className="answered">
+          Added to your cart.{' '}
+          <Link to="/cart" onClick={onViewCart}>
+            View cart
+          </Link>
+        </p>
+      ) : state === 'declined' ? (
+        <p className="answered">Not added.</p>
+      ) : (
+        <>
+          {replaces && (
+            <p className="warning">
+              Your cart has dishes from another cook. Adding these starts a new cart.
+            </p>
+          )}
+          <div className="buttons">
+            <button type="button" className="confirm" onClick={accept}>
+              Add to cart
+            </button>
+            <button type="button" onClick={() => onAnswer('declined')}>
+              Not now
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 // A chat helper that suggests dishes. It only ever shows dishes that exist on the site.
 const Assistant = () => {
@@ -45,9 +106,22 @@ const Assistant = () => {
     setBusy(true);
     try {
       const answer = await aiService.ask(
-        next.slice(-MAX_SENT).map(({ role, text: body }) => ({ role, text: body }))
+        next.slice(-MAX_SENT).map(({ role, text: body, items }) => ({
+          role,
+          text: body,
+          // Which dishes a reply showed, so "add two of those" can be understood.
+          ...(items?.length > 0 && { items: items.map((item) => item._id) }),
+        }))
       );
-      setMessages([...next, { role: 'assistant', text: answer.reply, items: answer.items }]);
+      setMessages([
+        ...next,
+        {
+          role: 'assistant',
+          text: answer.reply,
+          items: answer.items,
+          proposal: answer.proposal,
+        },
+      ]);
     } catch (err) {
       const problem =
         err.response?.data?.message || 'Sorry, I could not answer that. Please try again.';
@@ -74,7 +148,10 @@ const Assistant = () => {
           <div className="chatThread" ref={listRef}>
             {messages.length === 0 && (
               <div className="welcome">
-                <p>Tell me what you feel like eating and I will find it.</p>
+                <p>
+                  Tell me what you feel like eating and I will find it. I can also put dishes in
+                  your cart for you to confirm.
+                </p>
                 <div className="suggestions">
                   {SUGGESTIONS.map((suggestion) => (
                     <button type="button" key={suggestion} onClick={() => send(suggestion)}>
@@ -107,6 +184,18 @@ const Assistant = () => {
                       </Link>
                     ))}
                   </div>
+                )}
+                {message.proposal && (
+                  <CartOffer
+                    proposal={message.proposal}
+                    state={message.offerState}
+                    onViewCart={() => setOpen(false)}
+                    onAnswer={(offerState) =>
+                      setMessages((all) =>
+                        all.map((other, at) => (at === i ? { ...other, offerState } : other))
+                      )
+                    }
+                  />
                 )}
               </div>
             ))}

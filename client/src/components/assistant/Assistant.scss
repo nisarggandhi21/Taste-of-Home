@@ -241,3 +241,80 @@
     }
   }
 }
+
+// The assistant's offer to add dishes to the cart, with its confirm button.
+.assistant .cartOffer {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 3px 0;
+
+    strong {
+      white-space: nowrap;
+    }
+
+    &.total {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-weight: 700;
+    }
+  }
+
+  .warning {
+    margin: 8px 0 0;
+    color: var(--warning-text);
+    font-size: 13px;
+  }
+
+  .answered {
+    margin: 10px 0 0;
+    color: var(--text-muted);
+    font-size: 13px;
+
+    a {
+      color: var(--primary);
+      font-weight: 700;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+
+    button {
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      background: none;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+
+      &.confirm {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--on-primary);
+      }
+    }
+  }
+}
