@@ -27,6 +27,8 @@ jobs:
         with:
           path: ~/.cache/mongodb-binaries
           key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('api/package-lock.json') }}
+          # A changed lockfile rarely means a different MongoDB: start from the last copy.
+          restore-keys: mongodb-binaries-${{ runner.os }}-
       - run: npm ci
       - run: npm run lint
       - run: npm test
@@ -66,6 +68,8 @@ jobs:
         with:
           path: ~/.cache/mongodb-binaries
           key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('api/package-lock.json') }}
+          # A changed lockfile rarely means a different MongoDB: start from the last copy.
+          restore-keys: mongodb-binaries-${{ runner.os }}-
       - run: npm ci
         working-directory: api
       - run: npm ci
