@@ -1,0 +1,328 @@
+.admin {
+  display: flex;
+  justify-content: center;
+
+  .container {
+    width: 1400px;
+    max-width: 100%;
+    padding: 40px 0 60px;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin: 32px 0 12px;
+    font-size: 18px;
+  }
+
+  button {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    &.danger {
+      border-color: var(--danger-border);
+      background: var(--danger-soft);
+      color: var(--danger-text);
+    }
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+
+    button {
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      background: none;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      white-space: nowrap;
+
+      &.active {
+        border-bottom-color: var(--primary);
+        color: var(--primary);
+      }
+    }
+  }
+
+  .panel {
+    padding-top: 24px;
+  }
+
+  .status,
+  .count {
+    color: var(--text-muted);
+  }
+
+  .count {
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 16px;
+
+    .tile {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+
+      .label,
+      .detail {
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+
+      strong {
+        font-size: 26px;
+      }
+    }
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+
+    input,
+    select {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--input-bg);
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    input {
+      flex: 1 1 220px;
+      max-width: 360px;
+      min-width: 0;
+    }
+
+    button {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+  }
+
+  // Wide tables scroll sideways inside the page instead of stretching it.
+  .tableWrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-top: 1px solid var(--border);
+    }
+
+    .ref {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .dish {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 600;
+
+      img {
+        width: 44px;
+        height: 32px;
+        border-radius: 6px;
+        object-fit: cover;
+      }
+    }
+
+    .why {
+      margin-top: 4px;
+      max-width: 240px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--neutral-soft);
+    color: var(--neutral-text);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+
+    &.good {
+      background: var(--success-soft);
+      color: var(--success-text);
+    }
+
+    &.bad {
+      background: var(--danger-soft);
+      color: var(--danger-text);
+    }
+  }
+
+  .pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding-top: 18px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .actionList {
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      font-size: 14px;
+
+      & + li {
+        border-top: 1px solid var(--border);
+      }
+
+      .reason,
+      time {
+        color: var(--text-muted);
+      }
+
+      time {
+        flex-shrink: 0;
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+.adminDialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.adminDialog {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 460px;
+  max-width: 100%;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+
+  h2 {
+    margin: 0;
+    font-size: 19px;
+  }
+
+  p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--input-bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    resize: vertical;
+  }
+
+  .note {
+    font-size: 12px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin .actionList li {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

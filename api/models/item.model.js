@@ -100,6 +100,13 @@ const itemSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    // Set when an administrator takes the listing down. The seller cannot make it available
+    // again until it is restored. The reason is shown to the seller only.
+    takenDownAt: Date,
+    takenDownReason: String,
+    // True while an administrator's action (a takedown, or suspending the seller) is what
+    // keeps an otherwise available listing hidden, so lifting it brings the listing back.
+    heldAvailable: Boolean,
   },
   {
     timestamps: true,
@@ -109,5 +116,8 @@ const itemSchema = new Schema(
 itemSchema.index({ userId: 1 });
 itemSchema.index({ cat: 1 });
 itemSchema.index({ diet: 1 });
+
+// Left out when a listing is shown to anybody but its seller.
+export const PUBLIC_ITEM_FIELDS = '-takenDownReason -heldAvailable';
 
 export default mongoose.model('Item', itemSchema);

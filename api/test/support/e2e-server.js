@@ -14,7 +14,12 @@ import { startTestServer } from './server.js';
 // The AI features are on, answered by the local stand-in for the model.
 const server = await startTestServer({
   port: 8800,
-  env: { GEMINI_API_KEY: 'fake-key', AI_HOURLY_LIMIT: '1000', AI_DAILY_LIMIT: '5000' },
+  env: {
+    GEMINI_API_KEY: 'fake-key',
+    AI_HOURLY_LIMIT: '1000',
+    AI_DAILY_LIMIT: '5000',
+    ADMIN_EMAILS: 'root@example.com',
+  },
 });
 installFakeImageHost();
 const { call, register } = createClient(server.baseUrl);
@@ -27,6 +32,11 @@ const must = async (...args) => {
 
 const seller = await register('albert', true);
 const buyer = await register('stefan');
+// The administrator: listed in ADMIN_EMAILS above, with a confirmed address.
+await register('root');
+await server.db
+  .collection('users')
+  .updateOne({ username: 'root' }, { $set: { emailVerified: true } });
 
 const thali = await must('POST', '/api/items', { cookie: seller.cookie, body: sampleItem });
 await must('POST', '/api/items', {

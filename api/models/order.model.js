@@ -97,7 +97,7 @@ const OrderSchema = new Schema(
     },
     cancelledBy: {
       type: String,
-      enum: ['buyer', 'seller'],
+      enum: ['buyer', 'seller', 'admin'],
     },
     cancelReason: {
       type: String,

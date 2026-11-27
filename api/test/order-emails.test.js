@@ -135,23 +135,29 @@ test('a cancelled order tells both sides, with the refund and the reason', async
 });
 
 test('an order still goes through when someone on it can no longer be emailed', async () => {
-  const lost = await register('lost');
+  const gone = await register('gone', true);
+  const soup = (
+    await call('POST', '/api/items', {
+      cookie: gone.cookie,
+      body: { ...sampleItem, title: 'Tomato Soup', price: 90 },
+    })
+  ).data._id;
   const res = await call('POST', '/api/orders/checkout', {
-    cookie: lost.cookie,
-    body: { items: [{ itemId: thali, quantity: 1 }], deliveryAddress },
+    cookie: buyer.cookie,
+    body: { items: [{ itemId: soup, quantity: 1 }], deliveryAddress },
   });
   const intentId = res.data.clientSecret.split('_secret')[0];
   markSucceeded(intentId);
-  // The buyer's account disappears between paying and the confirmation.
-  await db.collection('users').deleteOne({ username: 'lost' });
+  // The cook's account disappears between the payment and its confirmation.
+  await db.collection('users').deleteOne({ username: 'gone' });
   const start = outbox.length;
 
   const confirmed = await call('PUT', '/api/orders', {
-    cookie: lost.cookie,
+    cookie: buyer.cookie,
     body: { payment_intent: intentId },
   });
   assert.equal(confirmed.status, 200);
   const stored = await db.collection('orders').findOne({ payment_intent: intentId });
   assert.equal(stored.isPaid, true);
-  assert.deepEqual(sentSince(start), [`${COOK}: New order ${refOf(stored)}: Paneer Thali`]);
+  assert.deepEqual(sentSince(start), [`${BUYER}: Order ${refOf(stored)} placed: Tomato Soup`]);
 });

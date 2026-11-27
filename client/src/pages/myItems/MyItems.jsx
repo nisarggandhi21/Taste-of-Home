@@ -116,16 +116,30 @@ function MyItems() {
                       <td>&#8377; {item.price}</td>
                       <td>{item.sales}</td>
                       <td>
-                        <span className={isAvailable ? 'state available' : 'state paused'}>
-                          {isAvailable ? 'Available' : 'Paused'}
-                        </span>
+                        {item.takenDownAt ? (
+                          <>
+                            <span className="state takenDown">Taken down</span>
+                            <div className="takenDownReason">
+                              By Taste of Home: {item.takenDownReason}
+                            </div>
+                          </>
+                        ) : (
+                          <span className={isAvailable ? 'state available' : 'state paused'}>
+                            {isAvailable ? 'Available' : 'Paused'}
+                          </span>
+                        )}
                       </td>
                       <td>
                         <div className="actions">
                           <button
                             type="button"
                             className="toggle"
-                            disabled={availability.isPending}
+                            disabled={availability.isPending || !!item.takenDownAt}
+                            title={
+                              item.takenDownAt
+                                ? 'Contact us to have this listing restored'
+                                : undefined
+                            }
                             onClick={() =>
                               availability.mutate({ id: item._id, isAvailable: !isAvailable })
                             }

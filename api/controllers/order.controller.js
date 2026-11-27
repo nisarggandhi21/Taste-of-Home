@@ -1,4 +1,3 @@
-import Stripe from 'stripe';
 import Item from '../models/item.model.js';
 import Order, {
   PAID_ORDER_FILTER,
@@ -6,14 +5,15 @@ import Order, {
   nextStage,
   orderLines,
 } from '../models/order.model.js';
-import createError from '../utils/createError.js';
 import {
-  notifyOrderCancelled,
-  notifyOrderPlaced,
-  notifyOrderStatus,
-} from '../utils/orderEmails.js';
-
-const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
+  cancelAndRefund,
+  countSales,
+  getStripe,
+  historyEntry,
+  serialize,
+} from '../services/orders.js';
+import createError from '../utils/createError.js';
+import { notifyOrderPlaced, notifyOrderStatus } from '../utils/orderEmails.js';
 
 const STATUS_LABELS = {
   pending_payment: 'awaiting payment',
@@ -30,23 +30,6 @@ const CANCELLABLE = {
   buyer: ['placed'],
   seller: ['placed', 'accepted', 'preparing'],
 };
-
-// What the API returns for an order: the stored document plus its worked-out status.
-const serialize = (order) => ({
-  ...order.toObject(),
-  status: effectiveStatus(order),
-  lines: orderLines(order),
-});
-
-// Adds (or with a negative sign, takes back) the sales of every dish on an order.
-const countSales = (order, sign = 1) =>
-  Promise.all(
-    orderLines(order).map((line) =>
-      Item.findByIdAndUpdate(line.itemId, { $inc: { sales: sign * line.quantity } })
-    )
-  );
-
-const historyEntry = (status) => ({ status, at: new Date() });
 
 // Idempotent: only the first call for a payment intent changes anything.
 const markOrderPaid = async (paymentIntentId) => {
@@ -318,32 +301,8 @@ export const cancelOrder = async (req, res, next) => {
       );
     }
 
-    // The idempotency key makes a repeated request return the same refund instead of a new one.
-    const refund = await getStripe().refunds.create(
-      { payment_intent: order.payment_intent },
-      { idempotencyKey: `refund_${order._id}` }
-    );
-
-    const updated = await Order.findOneAndUpdate(
-      { _id: order._id, status: { $ne: 'cancelled' } },
-      {
-        $set: {
-          status: 'cancelled',
-          cancelledBy: role,
-          cancelReason: req.body?.reason || undefined,
-          refundId: refund.id,
-        },
-        $push: { statusHistory: historyEntry('cancelled') },
-      },
-      { new: true }
-    );
-    // Only the request that actually cancelled the order takes the sale back.
-    if (updated) {
-      await countSales(order, -1);
-      await notifyOrderCancelled(updated);
-    }
-
-    res.status(200).send(serialize(updated || (await Order.findById(order._id))));
+    const cancelled = await cancelAndRefund(order, { by: role, reason: req.body?.reason });
+    res.status(200).send(serialize(cancelled));
   } catch (err) {
     next(err);
   }

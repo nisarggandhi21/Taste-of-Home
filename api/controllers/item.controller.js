@@ -49,6 +49,14 @@ export const updateItem = async (req, res, next) => {
 export const setAvailability = async (req, res, next) => {
   try {
     const item = await findOwnItem(req);
+    if (item.takenDownAt) {
+      return next(
+        createError(
+          403,
+          `This listing was taken down by Taste of Home: ${item.takenDownReason}. Contact us to have it restored.`
+        )
+      );
+    }
     item.isAvailable = req.body.isAvailable;
     res.status(200).json(await item.save());
   } catch (error) {
@@ -75,7 +83,13 @@ export const getItem = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return next(createError(404, 'Item not found!'));
-    res.status(200).send(item);
+    const data = item.toObject();
+    // Why a listing was taken down is between the seller and the site.
+    if (item.userId !== readUser(req)?.id) {
+      delete data.takenDownReason;
+      delete data.heldAvailable;
+    }
+    res.status(200).send(data);
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { SUSPENDED_MESSAGE } from '../middleware/jwt.js';
 import User, { ownProfile } from '../models/user.model.js';
 import createError from '../utils/createError.js';
 import { clientUrl, trySendMail } from '../utils/mailer.js';
@@ -68,6 +69,10 @@ export const login = async (req, res, next) => {
     // Same response whether the username or the password is wrong.
     const isCorrect = await bcrypt.compare(req.body.password, user ? user.password : DUMMY_HASH);
     if (!user || !isCorrect) return next(createError(400, 'Wrong username or password!'));
+    // Only said to somebody who knows the password.
+    if (user.suspendedAt) {
+      return next(createError(403, `${SUSPENDED_MESSAGE} Reason given: ${user.suspendReason}`));
+    }
 
     sendSession(res, user, 200);
   } catch (err) {

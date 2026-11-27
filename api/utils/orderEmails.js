@@ -185,6 +185,10 @@ export const notifyOrderStatus = safely(async (order) => {
 const CANCELLED_BY = {
   buyer: { buyer: 'You cancelled this order.', seller: 'The buyer cancelled this order.' },
   seller: { buyer: 'The cook cancelled this order.', seller: 'You cancelled this order.' },
+  admin: {
+    buyer: 'Taste of Home cancelled this order.',
+    seller: 'Taste of Home cancelled this order.',
+  },
 };
 
 // The order was cancelled and the payment refunded: tell both sides.

@@ -10,6 +10,7 @@ import { CartContextProvider } from './context/CartContext';
 import { ThemeContext, ThemeContextProvider } from './context/ThemeContext';
 
 import Add from './pages/add/Add';
+import Admin from './pages/admin/Admin';
 import Cart from './pages/cart/Cart';
 import ForgotPassword from './pages/account/ForgotPassword';
 import ResetPassword from './pages/account/ResetPassword';
@@ -46,6 +47,7 @@ const queryClient = new QueryClient();
 
 const needsLogin = (page) => <RequireAuth>{page}</RequireAuth>;
 const needsSeller = (page) => <RequireAuth seller>{page}</RequireAuth>;
+const needsAdmin = (page) => <RequireAuth admin>{page}</RequireAuth>;
 
 // Toasts follow the theme: dark on dark, light otherwise.
 const ThemedToasts = () => {
@@ -94,6 +96,9 @@ const App = () => {
                     <Route path="/myitems" element={needsSeller(<MyItems />)} />
                     <Route path="/add" element={needsSeller(<Add />)} />
                     <Route path="/edit/:id" element={needsSeller(<Add />)} />
+
+                    {/* Administrators only (the API checks again on every request) */}
+                    <Route path="/admin" element={needsAdmin(<Admin />)} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>

@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-import Item from '../models/item.model.js';
+import Item, { PUBLIC_ITEM_FIELDS } from '../models/item.model.js';
 import Order from '../models/order.model.js';
 import User, { ownProfile } from '../models/user.model.js';
+import { isAdminUser } from '../utils/admin.js';
 import { deleteUserAndTheirTraces } from '../utils/cleanup.js';
 import createError from '../utils/createError.js';
 import { cookieOptions } from '../utils/token.js';
@@ -21,6 +22,16 @@ export const deleteUser = async (req, res, next) => {
     const password = req.body?.password;
     if (typeof password !== 'string' || !(await bcrypt.compare(password, user.password))) {
       return next(createError(400, 'Your password is not correct.'));
+    }
+
+    // Deleting it would free the address for somebody else to register.
+    if (isAdminUser(user)) {
+      return next(
+        createError(
+          409,
+          'This is an administrator account. Remove its address from ADMIN_EMAILS before deleting it.'
+        )
+      );
     }
 
     const openOrders = await Order.countDocuments({
@@ -116,7 +127,7 @@ export const getFavourites = async (req, res, next) => {
 
     // Saved items that have since been deleted are simply left out.
     const ids = user.favourites.filter((id) => mongoose.isValidObjectId(id));
-    const items = await Item.find({ _id: { $in: ids } });
+    const items = await Item.find({ _id: { $in: ids } }).select(PUBLIC_ITEM_FIELDS);
     res.status(200).send(items);
   } catch (error) {
     next(error);

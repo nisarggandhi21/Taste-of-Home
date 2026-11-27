@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { isAdminUser } from '../utils/admin.js';
 const { Schema } = mongoose;
 
 const userSchema = new Schema(
@@ -46,6 +47,9 @@ const userSchema = new Schema(
     emailVerifyExpires: Date,
     resetTokenHash: String,
     resetExpires: Date,
+    // Set by an administrator. A suspended account cannot log in or do anything.
+    suspendedAt: Date,
+    suspendReason: String,
     // Ids of the items this user saved.
     favourites: {
       type: [String],
@@ -72,6 +76,10 @@ const OWN_FIELDS = [
   'favourites',
   'createdAt',
 ];
-export const ownProfile = (user) => Object.fromEntries(OWN_FIELDS.map((key) => [key, user[key]]));
+export const ownProfile = (user) => ({
+  ...Object.fromEntries(OWN_FIELDS.map((key) => [key, user[key]])),
+  // Lets the client show the admin pages; every admin request is checked again on the server.
+  isAdmin: isAdminUser(user),
+});
 
 export default mongoose.model('User', userSchema);

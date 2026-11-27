@@ -15,7 +15,9 @@ const SORTS = {
 };
 
 // Never returned to clients.
-const HIDDEN = { embedding: 0, embeddingModel: 0 };
+const HIDDEN = { embedding: 0, embeddingModel: 0, heldAvailable: 0 };
+// Why a listing was taken down is shown to its seller only.
+const HIDDEN_FROM_OTHERS = { ...HIDDEN, takenDownReason: 0 };
 
 // A dish counts as a meaning-based match when it is close enough to the query in absolute
 // terms and not far behind the best match for that query.
@@ -63,7 +65,7 @@ const buildFilters = async (q, currentUserId) => {
       },
     }),
     // Paused items are only listed for their owner.
-    ...(!(q.userId && q.userId === currentUserId) && { isAvailable: { $ne: false } }),
+    ...(!q.ownListings && { isAvailable: { $ne: false } }),
     ...(q.diet && { diet: q.diet }),
     // Items without declared allergens never count as free from anything.
     ...(q.freeFrom?.length && { allergens: { $exists: true, $nin: q.freeFrom } }),
@@ -84,7 +86,11 @@ const runPipeline = async (filters, q) => {
     { $sort: SORTS[q.sort] || SORTS.createdAt },
     {
       $facet: {
-        items: [{ $skip: (q.page - 1) * q.limit }, { $limit: q.limit }, { $project: HIDDEN }],
+        items: [
+          { $skip: (q.page - 1) * q.limit },
+          { $limit: q.limit },
+          { $project: q.ownListings ? HIDDEN : HIDDEN_FROM_OTHERS },
+        ],
         total: [{ $count: 'count' }],
       },
     },
@@ -143,7 +149,9 @@ const rankByMeaning = async (filters, text) => {
 // q is a validated items query (see schemas/item.schema.js).
 // Resolves to { items, total, page, pages, smart } where `smart` says whether the results
 // were matched by meaning as well as by words.
-export const searchItems = async (q, { currentUserId } = {}) => {
+export const searchItems = async (query, { currentUserId } = {}) => {
+  // A seller looking at their own listings sees the paused ones and the takedown reasons.
+  const q = { ...query, ownListings: !!query.userId && query.userId === currentUserId };
   const filters = await buildFilters(q, currentUserId);
 
   if (!q.search) {
@@ -170,7 +178,7 @@ export const searchItems = async (q, { currentUserId } = {}) => {
   const found = await Item.aggregate([
     { $match: { _id: { $in: pageIds } } },
     withRating,
-    { $project: HIDDEN },
+    { $project: HIDDEN_FROM_OTHERS },
   ]);
   const byId = new Map(found.map((item) => [String(item._id), item]));
   const items = pageIds.map((id) => byId.get(String(id))).filter(Boolean);

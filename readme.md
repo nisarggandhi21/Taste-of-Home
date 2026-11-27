@@ -166,6 +166,7 @@ CORS_URL=frontend.url
 CORS_ALLOWED_ORIGINS=[url-path]
 TRUST_PROXY=1  # optional, see below
 GEMINI_API_KEY=[your-gemini-api-key]  # optional, turns on the AI features
+ADMIN_EMAILS=[you@example.com]        # optional, accounts that may use the admin pages
 ```
 
 **Sessions and rate limits.** Logins last 7 days. Failed logins are limited to 10 per 15 minutes
@@ -176,11 +177,21 @@ proxy; on Vercel this is done automatically.
 **Email.** Password reset and email confirmation send links by email, and orders send emails
 too: a receipt to the buyer and the order to the cook when it is paid, a note to the buyer each
 time the cook moves it forward, and a note to both when it is cancelled and refunded. All of it
-goes over SMTP, which every email provider offers. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `MAIL_FROM` to
-turn it on, and `CLIENT_URL` if the client is not the first entry of `CORS_ALLOWED_ORIGINS`.
+goes over SMTP, which every email provider offers. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
+`SMTP_PASS` and `MAIL_FROM` to turn it on, and `CLIENT_URL` if the client is not the first entry
+of `CORS_ALLOWED_ORIGINS`.
 Without these settings no email is sent: in development the message is printed in the API log
 so the link can still be followed, and everything else keeps working. Confirming an email is
 shown on the profile but is not required to use the site.
+
+**Admin.** Accounts whose email address is listed in `ADMIN_EMAILS` (comma separated, written
+exactly as on the account's profile page, capitals included) get an **Admin** entry in their
+menu. From there an administrator can suspend an account (it is logged out at once and its
+listings are hidden), take a single listing down, and refund any paid order in full. Each of
+these needs a reason, which is emailed to the people affected and kept in an activity log.
+Lifting a suspension or restoring a listing puts things back as they were. Create the account
+first and then list its address; where email is set up, the address must also be confirmed.
+The role cannot be granted from inside the site.
 
 **Payments.** An order is only marked as paid after the API has checked the payment with Stripe.
 To also cover buyers who close the tab before returning to the site, add a Stripe webhook for the

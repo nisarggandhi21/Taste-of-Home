@@ -27,6 +27,8 @@ const envSchema = z.object({
   AI_EMBEDDING_MODEL: z.string().optional(),
   AI_DAILY_LIMIT: z.string().optional(),
   AI_HOURLY_LIMIT: z.string().optional(),
+  // Account email addresses that may use the admin pages, comma separated.
+  ADMIN_EMAILS: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
 });
 

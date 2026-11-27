@@ -7,6 +7,7 @@ import { createServer } from 'http';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import errorHandler from './middleware/errorHandler.js';
+import adminRoutes from './routes/admin.route.js';
 import aiRoutes from './routes/ai.route.js';
 import authRoute from './routes/auth.route.js';
 import conversationRoutes from './routes/conversation.route.js';
@@ -85,6 +86,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use(errorHandler);
 

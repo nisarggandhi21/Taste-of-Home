@@ -90,6 +90,11 @@ function Navbar() {
                       </Link>
                     </>
                   )}
+                  {currentUser.isAdmin && (
+                    <Link className="link" to="/admin">
+                      Admin
+                    </Link>
+                  )}
                   <Link className="link" to="/profile">
                     Profile
                   </Link>
