@@ -14,6 +14,7 @@ import conversationRoutes from './routes/conversation.route.js';
 import itemRoutes from './routes/item.route.js';
 import messageRoutes from './routes/message.route.js';
 import { stripeWebhook } from './controllers/order.controller.js';
+import { getRobots, getSitemap } from './controllers/seo.controller.js';
 import orderRoutes from './routes/order.route.js';
 import reviewRoutes from './routes/review.route.js';
 import uploadRoutes from './routes/upload.route.js';
@@ -73,6 +74,9 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+app.get('/sitemap.xml', getSitemap);
+app.get('/robots.txt', getRobots);
 
 app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);

@@ -3,34 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      The tags marked data-rh are the defaults for pages that say nothing else; once the app
+      has started it replaces them with each page's own (see src/components/seo/Seo.jsx).
+      %SITE_URL% is filled in when the site is built (see vite.config.js).
+    -->
     <meta
+      data-rh="true"
       name="description"
       content="Taste of Home - Connect with local home cooks and enjoy delicious, authentic homemade food delivered to your doorstep. Join our community of food enthusiasts today!"
     />
-    <meta
-      name="keywords"
-      content="homemade food, home cooked meals, local chefs, food delivery, authentic cuisine, Taste of Home, food marketplace"
-    />
     <meta name="author" content="Taste of Home" />
-    <meta name="robots" content="index, follow" />
+    <meta data-rh="true" name="robots" content="index, follow" />
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Taste of Home | Homemade Food Marketplace" />
+    <!-- Link previews (Open Graph and Twitter) -->
+    <meta property="og:site_name" content="Taste of Home" />
+    <meta data-rh="true" property="og:type" content="website" />
+    <meta data-rh="true" property="og:title" content="Taste of Home | Homemade Food Marketplace" />
     <meta
+      data-rh="true"
       property="og:description"
       content="Savor the perfection of homemade goodness with our expert home cooks. Every bite is a journey of flavor and warmth."
     />
-    <meta property="og:image" content="/img/homemadefood.png" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="Taste of Home | Homemade Food Marketplace" />
+    <meta data-rh="true" property="og:image" content="%SITE_URL%/img/homemadefood.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta data-rh="true" name="twitter:title" content="Taste of Home | Homemade Food Marketplace" />
     <meta
-      property="twitter:description"
+      data-rh="true"
+      name="twitter:description"
       content="Savor the perfection of homemade goodness with our expert home cooks. Every bite is a journey of flavor and warmth."
     />
-    <meta property="twitter:image" content="/img/homemadefood.png" />
+    <meta data-rh="true" name="twitter:image" content="%SITE_URL%/img/homemadefood.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -37,6 +37,7 @@ import Footer from './components/footer/Footer';
 import RequireAuth from './components/requireAuth/RequireAuth';
 import ScrollToTop from './components/scrollToTop/ScrollToTop';
 import Navbar from './components/navbar/Navbar';
+import Seo, { siteUrl } from './components/seo/Seo';
 
 import './theme.scss';
 import './app.scss';
@@ -64,6 +65,14 @@ const App = () => {
             <CartContextProvider>
               <BrowserRouter>
                 <div className="app">
+                  {/* What every page tells search engines unless it says otherwise. */}
+                  <Seo
+                    title="Taste of Home | Homemade Food Marketplace"
+                    description="Taste of Home - Connect with local home cooks and enjoy delicious, authentic homemade food delivered to your doorstep. Join our community of food enthusiasts today!"
+                    image={siteUrl('/img/homemadefood.png')}
+                    type="website"
+                    noindex={false}
+                  />
                   <ScrollToTop />
                   <ThemedToasts />
                   <Navbar />

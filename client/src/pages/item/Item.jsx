@@ -11,7 +11,8 @@ import { itemService } from '../../services/itemService';
 import DietBadge from '../../components/dietBadge/DietBadge';
 import { allergenLabel } from '../../constants/food';
 import { userService } from '../../services/userService';
-import { Helmet } from 'react-helmet-async';
+import Seo from '../../components/seo/Seo';
+import { dishData } from '../../utils/structuredData';
 import './Item.scss';
 
 function Item() {
@@ -25,6 +26,8 @@ function Item() {
   const { isLoading, error, data } = useQuery({
     queryKey: ['item', id],
     queryFn: () => itemService.getSingleItem(id),
+    // A dish that does not exist will not start existing on the second try.
+    retry: (failures, err) => failures < 2 && ![400, 404].includes(err.response?.status),
   });
 
   const userId = data?.userId; //optional chaning operator
@@ -81,19 +84,21 @@ function Item() {
       {isLoading ? (
         'loading'
       ) : error ? (
-        'Something went wrong!'
+        <>
+          {/* Nothing here to list: usually a dish that was deleted. */}
+          <Seo title="Dish not found | Taste of Home" noindex />
+          Something went wrong!
+        </>
       ) : (
         <div className="container">
-          <Helmet>
-            <title>{`${data.title} | Taste of Home`}</title>
-            <meta name="description" content={data.desc?.substring(0, 160)} />
-            <meta property="og:title" content={`${data.title} | Taste of Home`} />
-            <meta
-              property="og:description"
-              content={data.shortDesc || data.desc?.substring(0, 160)}
-            />
-            <meta property="og:image" content={data.cover} />
-          </Helmet>
+          <Seo
+            title={`${data.title} | Taste of Home`}
+            description={(data.shortDesc || data.desc || '').substring(0, 160)}
+            path={`/item/${data._id}`}
+            image={data.cover}
+            type="product"
+            jsonLd={dishData(data, dataUser)}
+          />
           <div className="left">
             <span className="breadcrumbs">
               Taste of Home {'>'} {data.cat} {'>'}

@@ -197,6 +197,16 @@ The role cannot be granted from inside the site.
 To also cover buyers who close the tab before returning to the site, add a Stripe webhook for the
 `payment_intent.succeeded` event pointing at `/api/orders/webhook` and set `STRIPE_WEBHOOK_SECRET`.
 
+**Search engines.** Every dish page describes itself in the vocabulary search engines use
+(schema.org `Product`: name, picture, price, availability, cook and rating), which is what lets
+a result show the price and stars. Pages give their canonical address, search-result pages and
+private pages are kept out of the index, and `/robots.txt` (written when the client is built)
+points at `/sitemap.xml`. The sitemap lists the public pages and every dish on sale; the API
+generates it, and the client's host passes the request on (`client/vercel.json`, or
+`client/nginx.conf` with Docker). If your API is at another address, change it in
+`client/vercel.json`. The site's own address is taken from `VITE_SUCCESS_URL`, or from
+`VITE_SITE_URL` if you set it.
+
 **Real-time chat.** Each open chat page holds one long-lived request to the API (server-sent
 events) and receives messages on it as they are sent; the conversations list updates the same
 way. This is plain HTTP, so it works on serverless hosting such as Vercel as well as on a

@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import Seo from '../../components/seo/Seo';
 import { Link } from 'react-router-dom';
 import { FOOTER_GROUPS, PAGES } from './pages';
 import './InfoPage.scss';
@@ -9,10 +9,11 @@ function InfoPage({ slug }) {
 
   return (
     <div className="infoPage">
-      <Helmet>
-        <title>{`${page.title} | Taste of Home`}</title>
-        <meta name="description" content={page.description} />
-      </Helmet>
+      <Seo
+        title={`${page.title} | Taste of Home`}
+        description={page.description}
+        path={`/${slug}`}
+      />
       <div className="container">
         <nav className="sideNav" aria-label="Information pages">
           {FOOTER_GROUPS.map((group) => (

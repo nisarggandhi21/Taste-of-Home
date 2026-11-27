@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import Seo from '../../components/seo/Seo';
 import { useLocation } from 'react-router-dom';
 import ItemCard from '../../components/itemCard/ItemCard';
 import { ALLERGENS, DIETS, SORTS } from '../../constants/food';
@@ -79,21 +79,22 @@ function Items() {
 
   return (
     <div className="items">
-      <Helmet>
-        <title>
-          {cat
+      <Seo
+        title={
+          cat
             ? `Authentic ${cat.charAt(0).toUpperCase() + cat.slice(1)} | Taste of Home`
-            : 'Explore Homemade Delights | Taste of Home'}
-        </title>
-        <meta
-          name="description"
-          content={
-            cat
-              ? `Browse and order the best homemade ${cat} prepared by expert home cooks.`
-              : 'Explore a wide variety of authentic homemade dishes from local home cooks.'
-          }
-        />
-      </Helmet>
+            : 'Explore Homemade Delights | Taste of Home'
+        }
+        description={
+          cat
+            ? `Browse and order the best homemade ${cat} prepared by expert home cooks.`
+            : 'Explore a wide variety of authentic homemade dishes from local home cooks.'
+        }
+        path={cat ? `/items?cat=${encodeURIComponent(cat)}` : '/items'}
+        // Search results are endless variations of the same list; only the category pages
+        // and the full list belong in search engines.
+        noindex={!!text}
+      />
       <div className="container">
         <p>
           {text ? `Results for “${text}”` : 'Explore the Food'}
