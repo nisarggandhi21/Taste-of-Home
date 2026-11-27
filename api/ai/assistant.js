@@ -180,5 +180,12 @@ export const askAssistant = async ({ messages, userId }) => {
     reply: reply || 'Sorry, I could not find an answer to that. Could you ask in another way?',
     items,
     searches: calls.filter((call) => call.name === 'search_dishes').length,
+    // What the model looked up, for the evaluation script. Not sent to the browser.
+    trace: calls.map((call) => ({
+      tool: call.name,
+      args: call.args,
+      found:
+        call.result?.dishes?.map((dish) => dish.title) ?? call.result?.title ?? call.result?.error,
+    })),
   };
 };

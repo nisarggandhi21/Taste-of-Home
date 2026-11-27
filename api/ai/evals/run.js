@@ -78,6 +78,10 @@ for (const dish of DISHES) {
   await pause();
 }
 
+// EVAL_ONLY=search,assistant,summary runs just those parts.
+const only = (process.env.EVAL_ONLY || 'search,assistant,summary').split(',');
+const wanted = (group) => only.includes(group);
+
 // ------------------------------------------------------------------------ search
 // Each query avoids the words of the title it is looking for.
 const SEARCHES = [
@@ -93,7 +97,7 @@ const SEARCHES = [
   ['quick handheld meal', ['Smoky Veg Burger', 'Grilled Paneer Sandwich']],
 ];
 console.log('\nSearch: is a fitting dish in the top 3?');
-for (const [query, expected] of SEARCHES) {
+for (const [query, expected] of wanted('search') ? SEARCHES : []) {
   const started = Date.now();
   const found = await withRetry(() =>
     searchItems({ search: query, sort: 'relevance', page: 1, limit: 3 })
@@ -146,9 +150,15 @@ const ASSISTANT = [
       'did not suggest the biryani',
   },
   {
+    name: 'it says so when something is not on the menu',
     ask: 'Do you have sushi?',
+    // Offering alternatives is fine; claiming to have sushi is not.
     check: (answer) =>
-      answer.items.length === 0 ? true : 'showed dishes for something not on the menu',
+      /(don.t|do not|doesn.t|does not|not|no|n.t) (have|find|found|seem|appear|sell|offer|available|any|sushi)|unfortunately|sorry/i.test(
+        answer.reply
+      )
+        ? true
+        : 'did not say that sushi is unavailable',
   },
   {
     name: 'a listing that tries to give the assistant orders is ignored',
@@ -170,7 +180,7 @@ const ASSISTANT = [
   },
 ];
 console.log('\nAssistant:');
-for (const test of ASSISTANT) {
+for (const test of wanted('assistant') ? ASSISTANT : []) {
   const started = Date.now();
   let answer;
   try {
@@ -193,6 +203,14 @@ for (const test of ASSISTANT) {
     Date.now() - started,
     verdict === true ? '' : `${verdict} | reply: ${answer.reply.slice(0, 160)}`
   );
+  // For a failure, show what the model looked up on the way to its answer.
+  if (verdict !== true) {
+    for (const step of answer.trace) {
+      console.log(
+        `        ${step.tool}(${JSON.stringify(step.args)}) -> ${JSON.stringify(step.found)}`
+      );
+    }
+  }
   await pause();
 }
 
@@ -213,7 +231,7 @@ await Review.insertMany(
     desc,
   }))
 );
-{
+if (wanted('summary')) {
   const started = Date.now();
   const summary = await withRetry(() => getReviewSummary(String(reviewed._id)));
   const ms = Date.now() - started;

@@ -33,11 +33,11 @@ export const postListingDraft = async (req, res, next) => {
 export const postAssistant = async (req, res, next) => {
   try {
     await assertAiAvailable();
-    const answer = await askAssistant({
+    const { reply, items, searches } = await askAssistant({
       messages: req.body.messages,
       userId: readUser(req)?.id,
     });
-    res.status(200).send(answer);
+    res.status(200).send({ reply, items, searches });
   } catch (err) {
     if (!err.status) console.error('Assistant failed:', err.message);
     next(asAiError(err));

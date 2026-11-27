@@ -12,6 +12,7 @@ export const ALLERGENS = [
   { value: 'soy', label: 'Soy' },
   { value: 'egg', label: 'Egg' },
   { value: 'sesame', label: 'Sesame' },
+  { value: 'fish', label: 'Fish' },
   { value: 'shellfish', label: 'Shellfish' },
 ];
 

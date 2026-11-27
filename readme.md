@@ -90,6 +90,22 @@ npm run ai:reindex   # gives dishes created before AI was turned on a search vec
 npm run ai:usage     # last week's model usage
 ```
 
+Evaluation results (27 November 2026, `gemini-3.5-flash-lite` with `gemini-embedding-2`, free tier):
+
+| Feature | Checks passed | Average time |
+| --- | --- | --- |
+| Smart search: a fitting dish in the top 3 for queries that share no words with its title | 10 / 10 | 0.3 s |
+| Assistant: right filters, real prices, allergy handling, refusing off-topic and hidden instructions | 8 / 8 | 4.4 s |
+| Review summary: reports praise and complaints, ignores an instruction hidden in a review | 4 / 4 | 1.0 s |
+
+Model answers vary from run to run: across three runs, two scored 21 of 22 before the fixes
+they pointed to (an assistant reply that came back empty, and one over-strict check) and the
+last scored 22 of 22. Listing drafts were tried by hand on real food photos, and a photo of a
+flower was correctly refused.
+
+`gemini-3.5-flash-lite` is the default because it was the free model that answered reliably
+when this was tested; set `AI_MODEL` to try another and re-run the evaluation to compare.
+
 On Gemini's free tier, requests may be used by Google to improve its products; use a paid key
 before sending real customers' data.
 

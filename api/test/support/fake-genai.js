@@ -15,6 +15,7 @@ export const resetScript = () => {
 };
 
 const USAGE = { total_input_tokens: 120, total_output_tokens: 40 };
+const STEP_TYPES = ['user_input', 'function_result', 'function_call', 'model_output'];
 
 // ---- embeddings: a bag-of-words vector, so texts that share words are similar ----------
 const DIMENSIONS = 256;
@@ -102,6 +103,13 @@ export class GoogleGenAI {
           const message = script.error;
           delete script.error;
           throw new Error(message);
+        }
+        // Like the real API: a list given as input must be a list of steps, not bare
+        // text or image parts (those belong inside a "user_input" step).
+        if (Array.isArray(request.input)) {
+          const bad = request.input.find((step) => !STEP_TYPES.includes(step.type));
+          if (bad)
+            throw new Error(`400 The value '${bad.type}' is not supported for 'input[0].type'`);
         }
         const id = `interaction_${++interactionCount}`;
 

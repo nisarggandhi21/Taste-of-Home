@@ -3,9 +3,17 @@
 import { GoogleGenAI } from '@google/genai';
 import { EMBEDDING_DIMENSIONS, aiConfig } from './config.js';
 
+// A model that is overloaded can leave a request hanging; give up well before the web
+// request itself would time out.
+const TIMEOUT_MS = 25_000;
+const REQUEST_OPTIONS = { timeout_ms: TIMEOUT_MS };
+
 let client;
 const getClient = () => {
-  client ||= new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  client ||= new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+    httpOptions: { timeout: TIMEOUT_MS },
+  });
   return client;
 };
 
@@ -14,25 +22,33 @@ const usageOf = (interaction) => ({
   outputTokens: interaction.usage?.total_output_tokens || 0,
 });
 
-// input: [{ type: 'text', text }, { type: 'image', data: <base64>, mimeType }]
-const toInput = (parts) =>
-  parts.map((part) =>
-    part.type === 'image'
-      ? { type: 'image', data: part.data, mime_type: part.mimeType }
-      : { type: 'text', text: part.text }
-  );
+// parts: [{ type: 'text', text }, { type: 'image', data: <base64>, mimeType }]
+// The API takes a list of steps; what the user sends is one "user_input" step holding the parts.
+const toInput = (parts) => [
+  {
+    type: 'user_input',
+    content: parts.map((part) =>
+      part.type === 'image'
+        ? { type: 'image', data: part.data, mime_type: part.mimeType }
+        : { type: 'text', text: part.text }
+    ),
+  },
+];
 
 // One request whose answer must be JSON matching `schema` (a JSON Schema object).
 // Resolves to { data, usage }. `data` is parsed but NOT yet trusted: callers validate it.
 export const generateJson = async ({ system, input, schema, maxOutputTokens = 1500 }) => {
-  const interaction = await getClient().interactions.create({
-    model: aiConfig().model,
-    system_instruction: system,
-    input: toInput(input),
-    response_format: { type: 'text', mime_type: 'application/json', schema },
-    generation_config: { max_output_tokens: maxOutputTokens },
-    store: false,
-  });
+  const interaction = await getClient().interactions.create(
+    {
+      model: aiConfig().model,
+      system_instruction: system,
+      input: toInput(input),
+      response_format: { type: 'text', mime_type: 'application/json', schema },
+      generation_config: { max_output_tokens: maxOutputTokens },
+      store: false,
+    },
+    REQUEST_OPTIONS
+  );
   return { data: JSON.parse(interaction.output_text), usage: usageOf(interaction) };
 };
 
@@ -50,12 +66,15 @@ export const runWithTools = async ({ system, prompt, tools, handlers, maxRounds 
     usage.outputTokens += used.outputTokens;
   };
 
-  let interaction = await getClient().interactions.create({
-    model: aiConfig().model,
-    system_instruction: system,
-    input: prompt,
-    tools: declarations,
-  });
+  let interaction = await getClient().interactions.create(
+    {
+      model: aiConfig().model,
+      system_instruction: system,
+      input: prompt,
+      tools: declarations,
+    },
+    REQUEST_OPTIONS
+  );
   add(interaction);
 
   for (let round = 0; round < maxRounds; round++) {
@@ -80,13 +99,35 @@ export const runWithTools = async ({ system, prompt, tools, handlers, maxRounds 
       });
     }
 
-    interaction = await getClient().interactions.create({
-      model: aiConfig().model,
-      system_instruction: system,
-      input: results,
-      tools: declarations,
-      previous_interaction_id: interaction.id,
-    });
+    // On the last round the model has to answer with what it has: no more tool calls.
+    const lastRound = round === maxRounds - 1;
+    interaction = await getClient().interactions.create(
+      {
+        model: aiConfig().model,
+        system_instruction: system,
+        input: results,
+        tools: declarations,
+        previous_interaction_id: interaction.id,
+        ...(lastRound && { generation_config: { tool_choice: 'none' } }),
+      },
+      REQUEST_OPTIONS
+    );
+    add(interaction);
+  }
+
+  // Occasionally a model returns nothing at all; ask once more for a plain answer.
+  if (!interaction.output_text?.trim()) {
+    interaction = await getClient().interactions.create(
+      {
+        model: aiConfig().model,
+        system_instruction: system,
+        input: 'Please answer the visitor now, in plain text, using what you have found.',
+        tools: declarations,
+        previous_interaction_id: interaction.id,
+        generation_config: { tool_choice: 'none' },
+      },
+      REQUEST_OPTIONS
+    );
     add(interaction);
   }
 
